@@ -7,6 +7,7 @@ import EmptyLayout from "@/views/layouts/Empty.vue";
 
 import authRoutes from "./auth";
 import homeRoutes from "./home";
+import learnRoutes from "./learn";
 import statsRoutes from "./stats";
 import vocabularyRoutes from "./vocabulary";
 import gamesRoutes from "./games";
@@ -32,6 +33,12 @@ const routes = [
         name: "home",
         component: EmptyLayout,
         children: homeRoutes,
+      },
+      {
+        path: "learn",
+        name: "learn",
+        component: EmptyLayout,
+        children: learnRoutes,
       },
       {
         path: "stats",
