@@ -37,4 +37,7 @@ export default {
       state.user = user;
     },
   },
+  getters: {
+    isLoggedIn: (state) => Boolean(state.user.token),
+  },
 };

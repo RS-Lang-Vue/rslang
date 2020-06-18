@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "@/store/index";
 
 import AuthLayout from "@/views/layouts/Auth.vue";
 import MainLayout from "@/views/layouts/Main.vue";
@@ -27,12 +28,18 @@ const routes = [
     path: "/auth",
     name: "auth",
     component: AuthLayout,
+    meta: {
+      onlyNotAuth: true,
+    },
     children: authRoutes,
   },
   {
     path: "/",
     name: "main",
     component: MainLayout,
+    meta: {
+      requiresAuth: true,
+    },
     children: [
       {
         path: "home",
@@ -78,6 +85,20 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (store.getters.isLoggedIn && to.matched.some((record) => record.meta.onlyNotAuth)) {
+    next("/home");
+  } else if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (store.getters.isLoggedIn) {
+      next();
+      return;
+    }
+    next("/auth/login");
+  } else {
+    next();
+  }
 });
 
 export default router;
