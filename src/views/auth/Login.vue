@@ -1,6 +1,11 @@
 <template>
   <div class="login">
-    <lang-user-form class="login__form" @submit="handleFormSubmit" />
+    <lang-user-form
+      class="login__form"
+      @submit="handleFormSubmit"
+      title="Log In"
+      submitButtonText="Log In"
+    />
   </div>
 </template>
 
