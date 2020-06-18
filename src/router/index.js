@@ -5,18 +5,24 @@ import AuthLayout from "@/views/layouts/Auth.vue";
 import MainLayout from "@/views/layouts/Main.vue";
 import EmptyLayout from "@/views/layouts/Empty.vue";
 
+import PromoPage from "@/views/promo/Index.vue";
+
 import authRoutes from "./auth";
 import homeRoutes from "./home";
 import learnRoutes from "./learn";
 import statsRoutes from "./stats";
 import vocabularyRoutes from "./vocabulary";
 import gamesRoutes from "./games";
-import promoRoutes from "./promo";
 import teamRoutes from "./team";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/",
+    name: "promo",
+    component: PromoPage,
+  },
   {
     path: "/auth",
     name: "auth",
@@ -57,12 +63,6 @@ const routes = [
         name: "games",
         component: EmptyLayout,
         children: gamesRoutes,
-      },
-      {
-        path: "promo",
-        name: "promo",
-        component: EmptyLayout,
-        children: promoRoutes,
       },
       {
         path: "team",
