@@ -1,11 +1,34 @@
 <template>
-  <div>
-    Login page
+  <div class="login">
+    <lang-user-form class="login__form" @submit="handleFormSubmit" />
   </div>
 </template>
 
 <script>
-export default {};
+import LangUserForm from "@/components/auth/langUserForm/LangUserForm.vue";
+
+export default {
+  components: {
+    "lang-user-form": LangUserForm,
+  },
+  methods: {
+    handleFormSubmit({ email, password }) {
+      console.log("Submitted", email, password);
+    },
+  },
+};
 </script>
 
-<style></style>
+<style scoped>
+.login {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login__form {
+  width: 30%;
+}
+</style>
