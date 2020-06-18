@@ -6,7 +6,7 @@
 
     <v-text-field v-model="password" :rules="passwordRules" label="Password" required />
 
-    <v-btn class="login__submit-button" type="submit" color="primary">Sign Up</v-btn>
+    <v-btn class="login__submit-button" type="submit" color="primary">{{ submitButtonText }}</v-btn>
   </v-form>
 </template>
 
@@ -16,6 +16,10 @@ export default {
     title: {
       type: String,
       default: "RS Lang",
+    },
+    submitButtonText: {
+      type: String,
+      default: "Submit",
     },
   },
   data: () => ({
