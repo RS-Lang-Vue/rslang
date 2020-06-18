@@ -43,37 +43,31 @@ const routes = [
     children: [
       {
         path: "home",
-        name: "home",
         component: EmptyLayout,
         children: homeRoutes,
       },
       {
         path: "learn",
-        name: "learn",
         component: EmptyLayout,
         children: learnRoutes,
       },
       {
         path: "stats",
-        name: "stats",
         component: EmptyLayout,
         children: statsRoutes,
       },
       {
         path: "vocabulary",
-        name: "vocabulary",
         component: EmptyLayout,
         children: vocabularyRoutes,
       },
       {
         path: "games",
-        name: "games",
         component: EmptyLayout,
         children: gamesRoutes,
       },
       {
         path: "team",
-        name: "team",
         component: EmptyLayout,
         children: teamRoutes,
       },
