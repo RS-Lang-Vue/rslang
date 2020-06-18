@@ -1,4 +1,4 @@
-import axios from "axios";
+import request from "@/requests/request";
 
 export default {
   state: {
@@ -7,13 +7,9 @@ export default {
   actions: {
     createUser(ctx, user) {
       return new Promise((resolve, reject) => {
-        axios({
+        request({
           method: "POST",
-          url: "https://afternoon-falls-25894.herokuapp.com/users",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
+          url: "users",
           data: user,
         })
           .then((res) => resolve(res))
@@ -22,13 +18,9 @@ export default {
     },
     loginUser({ commit }, user) {
       return new Promise((resolve, reject) => {
-        axios({
+        request({
           method: "POST",
-          url: "https://afternoon-falls-25894.herokuapp.com/signin",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
+          url: "signin",
           data: user,
         })
           .then((res) => {
