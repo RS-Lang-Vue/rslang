@@ -19,9 +19,8 @@ export default {
   },
   methods: {
     handleFormSubmit({ email, password }) {
-      console.log("Submitted", email, password);
       this.createUser({ email, password })
-        .then((res) => console.log(res))
+        .then(() => this.$router.push("/auth/login"))
         .catch((err) => console.log(err));
     },
     ...mapActions(["createUser"]),
