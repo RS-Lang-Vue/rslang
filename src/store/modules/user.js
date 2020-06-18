@@ -2,7 +2,10 @@ import request from "@/requests/request";
 
 export default {
   state: {
-    user: {},
+    user: {
+      token: localStorage.getItem("token") || "",
+      userId: localStorage.getItem("userId") || "",
+    },
   },
   actions: {
     createUser(ctx, user) {
@@ -25,6 +28,8 @@ export default {
         })
           .then((res) => {
             const { token, userId } = res.data;
+            localStorage.setItem("token", token);
+            localStorage.setItem("userId", userId);
             commit("setUser", { token, userId });
             resolve(res);
           })
@@ -35,6 +40,12 @@ export default {
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+    unsetUser(state) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      state.user.token = "";
+      state.user.userId = "";
     },
   },
   getters: {

@@ -20,7 +20,7 @@ export default {
   methods: {
     handleFormSubmit(user) {
       this.loginUser(user)
-        .then((res) => console.log(res))
+        .then(() => this.$router.push("/home"))
         .catch((err) => console.log(err));
     },
     ...mapActions(["loginUser"]),

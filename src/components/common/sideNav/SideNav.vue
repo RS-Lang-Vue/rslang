@@ -6,8 +6,23 @@
     <router-link to="/vocabulary" class="side-nav__link">Vocabulary</router-link>
     <router-link to="/games" class="side-nav__link">Games</router-link>
     <router-link to="/team" class="side-nav__link">About Team</router-link>
+    <v-btn @click="logout" color="error">Log out</v-btn>
   </nav>
 </template>
+
+<script>
+import { mapMutations } from "vuex";
+
+export default {
+  methods: {
+    logout() {
+      this.unsetUser();
+      this.$router.push("/auth/login");
+    },
+    ...mapMutations(["unsetUser"]),
+  },
+};
+</script>
 
 <style scoped>
 .side-nav {
