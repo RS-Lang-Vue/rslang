@@ -11,6 +11,7 @@
 
 <script>
 import LangUserForm from "@/components/auth/langUserForm/LangUserForm.vue";
+import { mapActions } from "vuex";
 
 export default {
   components: {
@@ -19,7 +20,11 @@ export default {
   methods: {
     handleFormSubmit({ email, password }) {
       console.log("Submitted", email, password);
+      this.createUser({ email, password })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
     },
+    ...mapActions(["createUser"]),
   },
 };
 </script>

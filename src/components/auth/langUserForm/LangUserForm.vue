@@ -6,7 +6,9 @@
 
     <v-text-field v-model="password" :rules="passwordRules" label="Password" required />
 
-    <v-btn class="login__submit-button" type="submit" color="primary">{{ submitButtonText }}</v-btn>
+    <v-btn class="user-form__submit-button" type="submit" color="primary">{{
+      submitButtonText
+    }}</v-btn>
   </v-form>
 </template>
 
