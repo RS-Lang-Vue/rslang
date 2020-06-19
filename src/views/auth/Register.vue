@@ -6,7 +6,9 @@
       title="Create account"
       submitButtonText="Sign Up"
       :loading="isFormLoading"
-    />
+    >
+      <p>Already have an account? <router-link to="/auth/login">Log In</router-link></p>
+    </lang-user-form>
   </div>
 </template>
 

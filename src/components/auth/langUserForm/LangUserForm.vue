@@ -9,6 +9,9 @@
     <v-btn class="user-form__submit-button" type="submit" color="primary" :loading="loading">{{
       submitButtonText
     }}</v-btn>
+    <footer class="user-form__footer">
+      <slot />
+    </footer>
   </v-form>
 </template>
 
@@ -64,6 +67,10 @@ export default {
 }
 
 .user-form__submit-button {
+  margin-top: 20px;
+}
+
+.user-form__footer {
   margin-top: 20px;
 }
 </style>
