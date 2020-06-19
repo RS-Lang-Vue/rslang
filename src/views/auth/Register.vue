@@ -5,6 +5,7 @@
       @submit="handleFormSubmit"
       title="Create account"
       submitButtonText="Sign Up"
+      :loading="isFormLoading"
     />
   </div>
 </template>
@@ -17,11 +18,31 @@ export default {
   components: {
     "lang-user-form": LangUserForm,
   },
+  data() {
+    return {
+      isFormLoading: false,
+    };
+  },
   methods: {
     handleFormSubmit({ email, password }) {
+      this.isFormLoading = true;
       this.createUser({ email, password })
-        .then(() => this.$router.push("/auth/login"))
-        .catch((err) => console.log(err));
+        .then(() => {
+          this.showAlert("success", "Success", "Successfully created user");
+          this.$router.push("/auth/login");
+        })
+        .catch(() => this.showAlert("error", "Error", "Something went wrong"))
+        .finally(() => {
+          this.isFormLoading = false;
+        });
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
     ...mapActions(["createUser"]),
   },
