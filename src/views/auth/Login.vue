@@ -5,6 +5,7 @@
       @submit="handleFormSubmit"
       title="Log In"
       submitButtonText="Log In"
+      :loading="isFormLoading"
     />
   </div>
 </template>
@@ -17,11 +18,38 @@ export default {
   components: {
     "lang-user-form": LangUserForm,
   },
+  data() {
+    return {
+      isFormLoading: false,
+    };
+  },
   methods: {
     handleFormSubmit(user) {
+      this.isFormLoading = true;
       this.loginUser(user)
-        .then(() => this.$router.push("/home"))
-        .catch((err) => console.log(err));
+        .then(() => {
+          this.showAlert("success", "Success", "Successfully logged in");
+          this.$router.push("/home");
+        })
+        .catch((err) => {
+          const statusCode = err.response.status;
+          if (statusCode === 404 || statusCode === 403) {
+            this.showAlert("error", "Error", "Credentials are incorrect");
+          } else {
+            this.showAlert("error", "Error", "Something went wrong");
+          }
+        })
+        .finally(() => {
+          this.isFormLoading = false;
+        });
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
     ...mapActions(["loginUser"]),
   },

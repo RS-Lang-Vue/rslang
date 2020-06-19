@@ -6,7 +6,7 @@
 
     <v-text-field v-model="password" :rules="passwordRules" label="Password" required />
 
-    <v-btn class="user-form__submit-button" type="submit" color="primary">{{
+    <v-btn class="user-form__submit-button" type="submit" color="primary" :loading="loading">{{
       submitButtonText
     }}</v-btn>
   </v-form>
@@ -22,6 +22,10 @@ export default {
     submitButtonText: {
       type: String,
       default: "Submit",
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({
