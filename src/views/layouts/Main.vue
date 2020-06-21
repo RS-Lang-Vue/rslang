@@ -19,7 +19,7 @@
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-list-item link>
+        <v-list-item link to="/home">
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -28,16 +28,34 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link>
+        <v-list-item link to="/team">
           <v-list-item-action>
-            <v-icon>mdi-information-outline</v-icon>
+            <v-icon>mdi-account-group</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>О приложении</v-list-item-title>
+            <v-list-item-title>О команде</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link>
+        <v-list-item link to="/stats">
+          <v-list-item-action>
+            <v-icon>mdi-chart-bar</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Статистика</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link to="/vocabulary">
+          <v-list-item-action>
+            <v-icon>mdi-bookshelf</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Словарь</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link to="/settings">
           <v-list-item-action>
             <v-icon>mdi-cog</v-icon>
           </v-list-item-action>
@@ -50,7 +68,7 @@
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-list-item link>
+        <v-list-item link to="/learn">
           <v-list-item-action>
             <v-icon>mdi-alphabetical-variant</v-icon>
           </v-list-item-action>
