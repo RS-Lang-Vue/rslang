@@ -2,11 +2,6 @@
   <div class="main-layout">
     <side-nav />
 
-    <v-app-bar app color="indigo" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>RS Lang - изучение</v-toolbar-title>
-    </v-app-bar>
-
     <v-main>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
