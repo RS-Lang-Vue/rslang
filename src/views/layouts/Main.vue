@@ -131,6 +131,19 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+
+      <v-divider></v-divider>
+
+      <v-list dense>
+        <v-list-item @click="handleLogout">
+          <v-list-item-action>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Выйти</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app color="indigo" dark>
@@ -154,10 +167,19 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
   data: () => ({
     drawer: null,
   }),
+  methods: {
+    handleLogout() {
+      this.unsetUser();
+      this.$router.push("/auth/login");
+    },
+    ...mapMutations(["unsetUser"]),
+  },
 };
 </script>
 
