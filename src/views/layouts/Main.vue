@@ -26,9 +26,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.main-layout__content {
-  background-color: red;
-}
-</style>
