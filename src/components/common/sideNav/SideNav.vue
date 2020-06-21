@@ -76,7 +76,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/speak-it">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
@@ -85,7 +85,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/english-for-kids">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
@@ -94,7 +94,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/savana">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
@@ -103,7 +103,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/audio-call">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
@@ -112,7 +112,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/sprint">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
@@ -121,7 +121,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item link>
+      <v-list-item link to="/games/our-game">
         <v-list-item-action>
           <v-icon>mdi-nintendo-game-boy</v-icon>
         </v-list-item-action>
