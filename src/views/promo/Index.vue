@@ -1,6 +1,6 @@
 <template>
   <v-main class="promo">
-    <v-container fluid>
+    <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col class="promo__text_center">
           <h1 class="promo__header">RS Lang</h1>
