@@ -7,10 +7,17 @@
           <p class="promo__title">
             представляет собой оптимальный интеллектуальный способ изучения слов английского языка
           </p>
-          <v-btn class="promo__button" large color="primary" @click="$router.push('home')"
-            >Начать</v-btn
+          <v-btn class="promo__button" large color="primary" @click="$router.push('/auth/login')"
+            >Войти</v-btn
           >
-          <v-btn class="promo__button" text large color="primary">Войти</v-btn>
+          <v-btn
+            class="promo__button"
+            text
+            large
+            color="primary"
+            @click="$router.push('/auth/register')"
+            >Зарегистрироваться</v-btn
+          >
         </v-col>
       </v-row>
     </v-container>
