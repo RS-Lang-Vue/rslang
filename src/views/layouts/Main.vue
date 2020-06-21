@@ -1,7 +1,19 @@
 <template>
   <div class="main-layout">
-    <side-nav class="main-layout__side-nav"></side-nav>
-    <router-view class="main-layout__content"></router-view>
+    <side-nav />
+
+    <v-main>
+      <v-container class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-col class="text-center">
+            <router-view class="main-layout__content"></router-view>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+    <v-footer color="indigo" app>
+      <span class="white--text">&copy; 2020 RS Lang</span>
+    </v-footer>
   </div>
 </template>
 
@@ -14,21 +26,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.main-layout {
-  display: flex;
-  justify-content: space-between;
-}
-
-.main-layout__side-nav {
-  width: 30%;
-  height: 100vh;
-  box-sizing: border-box;
-}
-
-.main-layout__content {
-  width: 70%;
-  box-sizing: border-box;
-}
-</style>

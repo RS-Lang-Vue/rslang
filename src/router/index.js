@@ -12,6 +12,7 @@ import authRoutes from "./auth";
 import homeRoutes from "./home";
 import learnRoutes from "./learn";
 import statsRoutes from "./stats";
+import settingsRoutes from "./settings";
 import vocabularyRoutes from "./vocabulary";
 import gamesRoutes from "./games";
 import teamRoutes from "./team";
@@ -70,6 +71,11 @@ const routes = [
         path: "team",
         component: EmptyLayout,
         children: teamRoutes,
+      },
+      {
+        path: "settings",
+        component: EmptyLayout,
+        children: settingsRoutes,
       },
     ],
   },
