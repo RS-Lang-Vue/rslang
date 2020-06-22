@@ -7,6 +7,7 @@ import MainLayout from "@/views/layouts/Main.vue";
 import EmptyLayout from "@/views/layouts/Empty.vue";
 
 import PromoPage from "@/views/promo/Index.vue";
+import Sprint from "@/views/games/Sprint.vue";
 
 import authRoutes from "./auth";
 import homeRoutes from "./home";
@@ -19,6 +20,10 @@ import teamRoutes from "./team";
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/sprint",
+    component: Sprint,
+  },
   {
     path: "/",
     name: "promo",
