@@ -1,9 +1,7 @@
 <template>
   <v-app>
-    <v-main>
-      <notifications group="main" style="top: 30px; right: 15px;" />
-      <router-view />
-    </v-main>
+    <notifications group="main" style="top: 30px; right: 15px;" />
+    <router-view />
   </v-app>
 </template>
 
