@@ -170,15 +170,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.side-nav {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.side-nav__link {
-  margin-bottom: 10px;
-}
-</style>
+<style></style>
