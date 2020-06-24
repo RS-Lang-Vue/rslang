@@ -1,7 +1,7 @@
 import Index from "@/views/games/Index.vue";
 import SpeakIt from "@/views/games/SpeakIt.vue";
-// eslint-disable-next-line
-import EnglishPuzzle from "@/views/games/EnglishPuzzle.vue";
+import StartEnglishPuzzle from "@/views/games/EnglishPuzzle/Start.vue";
+import EnglishPuzzle from "@/views/games/EnglishPuzzle/EnglishPuzzle.vue";
 import Savana from "@/views/games/Savana.vue";
 import AudioCall from "@/views/games/AudioCall.vue";
 import Sprint from "@/views/games/Sprint.vue";
@@ -16,6 +16,11 @@ export default [
     path: "speak-it",
     component: SpeakIt,
     meta: { title: 'Игра "SpeakIt"' },
+  },
+  {
+    path: "start-english-puzzle",
+    component: StartEnglishPuzzle,
+    meta: { title: 'Игра "English puzzle"' },
   },
   {
     path: "english-puzzle",
