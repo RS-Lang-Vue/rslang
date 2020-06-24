@@ -145,7 +145,7 @@ export default {
   computed: {
     ...mapGetters([
       "getWordsForRoundEP",
-      "getRequestOptionsEP",
+      "getOptionsEP",
       "getHintOptionsEP",
       "getSourceCardsEP",
       "getResultsCardsEP",
@@ -184,7 +184,7 @@ export default {
   methods: {
     ...mapActions([
       "fetchWordsForRoundEP",
-      "setRequestOptionsEP",
+      "setOptionsEP",
       "setSourceCardsEP",
       "setResultsCardsEP",
       "fetchRoundsPerLevelCountEP",
@@ -196,7 +196,7 @@ export default {
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
       this.clearGameState();
-      await this.fetchWordsForRoundEP(this.getRequestOptionsEP);
+      await this.fetchWordsForRoundEP(this.getOptionsEP);
       setTimeout(() => {
         this.startNewPhrasePuzzle();
         this.setRoundPainting();
@@ -220,7 +220,7 @@ export default {
       this.AUDIO_URL = "";
     },
     async goToNextRound() {
-      const options = { ...this.getRequestOptionsEP };
+      const options = { ...this.getOptionsEP };
       if (options.page === options.numOfPagesInGroup) {
         if (options.group === options.numOfGroups) return false;
         options.group += 1;
@@ -229,7 +229,7 @@ export default {
       } else {
         options.page += 1;
       }
-      this.setRequestOptionsEP(options);
+      this.setOptionsEP(options);
       this.startNewRound();
       return true;
     },
@@ -258,8 +258,8 @@ export default {
     },
     updateStatisticsEP() {
       const statisticsItem = new StatisticsItem(
-        this.getRequestOptionsEP.group,
-        this.getRequestOptionsEP.page,
+        this.getOptionsEP.group,
+        this.getOptionsEP.page,
         this.roundResults.getWordsId()
       );
       const statisticsArray = [...this.getStatisticsEP];
@@ -297,7 +297,7 @@ export default {
       this.translateText = this.getWordsForRoundEP[this.currentPhraseNumber].textExampleTranslate;
     },
     setRoundPainting() {
-      const { group, page } = this.getRequestOptionsEP;
+      const { group, page } = this.getOptionsEP;
       const newPainting = new Painting(group, page);
       this.painting = newPainting.getPainting();
     },

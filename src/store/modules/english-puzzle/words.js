@@ -91,7 +91,7 @@ export default {
         throw err;
       }
     },
-    setRequestOptionsEP({ commit }, options) {
+    setOptionsEP({ commit }, options) {
       commit("updateRequestOptions", options);
     },
   },
@@ -99,7 +99,7 @@ export default {
     getWordsForRoundEP(state) {
       return state.words;
     },
-    getRequestOptionsEP(state) {
+    getOptionsEP(state) {
       return state.requestOptions;
     },
   },

@@ -8,7 +8,7 @@
         color="teal"
         thumb-label="always"
         :thumb-size="24"
-        :max="getRequestOptionsEP.numOfGroups"
+        :max="getOptionsEP.numOfGroups"
         :min="0"
         hide-details
       >
@@ -21,7 +21,7 @@
         color="teal"
         thumb-label="always"
         :thumb-size="24"
-        :max="getRequestOptionsEP.numOfPagesInGroup"
+        :max="getOptionsEP.numOfPagesInGroup"
         :min="0"
         hide-details
       >
@@ -50,21 +50,21 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["getRequestOptionsEP", "getHintOptionsEP"]),
+    ...mapGetters(["getOptionsEP", "getHintOptionsEP"]),
     page: {
       get() {
-        return this.getRequestOptionsEP.page;
+        return this.getOptionsEP.page;
       },
       set(value) {
-        const options = { ...this.getRequestOptionsEP };
+        const options = { ...this.getOptionsEP };
         options.page = value;
-        this.setRequestOptionsEP(options);
+        this.setOptionsEP(options);
         this.setIsUserChangedRoundEP(true);
       },
     },
     group: {
       get() {
-        return this.getRequestOptionsEP.group;
+        return this.getOptionsEP.group;
       },
       set(value) {
         this.updateProgressOptionGroup(value);
@@ -108,7 +108,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      "setRequestOptionsEP",
+      "setOptionsEP",
       "setHintOptionsEP",
       "logoutUser",
       "fetchRoundsPerLevelCountEP",
@@ -125,19 +125,19 @@ export default {
       if (hints) this.setHintOptionsEP(JSON.parse(hints));
       let options = localStorage.getItem("englishPuzzleRounds");
       if (options) {
-        this.setRequestOptionsEP(JSON.parse(options));
+        this.setOptionsEP(JSON.parse(options));
       } else {
-        options = { ...this.getRequestOptionsEP };
+        options = { ...this.getOptionsEP };
         options.numOfPagesInGroup = await this.fetchRoundsPerLevelCountEP(0);
-        this.setRequestOptionsEP(options);
+        this.setOptionsEP(options);
       }
     },
     async updateProgressOptionGroup(value) {
-      const options = { ...this.getRequestOptionsEP };
+      const options = { ...this.getOptionsEP };
       options.numOfPagesInGroup = await this.fetchRoundsPerLevelCountEP(value);
       options.group = value;
       options.page = 0;
-      this.setRequestOptionsEP(options);
+      this.setOptionsEP(options);
       this.setIsUserChangedRoundEP(true);
     },
     closeSettings() {
