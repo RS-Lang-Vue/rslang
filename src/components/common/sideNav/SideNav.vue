@@ -86,7 +86,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/games/english-for-kids">
+        <v-list-item link to="/games/english-puzzle">
           <v-list-item-action>
             <v-icon>mdi-nintendo-game-boy</v-icon>
           </v-list-item-action>

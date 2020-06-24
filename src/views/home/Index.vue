@@ -88,7 +88,7 @@ const cards = [
     cardSubtitle: "Мини игра",
     cardText:
       "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/english-for-kids" },
+    mainButton: { title: "Играть", link: "/games/english-puzzle" },
     additionalButton: { title: "Инфо", link: "" },
   },
   {

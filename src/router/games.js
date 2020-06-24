@@ -1,6 +1,7 @@
 import Index from "@/views/games/Index.vue";
 import SpeakIt from "@/views/games/SpeakIt.vue";
-import EnglishForKids from "@/views/games/EnglishForKids.vue";
+// eslint-disable-next-line
+import EnglishPuzzle from "@/views/games/EnglishPuzzle.vue";
 import Savana from "@/views/games/Savana.vue";
 import AudioCall from "@/views/games/AudioCall.vue";
 import Sprint from "@/views/games/Sprint.vue";
@@ -16,8 +17,8 @@ export default [
     component: SpeakIt,
   },
   {
-    path: "english-for-kids",
-    component: EnglishForKids,
+    path: "english-puzzle",
+    component: EnglishPuzzle,
   },
   {
     path: "savana",
