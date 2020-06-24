@@ -15,25 +15,31 @@ export default [
   {
     path: "speak-it",
     component: SpeakIt,
+    meta: { title: 'Игра "SpeakIt"' },
   },
   {
     path: "english-puzzle",
     component: EnglishPuzzle,
+    meta: { title: 'Игра "English puzzle"' },
   },
   {
     path: "savana",
     component: Savana,
+    meta: { title: 'Игра "Саванна"' },
   },
   {
     path: "audio-call",
     component: AudioCall,
+    meta: { title: 'Игра "Аудиовызов"' },
   },
   {
     path: "sprint",
     component: Sprint,
+    meta: { title: 'Игра "Спринт"' },
   },
   {
     path: "our-game",
     component: OurGame,
+    meta: { title: 'Игра "Своя игра"' },
   },
 ];

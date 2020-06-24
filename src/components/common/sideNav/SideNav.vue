@@ -148,7 +148,7 @@
 
     <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>RS Lang - изучение</v-toolbar-title>
+      <v-toolbar-title>RS Lang{{ title }}</v-toolbar-title>
     </v-app-bar>
   </div>
 </template>
@@ -160,6 +160,11 @@ export default {
   data: () => ({
     drawer: null,
   }),
+  computed: {
+    title() {
+      return ` - ${this.$route.meta.title || "эффективное изучение английских слов"}`;
+    },
+  },
   methods: {
     handleLogout() {
       this.unsetUser();

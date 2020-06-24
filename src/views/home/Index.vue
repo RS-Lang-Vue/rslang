@@ -4,42 +4,7 @@
       <!-- Stack the columns on mobile by making one full-width and the other half-width -->
       <v-row>
         <v-col cols="12" md="6" lg="4">
-          <v-card class="mx-auto" max-width="500">
-            <v-card-title class="headline">Статистика</v-card-title>
-            <v-simple-table dense light>
-              <tbody>
-                <tr>
-                  <td class="text-left">Слова для практики</td>
-                  <td class="text-right">11</td>
-                </tr>
-                <tr>
-                  <td class="text-left">Лучшая серия</td>
-                  <td class="text-right">0</td>
-                </tr>
-                <tr>
-                  <td class="text-left">Пройдено слов по практике</td>
-                  <td class="text-right">11</td>
-                </tr>
-                <tr>
-                  <td class="text-left">Правильные повторы, %</td>
-                  <td class="text-right">0</td>
-                </tr>
-                <tr>
-                  <td class="text-left">Новые слова</td>
-                  <td class="text-right">0</td>
-                </tr>
-              </tbody>
-            </v-simple-table>
-
-            <v-card-actions>
-              <v-btn text color="indigo accent-4">Подробнее</v-btn>
-              <v-btn text color="indigo accent-4">Словарь</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-
-        <v-col cols="12" md="6" lg="4">
-          <v-card class="mx-auto" max-width="500">
+          <v-card class="mx-auto amber lighten-5" max-width="500">
             <v-card-title class="headline">Цель на сегодня</v-card-title>
             <v-card-text class="text-left">Завершить 50 карточек</v-card-text>
             <v-card-text class="text-left"
@@ -48,7 +13,27 @@
             >
 
             <v-card-actions>
-              <v-btn text color="indigo accent-4">Достигнуть цели</v-btn>
+              <v-btn text color="indigo accent-4" to="/learn">Выполнить</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" md="6" lg="4">
+          <v-card class="mx-auto yellow lighten-5" max-width="500">
+            <v-card-title class="headline">Статистика</v-card-title>
+
+            <v-simple-table dense class="container__color">
+              <tbody>
+                <tr v-for="item in staticticList" :key="item.id">
+                  <td class="text-left">{{ item.staticticTitle }}</td>
+                  <td class="text-right">{{ item.staticticValue }}</td>
+                </tr>
+              </tbody>
+            </v-simple-table>
+
+            <v-card-actions>
+              <v-btn text color="indigo accent-4" to="/stats">Подробнее</v-btn>
+              <v-btn text color="indigo accent-4" to="/vocabulary">Словарь</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -56,7 +41,7 @@
 
       <v-row>
         <v-col cols="12" md="6" lg="4" v-for="card in cards" :key="card.id">
-          <v-card color="pink lighten-5" class="mx-auto" max-width="500">
+          <v-card color="blue lighten-5" class="mx-auto" max-width="500">
             <v-card-title class="headline">{{ card.cardTitle }}</v-card-title>
             <v-card-subtitle class="text-left">{{ card.cardSubtitle }}</v-card-subtitle>
             <v-card-text class="text-left">{{ card.cardText }}</v-card-text>
@@ -125,15 +110,51 @@ const cards = [
   },
 ];
 
+const staticticList = [
+  {
+    staticticTitle: "Слова для практики",
+    staticticValue: 11,
+  },
+  {
+    staticticTitle: "Лучшая серия",
+    staticticValue: 0,
+  },
+  {
+    staticticTitle: "Пройдено слов по практике",
+    staticticValue: 11,
+  },
+  {
+    staticticTitle: "Правильные повторы, %",
+    staticticValue: 0,
+  },
+  {
+    staticticTitle: "Новые слова",
+    staticticValue: 0,
+  },
+];
+
 export default {
   data: () => ({
     cards,
+    staticticList,
   }),
 };
 </script>
 
 <style scoped>
-.home {
-  /* background-color: #e0e0e0; */
+.container__color {
+  background-color: inherit !important;
+}
+
+.container__color tr:hover {
+  background-color: inherit !important;
+}
+
+.statictic-name {
+  flex-grow: 8;
+  text-align: start;
+}
+.statictic-value {
+  justify-content: flex-end;
 }
 </style>
