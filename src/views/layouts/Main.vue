@@ -26,3 +26,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.main-layout {
+  flex-grow: 2;
+}
+</style>
