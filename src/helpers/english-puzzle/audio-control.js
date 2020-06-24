@@ -1,4 +1,4 @@
-import constants from "./constants";
+import config from "@/config/config";
 
 export default class AudioControl {
   constructor() {
@@ -29,7 +29,7 @@ export default class AudioControl {
   }
 
   play(url) {
-    this.player.src = `${constants.BASE_AUDIO_URL}${url}`;
+    this.player.src = `${config.audioBaseUrl}${url}`;
   }
 
   stop() {

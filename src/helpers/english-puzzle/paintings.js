@@ -4,13 +4,13 @@ import level3 from "@/helpers/english-puzzle/paintings/level3";
 import level4 from "@/helpers/english-puzzle/paintings/level4";
 import level5 from "@/helpers/english-puzzle/paintings/level5";
 import level6 from "@/helpers/english-puzzle/paintings/level6";
-import constants from "@/helpers/english-puzzle/constants";
+import config from "@/config/config";
 
 const LEVELS = [level1, level2, level3, level4, level5, level6];
 
 export default class Painting {
   constructor(level, round) {
-    this.baseUrl = constants.BASE_PAINTINGS_URL;
+    this.baseUrl = config.paintingsBaseUrl;
     this.levels = LEVELS;
     this.level = level;
     this.round = round;
