@@ -35,12 +35,20 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
-                  <v-btn icon>
-                    <v-icon
-                      large
-                      color="indigo"
-                      @click="setValuesRoundStatistics(item.level, item.round, item.results)"
-                    >
+                  <v-btn
+                    text
+                    color="indigo"
+                    class="hidden-sm-and-down"
+                    @click="setValuesRoundStatistics(item.level, item.round, item.results)"
+                  >
+                    Подробнее
+                  </v-btn>
+                  <v-btn
+                    icon
+                    class="hidden-md-and-up"
+                    @click="setValuesRoundStatistics(item.level, item.round, item.results)"
+                  >
+                    <v-icon large color="indigo">
                       mdi-more
                     </v-icon>
                   </v-btn>
