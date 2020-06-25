@@ -1,5 +1,5 @@
 <template>
-  <div>English for Kids game's page</div>
+  <div>English puzzle game's page</div>
 </template>
 
 <script>
