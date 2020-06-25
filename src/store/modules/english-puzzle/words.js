@@ -20,7 +20,7 @@ export default {
         transcription: "",
       },
     ],
-    requestOptions: {
+    optionsEP: {
       group: 0,
       page: 0,
       numOfPagesInGroup: 0,
@@ -31,8 +31,8 @@ export default {
     updateWordsForRoundEP(state, words) {
       state.words = words;
     },
-    updateRequestOptions(state, options) {
-      state.requestOptions = options;
+    updateOptionsEP(state, options) {
+      state.optionsEP = options;
       localStorage.setItem("englishPuzzleRounds", JSON.stringify(options));
     },
   },
@@ -45,7 +45,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Server response status: ${res.status}.`);
+          throw new Error(`Words were not received from the server`);
         }
         const data = await res.json();
         commit("updateWordsForRoundEP", data);
@@ -63,7 +63,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Server response status: ${res.status}.`);
+          throw new Error(`Word were not received from the server`);
         }
         dispatch("setLoading", false);
         return await res.json();
@@ -80,7 +80,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Server response status: ${res.status}.`);
+          throw new Error(`No connection to server`);
         }
         const data = await res.json();
         dispatch("setLoading", false);
@@ -92,7 +92,7 @@ export default {
       }
     },
     setOptionsEP({ commit }, options) {
-      commit("updateRequestOptions", options);
+      commit("updateOptionsEP", options);
     },
   },
   getters: {
@@ -100,7 +100,7 @@ export default {
       return state.words;
     },
     getOptionsEP(state) {
-      return state.requestOptions;
+      return state.optionsEP;
     },
   },
   modules: {},

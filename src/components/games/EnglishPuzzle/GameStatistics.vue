@@ -81,6 +81,7 @@ export default {
     roundResults: {},
     painting: {},
     isGameStatisticsOpen: true,
+    loading: false,
   }),
   computed: {
     ...mapGetters(["getWord", "getStatisticsEP"]),
@@ -97,7 +98,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["fetchWordByIdEP"]),
+    ...mapActions(["fetchWordByIdEP", "setLoading"]),
     closeGameStatistics() {
       this.$emit("closeGameStatistics");
       this.isShowResultsRound = false;
@@ -112,14 +113,36 @@ export default {
     skipCount(item) {
       return item.results.skip.length;
     },
-    async setValuesRoundStatistics(level, round, results) {
+    setValuesRoundStatistics(level, round, results) {
       const newPainting = new Painting(level, round);
       this.painting = newPainting.getPainting();
-      const success = await Promise.all(results.success.map((item) => this.fetchWordByIdEP(item)));
-      this.roundResults.success = success;
-      const skip = await Promise.all(results.skip.map((item) => this.fetchWordByIdEP(item)));
-      this.roundResults.skip = skip;
-      this.isShowResultsRound = true;
+      this.setLoading(true);
+      Promise.all(results.success.map((item) => this.fetchWordByIdEP(item)))
+        .then((success) => {
+          this.roundResults.success = success;
+          Promise.all(results.skip.map((item) => this.fetchWordByIdEP(item)))
+            .then((skip) => {
+              this.roundResults.skip = skip;
+              this.loading = false;
+              this.isShowResultsRound = true;
+            })
+            .catch(() => {
+              this.showAlert("error", "Error", "Word statistics not available");
+              this.setLoading(false);
+            });
+        })
+        .catch(() => {
+          this.showAlert("error", "Error", "Word statistics not available");
+          this.setLoading(false);
+        });
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
   },
 };

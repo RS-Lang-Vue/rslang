@@ -2,9 +2,15 @@
   <v-form @submit.prevent="handleFormSubmit" class="user-form" ref="form" lazy-validation>
     <h1 class="user-form__heading">{{ title }}</h1>
 
-    <v-text-field v-model="email" :rules="emailRules" label="E-mail" required />
+    <v-text-field type="email" v-model="email" :rules="emailRules" label="E-mail" required />
 
-    <v-text-field v-model="password" :rules="passwordRules" label="Password" required />
+    <v-text-field
+      type="password"
+      v-model="password"
+      :rules="passwordRules"
+      label="Password"
+      required
+    />
 
     <v-btn class="user-form__submit-button" type="submit" color="primary" :loading="loading">{{
       submitButtonText

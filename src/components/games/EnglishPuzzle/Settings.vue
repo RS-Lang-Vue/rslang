@@ -120,7 +120,7 @@ export default {
       this.setHintOptionsEP(options);
       localStorage.setItem("englishPuzzleHintOptions", JSON.stringify(options));
     },
-    async updateSettingsFromLocaleStorage() {
+    updateSettingsFromLocaleStorage() {
       const hints = localStorage.getItem("englishPuzzleHintOptions");
       if (hints) this.setHintOptionsEP(JSON.parse(hints));
       let options = localStorage.getItem("englishPuzzleRounds");
@@ -128,20 +128,40 @@ export default {
         this.setOptionsEP(JSON.parse(options));
       } else {
         options = { ...this.getOptionsEP };
-        options.numOfPagesInGroup = await this.fetchRoundsPerLevelCountEP(0);
-        this.setOptionsEP(options);
+        this.fetchRoundsPerLevelCountEP(0)
+          .then((num) => {
+            options.numOfPagesInGroup = num;
+            this.setOptionsEP(options);
+          })
+          .catch((err) => {
+            this.showAlert("error", "Error", err.message);
+          });
       }
     },
     async updateProgressOptionGroup(value) {
       const options = { ...this.getOptionsEP };
-      options.numOfPagesInGroup = await this.fetchRoundsPerLevelCountEP(value);
-      options.group = value;
-      options.page = 0;
-      this.setOptionsEP(options);
-      this.setIsUserChangedRoundEP(true);
+      this.fetchRoundsPerLevelCountEP(value)
+        .then((num) => {
+          options.numOfPagesInGroup = num;
+          options.group = value;
+          options.page = 0;
+          this.setOptionsEP(options);
+          this.setIsUserChangedRoundEP(true);
+        })
+        .catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
     },
     closeSettings() {
       this.$emit("closeSettings");
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
   },
 };

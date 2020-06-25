@@ -191,17 +191,22 @@ export default {
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
     ]),
-    async startNewRound() {
+    startNewRound() {
       this.roundResults = new RoundResults();
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
       this.clearGameState();
-      await this.fetchWordsForRoundEP(this.getOptionsEP);
-      setTimeout(() => {
-        this.startNewPhrasePuzzle();
-        this.setRoundPainting();
-        this.setIsUserChangedRoundEP(false);
-      }, 0);
+      this.fetchWordsForRoundEP(this.getOptionsEP)
+        .then(() => {
+          setTimeout(() => {
+            this.startNewPhrasePuzzle();
+            this.setRoundPainting();
+            this.setIsUserChangedRoundEP(false);
+          }, 0);
+        })
+        .catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
     },
     startNewPhrasePuzzle() {
       const phrase = this.getPhrase();
@@ -219,13 +224,19 @@ export default {
       this.audio.stop();
       this.AUDIO_URL = "";
     },
-    async goToNextRound() {
+    goToNextRound() {
       const options = { ...this.getOptionsEP };
       if (options.page === options.numOfPagesInGroup) {
         if (options.group === options.numOfGroups) return false;
         options.group += 1;
-        options.numOfPagesInGroup = await this.fetchRoundsPerLevelCountEP(options.group);
-        options.page = 0;
+        this.fetchRoundsPerLevelCountEP(options.group)
+          .then((num) => {
+            options.numOfPagesInGroup = num;
+            options.page = 0;
+          })
+          .catch((err) => {
+            this.showAlert("error", "Error", err.message);
+          });
       } else {
         options.page += 1;
       }
@@ -361,6 +372,14 @@ export default {
     openRoundStatistics() {
       this.audio.stop();
       this.isShowResultsRound = true;
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
   },
 };
