@@ -10,8 +10,7 @@ export default {
     },
   },
   actions: {
-    async getFreeWordsPromise({ commit }, { group, pages }) {
-      commit('setSettings', { group, pages});
+    async getFreeWordsByPages(ctx, { group, pages }) {
       let words = [];
       const resPromiseArr = [];
       pages.forEach((page) => {
@@ -26,22 +25,48 @@ export default {
       for (let i = 0; i < wordsArr.length; i += 1) {
         words = words.concat(wordsArr[i]);
       }
-      commit("setWords", words);
+      return words;
+    },
+    async getPages(ctx, { firstWordNum, learningWordsCount, randomWordsCount }) {
+      const firstPage = parseInt(Math.floor(firstWordNum / 20), 10);
+      const lastPage = parseInt(
+        Math.floor((firstWordNum + learningWordsCount + randomWordsCount) / 20),
+        10
+      );
+      const pages = [];
+      for (let i = firstPage; i <= lastPage; i += 1) {
+        pages.push(i % 30);
+      }
+      return pages;
+    },
+    async getFreeWords({ commit }, { group, firstWordNum, learningWordsCount, randomWordsCount }) {
+      commit("setSettings", { group, firstWordNum, learningWordsCount, randomWordsCount });
+      const pages = await this.dispatch("getPages", { firstWordNum, learningWordsCount, randomWordsCount });
+      const words = await this.dispatch("getFreeWordsByPages", { group, pages });
+      const learningWords = words.splice(firstWordNum % 20, learningWordsCount);
+      const randomWords = [];
+      for (let i = 0; i < randomWordsCount; i += 1) {
+        const index = Math.floor(Math.random() * words.length);
+        randomWords.push(words.splice(index, 1)[0]);
+      }
+      commit("setWords", { learningWords, randomWords });
     },
   },
   mutations: {
-    setSettings(state, { group, pages }) {
-        state.apiService.group = group;
-        state.apiService.firstWordNum = pages[0] * 20;
-        state.apiService.learningWordsCount = pages.length * 20;        
+    setSettings(state, { group, firstWordNum, learningWordsCount, randomWordsCount }) {
+      state.apiService.group = group;
+      state.apiService.firstWordNum = firstWordNum;
+      state.apiService.learningWordsCount = learningWordsCount;
+      state.apiService.randomWordsCount = randomWordsCount;
     },
-    setWords(state, words) {
-        state.apiService.learningWords = words;
+    setWords(state, { learningWords, randomWords }) {
+      state.apiService.learningWords = learningWords;
+      state.apiService.randomWords = randomWords;
     },
   },
   getters: {
     words(state) {
-      return state.apiService.learningWords;
+      return state.apiService;
     },
   },
 };
