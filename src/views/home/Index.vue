@@ -71,9 +71,8 @@ const cards = [
   {
     cardTitle: "English puzzle",
     cardSubtitle: "Мини игра",
-    cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/english-puzzle" },
+    cardText: "Цель игры - собрать предложения из размещённых в случайном порядке английских слов.",
+    mainButton: { title: "Играть", link: "/games/start-english-puzzle" },
     additionalButton: { title: "Инфо", link: "" },
   },
   {
