@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import user from "./modules/user";
 import common from "./modules/common";
 import englishPuzzle from "./modules/english-puzzle/english-puzzle";
+import apiService from "./modules/word-service/api-service";
 
 Vue.use(Vuex);
 
@@ -12,5 +13,6 @@ export default new Vuex.Store({
     user,
     common,
     englishPuzzle,
+    apiService,
   },
 });
