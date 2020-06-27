@@ -5,59 +5,44 @@ export default {
     apiService,
   },
   state: {
-    settings: {
-      group: 0,
-      firstWordNum: 0,
-      learningWordsCount: 0,
-      randomWordsCount: 0,
-    },
-    userWords: undefined,
-    wordContent: {
-      learningWords: [],
-      randomWords: [],
-    },
+    ROUND_WORD_COUNT: 20,
+    GROUP_COUNT: 6,
+    PAGE_COUNT: 30
   },
   actions: {
-    async getWords(ctx, { game, learningWordsCount, randomWordsCount }) {
-      const gameSettings = this.state.userSetting.optional[game];
-      const { group } = gameSettings;
-      if (this.state.wordService.userWords === undefined) {
-        await this.dispatch("downloadUserWords", group);
-      }
-      if (
-        this.getters.isLoggedIn &&
-        gameSettings.useUserWords &&
-        this.state.wordService.userWords.length >= gameSettings.minUserWordCount
-      ) {
-        this.dispatch("getUserWords", { learningWordsCount, randomWordsCount });
+    async getKeyWords() {
+      const { group } = this.state.game.gameSettings;
+      const round = this.state.game.gameSettings.nextRound[group];
+      let keyWords = [];
+      if (round < 30) {
+        keyWords = await this.dispatch("getFreeWords", { group, round });
       } else {
-        const firstWordNum = gameSettings.currentWords[group];
-        this.dispatch("getFreeWords", {
-          group,
-          firstWordNum,
-          learningWordsCount,
-          randomWordsCount,
-        });
+        const { user } = this.state.user;
+        const userWords = await this.dispatch("getUserWords", { user, group });
+        keyWords = [...userWords];
+        while (keyWords.length > this.state.game.ROUND_WORD_COUNT) {
+          const index = Math.floor(Math.random() * userWords.length);
+          keyWords.splice(index, 1);
+        }
       }
+      return keyWords;
+    },
+    async getRandomWords() {
+      const keyGroup = this.state.game.gameSettings.group;
+      const keyRound = this.state.game.gameSettings.nextRound[keyGroup];
+      let group = 0;
+      let round = 0;
+      do {
+        group = Math.floor(Math.random() * this.state.game.GROUP_COUNT);
+        round = Math.floor(Math.random() * this.state.game.PAGE_COUNT);
+      } while (round === keyRound && group === keyGroup);
+
+      const randomWords = await this.dispatch("getFreeWords", { group, round });
+      return randomWords;
     },
   },
   mutations: {
-    setSettings(state, { group, firstWordNum, learningWordsCount, randomWordsCount }) {
-      this.state.wordService.group = group;
-      this.state.wordService.firstWordNum = firstWordNum;
-      this.state.wordService.learningWordsCount = learningWordsCount;
-      this.state.wordService.randomWordsCount = randomWordsCount;
-    },
-    setUserWords(state, userWords) {
-      this.state.wordService.userWords = userWords[0].paginatedResults;
-    },
-    setWords(state, { learningWords, randomWords }) {
-      this.state.wordService.wordContent = { learningWords, randomWords };
-    },
   },
   getters: {
-    wordContent(state) {
-      return state.wordContent;
-    },
   },
 };

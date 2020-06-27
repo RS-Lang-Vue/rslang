@@ -17,47 +17,35 @@ export default {
         image: false,
       },
       gameSpeakIt: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
       gamePuzzle: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
       gameSavannah: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
       gameAuidioCall: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
       gameSprint: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
       gameOwnGame: {
-        currentWords: [0, 0, 0, 0, 0, 0],
+        nextRound: [0, 0, 0, 0, 0, 0],
         group: 0,
-        useUserWords: false,
-        minUserWordCount: 20,
       },
     },
   },
   actions: {
     uploadSettings() {
       const { user } = this.state;
-      const { wordsPerDay, optional } = this.state.userSetting;
+      const { wordsPerDay, optional } = this.state.userSettings;
       console.log({ wordsPerDay, optional });
       fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`, {
         method: "PUT",
@@ -119,7 +107,7 @@ export default {
           "gameOwnGame",
         ].forEach((game) => {
           if (userSettings[game] !== {}) {
-            ["currentWords", "group", "useUserWords", "minUserWordCount"].forEach((setting) => {
+            ["nextRound", "group", "useUserWords"].forEach((setting) => {
               if (userSettings[game][setting] !== undefined)
                 state.userSettings[game][setting] = userSettings[game][setting];
             });
