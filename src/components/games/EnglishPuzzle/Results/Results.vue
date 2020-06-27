@@ -13,6 +13,7 @@
     <FieldOfCurrentRound
       :class="{ invisible: isEndRound }"
       :isPhraseCollected="isPhraseCollected"
+      :painting="painting"
       v-on:transferCard="transferCard"
     />
   </v-card>

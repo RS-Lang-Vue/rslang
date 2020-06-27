@@ -18,6 +18,7 @@
         v-for="card of cards"
         :key="card.id"
         :card="card"
+        :painting="painting"
         :isPhraseCollected="isPhraseCollected"
         v-on:transferCard="transferCard"
       />
@@ -38,6 +39,10 @@ export default {
   props: {
     isPhraseCollected: {
       type: Boolean,
+      required: true,
+    },
+    painting: {
+      type: Object,
       required: true,
     },
   },

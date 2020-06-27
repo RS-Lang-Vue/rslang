@@ -9,6 +9,7 @@ export default {
   state: {
     hintOptions: {
       showTranslation: true,
+      showBackground: true,
       showAudio: true,
       autoPlayAudio: true,
     },

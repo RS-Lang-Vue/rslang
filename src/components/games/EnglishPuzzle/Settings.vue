@@ -5,7 +5,7 @@
       <v-slider
         v-model="group"
         class="align-center ma-5 mb-0"
-        color="teal"
+        color="cyan darken-2"
         thumb-label="always"
         :thumb-size="24"
         :max="getOptionsEP.numOfGroups"
@@ -18,7 +18,7 @@
       <v-slider
         v-model="page"
         class="align-center ma-5 mb-0"
-        color="teal"
+        color="cyan darken-2"
         thumb-label="always"
         :thumb-size="24"
         :max="getOptionsEP.numOfPagesInGroup"
@@ -28,12 +28,28 @@
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
       <v-card-title>Hints</v-card-title>
-      <v-switch v-model="translation" class="ma-2" color="teal" label="Translation"></v-switch>
-      <v-switch v-model="audio" class="ma-2" color="teal" label="Speak"></v-switch>
-      <v-switch v-model="audioAuto" class="ma-2" color="teal" label="Speak Auto"></v-switch>
+      <v-switch
+        v-model="translation"
+        class="ma-2"
+        color="cyan darken-2"
+        label="Translation"
+      ></v-switch>
+      <v-switch
+        v-model="picture"
+        class="ma-2"
+        color="cyan darken-2"
+        label="Background picture"
+      ></v-switch>
+      <v-switch v-model="audio" class="ma-2" color="cyan darken-2" label="Speak"></v-switch>
+      <v-switch
+        v-model="audioAuto"
+        class="ma-2"
+        color="cyan darken-2"
+        label="Speak Auto"
+      ></v-switch>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="teal" text @click="closeSettings">Close</v-btn>
+        <v-btn color="cyan darken-2" text @click="closeSettings">Close</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -76,6 +92,14 @@ export default {
       },
       set() {
         this.updateHintOptionsEP("showTranslation");
+      },
+    },
+    picture: {
+      get() {
+        return this.getHintOptionsEP.showBackground;
+      },
+      set() {
+        this.updateHintOptionsEP("showBackground");
       },
     },
     audio: {

@@ -14,8 +14,8 @@
         :key="card.id"
         :card="card"
         :painting="painting"
+        :currentPhraseNumber="currentPhraseNumber"
         v-on:transferCard="transferCard"
-        v-on:setWidthCard="setWidthCard"
       />
     </draggable>
   </v-card>
@@ -40,6 +40,9 @@ export default {
       type: Object,
       required: true,
     },
+    currentPhraseNumber: {
+      type: Number,
+    },
   },
   computed: {
     ...mapGetters(["getSourceCardsEP"]),
@@ -56,9 +59,6 @@ export default {
     ...mapActions(["setSourceCardsEP"]),
     transferCard(id) {
       this.$emit("transferCard", id);
-    },
-    setWidthCard(value) {
-      this.$emit("setWidthCard", value);
     },
   },
 };

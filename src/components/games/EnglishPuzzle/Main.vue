@@ -67,8 +67,8 @@
         <Source
           :isEndRound="isEndRound"
           :painting="painting"
+          :currentPhraseNumber="currentPhraseNumber"
           v-on:transferCard="transferCardFromSourcesToResults"
-          v-on:setWidthCard="setWidthCard"
           v-if="!isEndRound"
         />
         <PaintingInformation :painting="painting" v-else />
@@ -210,7 +210,10 @@ export default {
     },
     startNewPhrasePuzzle() {
       const phrase = this.getPhrase();
-      this.setCards(phrase);
+      this.createCards(phrase);
+      setTimeout(() => {
+        this.shuffleСards();
+      }, 0);
       this.setAudioUrl();
       this.setTranslate();
       if (this.getHintOptionsEP.autoPlayAudio) this.audio.play(this.AUDIO_URL);
@@ -284,9 +287,14 @@ export default {
     },
     showSkipPhrasePuzzle() {
       this.roundResults.skip = this.getWordsForRoundEP[this.currentPhraseNumber];
-      const phrase = this.getPhrase();
-      const newCards = phrase.map((item, index) => new Card(item, index, true));
-      this.setResultsCardsEP(newCards);
+      const skip = [...this.getResultsCardsEP, ...this.getSourceCardsEP];
+      skip.forEach((el) => {
+        const item = el;
+        item.isCheck = false;
+        item.isError = false;
+      });
+      skip.sort((a, b) => a.id - b.id);
+      this.setResultsCardsEP(skip);
       this.setSourceCardsEP([]);
       this.isPhraseCollected = true;
       this.audio.play(this.AUDIO_URL);
@@ -295,10 +303,19 @@ export default {
       const phrase = this.getWordsForRoundEP[this.currentPhraseNumber].textExample;
       return phrase.split(" ").map((item) => item.replace(/<\/?[^>]+>/g, ""));
     },
-    setCards(phrase) {
-      const mixed = [...phrase].sort(() => Math.random() - 0.5);
-      const newCards = mixed.map((item, index) => new Card(item, index, false));
+    createCards(phrase) {
+      const newCards = phrase.map((item, index) => new Card(item, index, false));
       this.setSourceCardsEP(newCards);
+    },
+    shuffleСards() {
+      const mixed = this.getSourceCardsEP.sort(() => Math.random() - 0.5);
+      const orders = mixed.map((el, index) => {
+        const item = el;
+        item.order = index;
+        return item;
+      });
+      orders.sort((a, b) => a.order - b.order);
+      this.setSourceCardsEP(orders);
     },
     setAudioUrl() {
       const url = this.getWordsForRoundEP[this.currentPhraseNumber].audioExample;
@@ -354,20 +371,10 @@ export default {
         if (item.id === id) target = index;
       });
       if (id !== null) source.push(result.splice(target, 1)[0]);
-      source.sort((a, b) => a.id - b.id);
+      source.sort((a, b) => a.order - b.order);
       this.setSourceCardsEP(source);
       this.setResultsCardsEP(result);
       this.isErrors = false;
-    },
-    setWidthCard(value) {
-      const newCards = this.getSourceCardsEP.map((el) => {
-        const item = el;
-        if (item.id === value.id) {
-          item.width = value.width;
-        }
-        return item;
-      });
-      this.setSourceCardsEP(newCards);
     },
     openRoundStatistics() {
       this.audio.stop();

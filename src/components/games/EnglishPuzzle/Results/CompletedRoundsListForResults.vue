@@ -1,7 +1,7 @@
 <template>
   <v-list
     class="completed-rounds-list pa-0"
-    :style="{ background: `url(${painting.cutSrc}) top/cover no-repeat rgba(0,0,0,0.2)` }"
+    :style="{ background: `url(${painting.cutSrc}) top/cover no-repeat rgba(0,0,0,0.3)` }"
   >
     <v-list-item
       class="completed-rounds-item pa-0"
