@@ -41,7 +41,11 @@ export default {
     },
     async getFreeWords({ commit }, { group, firstWordNum, learningWordsCount, randomWordsCount }) {
       commit("setSettings", { group, firstWordNum, learningWordsCount, randomWordsCount });
-      const pages = await this.dispatch("getPages", { firstWordNum, learningWordsCount, randomWordsCount });
+      const pages = await this.dispatch("getPages", {
+        firstWordNum,
+        learningWordsCount,
+        randomWordsCount,
+      });
       const words = await this.dispatch("getFreeWordsByPages", { group, pages });
       const learningWords = words.splice(firstWordNum % 20, learningWordsCount);
       const randomWords = [];
