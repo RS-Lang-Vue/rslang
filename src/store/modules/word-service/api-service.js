@@ -1,14 +1,4 @@
 export default {
-  state: {
-    apiService: {
-      group: 0,
-      firstWordNum: 0,
-      learningWordsCount: 0,
-      learningWords: [],
-      randomWordsCount: 0,
-      randomWords: [],
-    },
-  },
   actions: {
     async getFreeWordsByPages(ctx, { group, pages }) {
       let words = [];
@@ -55,22 +45,35 @@ export default {
       }
       commit("setWords", { learningWords, randomWords });
     },
-  },
-  mutations: {
-    setSettings(state, { group, firstWordNum, learningWordsCount, randomWordsCount }) {
-      state.apiService.group = group;
-      state.apiService.firstWordNum = firstWordNum;
-      state.apiService.learningWordsCount = learningWordsCount;
-      state.apiService.randomWordsCount = randomWordsCount;
+    getUserWords({ commit }, { learningWordsCount, randomWordsCount }) {
+      const words = this.state.wordService.userWords;
+      const learningWords = [];
+      for (let i = 0; i < learningWordsCount; i += 1) {
+        const index = Math.floor(Math.random() * words.length);
+        learningWords.push(words.splice(index, 1)[0]);
+      }
+      const randomWords = [];
+      for (let i = 0; i < randomWordsCount; i += 1) {
+        const index = Math.floor(Math.random() * words.length);
+        randomWords.push(words.splice(index, 1)[0]);
+      }
+      commit("setWords", { learningWords, randomWords });
     },
-    setWords(state, { learningWords, randomWords }) {
-      state.apiService.learningWords = learningWords;
-      state.apiService.randomWords = randomWords;
-    },
-  },
-  getters: {
-    words(state) {
-      return state.apiService;
+    async downloadUserWords({ commit }, group) {
+      const { user } = this.state.user;
+      const res = await fetch(
+        `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/aggregatedWords?group=${group}`,
+        {
+          method: "GET",
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      const userWords = await res.json();
+      commit("setUserWords", userWords);
     },
   },
 };
