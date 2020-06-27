@@ -2,19 +2,19 @@
   <v-card
     outlined
     dark
-    :height="HEIGHT_CARD"
-    class="rounded-0 card border"
+    class="rounded-0 card border ep-card-height"
     v-on:click="onClick"
     ref="card"
     :width="cardWidth"
     :style="
       isCardBackground
         ? {
-            background: `url(${painting.cutSrc}) -${cardBgPosX} -${cardBgPosY}/800px 450px no-repeat rgba(0,0,0,0.2)`,
+            background: `url(${painting.cutSrc}) -${cardBgPosX} -${cardBgPosY}/800px 450px no-repeat rgba(0,0,0,0.3)`,
           }
         : ''
     "
     :class="{
+      'opacity-card': visibility,
       cyan: !isCardBackground,
       'darken-2': !isCardBackground,
       error: error,
@@ -51,6 +51,7 @@ export default {
       growOne: false,
       isUpdate: false,
       HEIGHT_CARD: 45,
+      visibility: false,
     };
   },
   computed: {
@@ -89,7 +90,9 @@ export default {
       const newCards = this.getSourceCardsEP.map((el) => {
         const item = el;
         if (item.id === this.card.id) {
-          item.width = `${this.$refs.card.$el.offsetWidth}px`;
+          const parentWidth = this.$refs.card.$parent.$parent.$el.offsetWidth;
+          const widthCard = (this.$refs.card.$el.offsetWidth / parentWidth) * 100;
+          item.width = `${widthCard}%`;
           item.init = false;
           item.bgPosX = `${this.$refs.card.$el.offsetLeft}px`;
           item.bgPosY = `${bgPosY}px`;
@@ -103,6 +106,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       if (this.card.init) this.growOne = true;
+      this.visibility = true;
     });
   },
   updated() {
@@ -115,16 +119,22 @@ export default {
 
 <style lang="scss" scoped>
 .cyan.border {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border: none !important;
+}
+
+.opacity-card {
+  opacity: 1 !important;
 }
 
 .card {
   box-sizing: border-box;
-  border: 1px solid #00000033;
+  border: none !important;
   background-blend-mode: multiply;
+  opacity: 0;
+  transition: opacity 0.3s linear;
+  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
 
   font-size: 10px;
-  line-height: 45px;
   text-align: center;
   cursor: pointer;
 
@@ -138,6 +148,9 @@ export default {
   }
   @media (min-width: 600px) {
     font-size: 16px;
+  }
+  @media (max-width: 824px) {
+    background: #0097a7 !important;
   }
 }
 </style>

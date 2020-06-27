@@ -2,10 +2,9 @@
   <v-card
     flat
     elevation="8"
-    height="45"
     justify="center"
     align="center"
-    class="text-center rounded-0"
+    class="text-center rounded-0 ep-card-height"
     color="rgba(0, 0, 0, 0.2)"
   >
     <draggable class="cards" group="words" v-model="cards" ref="cards">
@@ -16,6 +15,7 @@
         :painting="painting"
         :currentPhraseNumber="currentPhraseNumber"
         v-on:transferCard="transferCard"
+        :class="{ invisible: !visibility }"
       />
     </draggable>
   </v-card>
@@ -44,6 +44,11 @@ export default {
       type: Number,
     },
   },
+  data() {
+    return {
+      visibility: false,
+    };
+  },
   computed: {
     ...mapGetters(["getSourceCardsEP"]),
     cards: {
@@ -54,6 +59,11 @@ export default {
         this.setSourceCardsEP(value);
       },
     },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.visibility = true;
+    }, 300);
   },
   methods: {
     ...mapActions(["setSourceCardsEP"]),

@@ -1,5 +1,5 @@
 <template>
-  <v-row
+  <div
     align="center"
     justify="center"
     class="fill-height text-sm-body-2 text-md-body-1 text-lg-subtitle-1"
@@ -97,7 +97,7 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </v-row>
+  </div>
 </template>
 
 <script>
@@ -248,7 +248,7 @@ export default {
       return true;
     },
     continueGame() {
-      if (!this.isEndRound) this.arrayOfCardsOfCompletedRounds.push(this.getPhrase());
+      if (!this.isEndRound) this.arrayOfCardsOfCompletedRounds.push(this.getResultsCardsEP);
       if (this.arrayOfCardsOfCompletedRounds.length === this.MAX_NUM_PHRASES_ROUND) {
         this.finishRound();
       } else {
@@ -391,6 +391,26 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.ep-card-height {
+  border: none !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  @media (min-width: 375px) {
+    height: 35px !important;
+    line-height: 35px !important;
+  }
+  @media (min-width: 600px) {
+    height: 40px !important;
+    line-height: 40px !important;
+  }
+  @media (min-width: 824px) {
+    height: 45px !important;
+    line-height: 45px !important;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .game-content {

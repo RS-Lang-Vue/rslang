@@ -1,11 +1,10 @@
 <template>
   <v-card
     flat
-    height="45"
     justify="center"
     align="center"
     color="rgba(0, 0, 0, 0.2)"
-    class="rounded-0"
+    class="rounded-0 ep-card-height"
   >
     <draggable
       class="cards"
@@ -72,5 +71,6 @@ export default {
 <style lang="scss" scoped>
 .cards {
   display: flex;
+  border: none !important;
 }
 </style>

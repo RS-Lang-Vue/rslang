@@ -36,7 +36,7 @@
       ></v-switch>
       <v-switch
         v-model="picture"
-        class="ma-2"
+        class="ma-2 hint-picture"
         color="cyan darken-2"
         label="Background picture"
       ></v-switch>
@@ -195,5 +195,10 @@ export default {
 .progress-option {
   width: 65px;
   margin-right: 10px;
+}
+.hint-picture {
+  @media (max-width: 800px) {
+    display: none;
+  }
 }
 </style>
