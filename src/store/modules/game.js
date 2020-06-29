@@ -2,7 +2,7 @@ import wordService from "./word-service/word-service";
 
 export default {
   modules: {
-    wordService
+    wordService,
   },
   state: {
     ROUND_WORD_COUNT: 20,
@@ -30,11 +30,11 @@ export default {
       }
       commit("setRound", round);
     },
-    async getRoundWords({ commit }) {
+    async getRoundWords({ commit }, needRandom = true) {
       const keyWords = await this.dispatch("getKeyWords");
-      const randomWords = await this.dispatch("getRandomWords");
+      const randomWords = needRandom ? await this.dispatch("getRandomWords") : [];
       commit("setRoundWords", { keyWords, randomWords });
-    }
+    },
   },
   mutations: {
     setGame(state, gameName) {
