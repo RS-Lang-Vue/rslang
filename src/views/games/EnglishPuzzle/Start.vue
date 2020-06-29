@@ -1,6 +1,6 @@
 <template>
-  <v-main class="promo">
-    <v-container class="fill-height" fluid>
+  <div class="promo">
+    <v-container class="fill-height">
       <v-row align="center" justify="center">
         <v-col class="text-center">
           <h1 class="promo__header">ENGLISH PUZZLE</h1>
@@ -17,7 +17,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-main>
+  </div>
 </template>
 
 <style scoped>
