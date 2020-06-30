@@ -12,7 +12,6 @@
     <p>Получаем слова для этого раунда:</p>
     <p>
       Вызывая this.$store.dispatch("getRoundWords") и получая в геттере roundWords
-      <a>{{ roundWords }}</a>
     </p>
     <p>
       Если для игры не нужны случайные ложные слова, то можно вызвать
@@ -20,7 +19,7 @@
     </p>
     <p>Тогда в roundWords.randomWords будет пустой массив</p>
     <p>
-      По умолачнию же roundWords.keyWords содержит 20 слов, часть из которых (ил все) нужно
+      По умолачнию же roundWords.keyWords содержит 20 слов, часть из которых (или все) нужно
       использовать в игре
     </p>
     <p>roundWords.randomWords сожержит случайных 20 слов для генерации ложных вариантов ответа</p>
@@ -35,6 +34,7 @@
     </p>
 
     <h3>Пример полученных 20 слов:</h3>
+    <h3>Уровень - {{ currentGroup + 1 }}, раунд - {{ currentRound + 1 }}</h3>
     <h3>keyWords:</h3>
     <div class="keyWords" v-for="word in roundWords.keyWords" :key="word.id">
       {{ word.word }} - {{ word.wordTranslate }}
@@ -43,6 +43,10 @@
     <div class="randomWords" v-for="word in roundWords.randomWords" :key="word.id">
       {{ word.word }} - {{ word.wordTranslate }}
     </div>
+
+    <v-btn class="complete_round__button" large color="primary" @click="nextRound"
+      >Round Complete</v-btn
+    >
   </div>
 </template>
 
@@ -54,6 +58,12 @@ export default {
   async mounted() {
     this.$store.dispatch("setGame", "gameSavannah");
     this.$store.dispatch("getRoundWords");
+  },
+  methods: {
+    nextRound() {
+      this.$store.dispatch("compliteRound");
+      this.$store.dispatch("getRoundWords");
+    },
   },
 };
 </script>

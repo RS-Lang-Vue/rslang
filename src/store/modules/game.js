@@ -69,6 +69,8 @@ export default {
       if (round === state.PAGE_COUNT - 1 && group < state.GROUP_COUNT) {
         group += 1;
         state.gameSettings.group = group;
+      } else {
+        state.gameSettings.nextRound[group] = round;
       }
     },
   },
@@ -77,9 +79,11 @@ export default {
       return state.roundWords;
     },
     currentGroup(state) {
+      if (state.gameSettings === undefined) return undefined;
       return state.gameSettings.group;
     },
     currentRound(state) {
+      if (state.gameSettings === undefined) return undefined;
       const { group } = state.gameSettings;
       return state.gameSettings.nextRound[group];
     },
