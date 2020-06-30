@@ -16,7 +16,7 @@
       max-width="800"
       min-width="290"
     >
-      <v-card class="pt-4 pb-4" color="transparent" flat :class="{ invisible: isEndRound }">
+      <v-card class="pt-4" color="transparent" flat :class="{ invisible: isEndRound }">
         <v-btn
           icon
           @click="audio.play(AUDIO_URL)"
@@ -42,7 +42,7 @@
           class="game-btn-settings"
         >
           <template v-slot:activator>
-            <v-btn v-model="fab" color="blue darken-2" dark fab>
+            <v-btn v-model="fab" color="primary" dark fab>
               <v-icon v-if="fab">mdi-close</v-icon>
               <v-icon v-else>mdi-dots-vertical</v-icon>
             </v-btn>
@@ -304,7 +304,7 @@ export default {
       return phrase.split(" ").map((item) => item.replace(/<\/?[^>]+>/g, ""));
     },
     createCards(phrase) {
-      const newCards = phrase.map((item, index) => new Card(item, index, false));
+      const newCards = phrase.map((item, index) => new Card(item, index, phrase.length, false));
       this.setSourceCardsEP(newCards);
     },
     shuffleСards() {
@@ -405,7 +405,7 @@ export default {
     height: 40px !important;
     line-height: 40px !important;
   }
-  @media (min-width: 824px) {
+  @media (min-width: 735px) {
     height: 45px !important;
     line-height: 45px !important;
   }
@@ -425,6 +425,8 @@ export default {
 .hint-translation {
   box-sizing: content-box;
   justify-content: center;
+  font-size: 1em;
+  line-height: 1.2em;
   word-break: normal;
   min-height: 3.5em;
 }

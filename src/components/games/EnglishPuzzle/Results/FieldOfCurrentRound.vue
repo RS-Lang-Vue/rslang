@@ -3,7 +3,7 @@
     flat
     justify="center"
     align="center"
-    color="rgba(0, 0, 0, 0.2)"
+    color="rgba(0, 0, 0, 0.1)"
     class="rounded-0 ep-card-height"
   >
     <draggable
@@ -62,7 +62,7 @@ export default {
       this.$emit("transferCard", id);
     },
     onChange(evt) {
-      if (evt.removed) this.transferCard(null);
+      if (evt.removed || evt.moved) this.transferCard(null);
     },
   },
 };
@@ -70,6 +70,7 @@ export default {
 
 <style lang="scss" scoped>
 .cards {
+  height: 100%;
   display: flex;
   border: none !important;
 }

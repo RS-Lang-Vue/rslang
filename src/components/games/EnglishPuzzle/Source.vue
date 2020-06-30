@@ -7,7 +7,7 @@
     class="text-center rounded-0 ep-card-height"
     color="rgba(0, 0, 0, 0.2)"
   >
-    <draggable class="cards" group="words" v-model="cards" ref="cards">
+    <draggable class="cards" group="words" v-model="cards">
       <Card
         v-for="card of cards"
         :key="card.id"

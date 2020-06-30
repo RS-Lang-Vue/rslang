@@ -1,5 +1,5 @@
 export default class Card {
-  constructor(value, index, result = false) {
+  constructor(value, index, length, result = false) {
     this.word = value;
     this.id = index;
     this.init = true;
@@ -9,5 +9,7 @@ export default class Card {
     this.isResults = result;
     this.isCheck = false;
     this.isError = false;
+    this.isFirstСard = !!(index === 0);
+    this.isLastСard = !!(index === length - 1);
   }
 }

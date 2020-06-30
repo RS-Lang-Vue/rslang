@@ -113,7 +113,7 @@ export default {
     },
     statisticsLineTitle(item) {
       const date = new Date(item.date).toString().replace(/(.+) (GMT.+)/i, "$1");
-      return `${date}, Level: ${item.level}, Round: ${item.round}`;
+      return `${date}, Level: ${item.level + 1}, Round: ${item.round + 1}`;
     },
     successCount(item) {
       return item.results.success.length;

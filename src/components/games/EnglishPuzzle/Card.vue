@@ -6,24 +6,27 @@
     v-on:click="onClick"
     ref="card"
     :width="cardWidth"
-    :style="
-      isCardBackground
-        ? {
-            background: `url(${painting.cutSrc}) -${cardBgPosX} -${cardBgPosY}/800px 450px no-repeat rgba(0,0,0,0.3)`,
-          }
-        : ''
-    "
+    :style="(card.isLastСard ? { overflow: 'hidden' } : '')"
     :class="{
+      'flex-grow-1': growOne,
       'opacity-card': visibility,
-      cyan: !isCardBackground,
-      'darken-2': !isCardBackground,
-      error: error,
-      success: success,
+      'card-error': error,
+      'card-success': success,
       disabled: isPhraseCollected,
-      'flex-grow-1': growOne || isPhraseCollected,
     }"
   >
-    {{ card.word }}
+    <span class="card-text">{{ card.word }}</span>
+    <span
+      class="card-bg"
+      :class="{ 'first-card': card.isFirstСard }"
+      :style="
+        isCardBackground
+          ? {
+              background: `url(${painting.cutSrc}) -${cardBgPosX} -${cardBgPosY}/800px 450px no-repeat`,
+            }
+          : { background: `#3f51b5` }
+      "
+    ></span>
   </v-card>
 </template>
 
@@ -118,39 +121,64 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cyan.border {
-  border: none !important;
-}
-
 .opacity-card {
   opacity: 1 !important;
 }
-
 .card {
+  position: relative;
   box-sizing: border-box;
-  border: none !important;
-  background-blend-mode: multiply;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  background: transparent;
   opacity: 0;
   transition: opacity 0.3s linear;
-  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
-
+  box-shadow: inset 2px 2px 2px rgba(154, 147, 140, 0.5), 1px 1px 2px rgba(255, 255, 255, 1);
   font-size: 10px;
   text-align: center;
   cursor: pointer;
-
   &.disabled {
     cursor: auto;
     opacity: 1;
   }
-
   @media (min-width: 375px) {
     font-size: 12px;
   }
   @media (min-width: 600px) {
     font-size: 16px;
+    box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1);
   }
-  @media (max-width: 824px) {
-    background: #0097a7 !important;
+  @media (max-width: 850px) {
+    background: #3f51b5 !important;
   }
+}
+.card-text {
+  position: relative;
+  z-index: 2;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5), -1px -1px 5px rgba(0, 0, 0, 0.5),
+    -1px 1px 5px rgba(0, 0, 0, 0.5), 1px -1px 5px rgba(0, 0, 0, 0.5);
+}
+.card-bg {
+  @media (min-width: 851px) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    width: calc(100% + 16px);
+    height: 100%;
+    z-index: 1;
+
+    background-blend-mode: multiply;
+    -webkit-mask-box-image: url("../../../assets/images/maskForCard.svg") 0 35%;
+  }
+}
+.first-card {
+  @media (min-width: 851px) {
+    -webkit-mask-box-image: url("../../../assets/images/maskFirstCard.svg") 0 35%;
+  }
+}
+.card-error {
+  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px white, 0 5px 0 #ff5252;
+}
+.card-success {
+  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px white, 0 5px 0 #4caf50;
 }
 </style>

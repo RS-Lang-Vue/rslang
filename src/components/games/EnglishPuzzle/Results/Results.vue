@@ -64,7 +64,7 @@ export default {
   @media (min-width: 600px) {
     height: 400px !important;
   }
-  @media (min-width: 824px) {
+  @media (min-width: 735px) {
     height: 450px !important;
   }
 }
