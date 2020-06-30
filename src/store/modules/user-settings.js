@@ -46,7 +46,6 @@ export default {
     uploadSettings() {
       const { user } = this.state;
       const { wordsPerDay, optional } = this.state.userSettings;
-      console.log({ wordsPerDay, optional });
       fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`, {
         method: "PUT",
         withCredentials: true,
@@ -76,6 +75,10 @@ export default {
       } else if (res.status === 404) {
         this.dispatch("uploadSettings");
       }
+    },
+    setGameSetting({ commit }, { gameName, gameSettings }) {
+      commit("setGameSetting", { gameName, gameSettings });
+      this.dispatch("uploadSettings");
     },
   },
   mutations: {
@@ -114,6 +117,9 @@ export default {
           }
         });
       }
+    },
+    setGameSetting(state, { gameName, gameSettings }) {
+      state.optional[gameName] = gameSettings;
     },
   },
   getters: {},

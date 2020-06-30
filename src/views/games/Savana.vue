@@ -1,8 +1,42 @@
 <template>
   <div>
     <h2>Savana game's page</h2>
-    <h3>learnWords:</h3>
-    <div class="learnWords" v-for="word in roundWords.keyWords" :key="word.id">
+    <h3>Пример работы с game-модулем:</h3>
+    <p>Зашли в игру, вызываем setGame передавая название игры из опций:</p>
+    <p>this.$store.dispatch("setGame", "gameSavannah");</p>
+    <p>Узнаём какой уровень и раунд у игрока в этой игре через геттеры</p>
+    <p>
+      getters: "currentGroup" = <a>{{ currentGroup }}</a
+      >, "currentRound" <a>{{ currentRound }}</a>
+    </p>
+    <p>Получаем слова для этого раунда:</p>
+    <p>
+      Вызывая this.$store.dispatch("getRoundWords") и получая в геттере roundWords
+      <a>{{ roundWords }}</a>
+    </p>
+    <p>
+      Если для игры не нужны случайные ложные слова, то можно вызвать
+      this.$store.dispatch("getRoundWords", false)
+    </p>
+    <p>Тогда в roundWords.randomWords будет пустой массив</p>
+    <p>
+      По умолачнию же roundWords.keyWords содержит 20 слов, часть из которых (ил все) нужно
+      использовать в игре
+    </p>
+    <p>roundWords.randomWords сожержит случайных 20 слов для генерации ложных вариантов ответа</p>
+    <p>
+      Слова в обоих массивах уже перемешаны, поэтому во время раунда можно брать слова по порядку
+    </p>
+
+    <p>После окончания раунда вызываем this.$store.dispatch("compliteRound")</p>
+    <p>
+      При этом меняются значения "currentGroup" и "currentRound" и настройки игры сохраняются на
+      бэкенде
+    </p>
+
+    <h3>Пример полученных 20 слов:</h3>
+    <h3>keyWords:</h3>
+    <div class="keyWords" v-for="word in roundWords.keyWords" :key="word.id">
       {{ word.word }} - {{ word.wordTranslate }}
     </div>
     <h3>randomWords:</h3>
@@ -16,7 +50,7 @@
 import { mapGetters } from "vuex";
 
 export default {
-  computed: mapGetters(["roundWords"]),
+  computed: mapGetters(["roundWords", "currentGroup", "currentRound"]),
   async mounted() {
     this.$store.dispatch("setGame", "gameSavannah");
     this.$store.dispatch("getRoundWords");

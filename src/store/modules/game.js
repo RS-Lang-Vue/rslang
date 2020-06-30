@@ -35,6 +35,16 @@ export default {
       const randomWords = needRandom ? await this.dispatch("getRandomWords") : [];
       commit("setRoundWords", { keyWords, randomWords });
     },
+    compliteRound({ commit }) {
+      const { group } = this.state.game.gameSettings;
+      if (this.state.game.gameSettings.nextRound[group] === this.state.game.PAGE_COUNT - 1) {
+        return;
+      }
+      commit("compliteRound");
+      const { gameName } = this.state.game;
+      const { gameSettings } = this.state.game;
+      this.dispatch("setGameSetting", { gameName, gameSettings });
+    },
   },
   mutations: {
     setGame(state, gameName) {
@@ -51,10 +61,27 @@ export default {
     setRoundWords(state, { keyWords, randomWords }) {
       state.roundWords = { keyWords, randomWords };
     },
+    compliteRound(state) {
+      let { group } = state.gameSettings;
+      let round = state.gameSettings.nextRound[group];
+      round += 1;
+      state.gameSettings.nextRound[group] = round;
+      if (round === state.PAGE_COUNT - 1 && group < state.GROUP_COUNT) {
+        group += 1;
+        state.gameSettings.group = group;
+      }
+    },
   },
   getters: {
     roundWords(state) {
       return state.roundWords;
+    },
+    currentGroup(state) {
+      return state.gameSettings.group;
+    },
+    currentRound(state) {
+      const { group } = state.gameSettings;
+      return state.gameSettings.nextRound[group];
     },
   },
 };
