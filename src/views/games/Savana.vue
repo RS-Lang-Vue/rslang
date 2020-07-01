@@ -60,7 +60,6 @@ export default {
     this.$store.dispatch("getRoundWords");
 
     const { user } = this.$store.state.user;
-
     const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, round: 0 });
     console.log(firstWords);
     const promises = [];
@@ -84,8 +83,15 @@ export default {
     const a = await Promise.all(promises);
     console.log(a);
 
-    const group = undefined;
-    const userWords = await this.$store.dispatch("getUserWords", { user, group });
+    const userWord1 = await this.$store.dispatch("getUserWords", { user });
+    console.log(userWord1);
+
+    const group = 0;
+    const userWords = await this.$store.dispatch("getUserAggregateWords", {
+      user,
+      group,
+      maxCount: 20,
+    });
     console.log(userWords);
   },
   methods: {

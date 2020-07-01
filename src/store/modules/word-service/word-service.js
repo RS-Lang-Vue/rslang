@@ -20,7 +20,7 @@ export default {
         keyWords = utils.shuffle(keyWords);
       } else {
         const { user } = this.state.user;
-        const userWords = await this.dispatch("getUserWords", { user, group });
+        const userWords = await this.dispatch("getUserAggregateWords", { user, group });
         keyWords = [...userWords];
         keyWords = utils.shuffle(keyWords);
         keyWords = keyWords.splice(0, 20);
