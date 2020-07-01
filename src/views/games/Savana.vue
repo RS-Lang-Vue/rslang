@@ -78,7 +78,12 @@ export default {
       };
       console.log(userWord);
       const wordId = userWord.optional.word.id;
-      const promise = this.$store.dispatch("setUserWords", { isNewWord: false, user, userWord, wordId });
+      const promise = this.$store.dispatch("setUserWords", {
+        isNewWord: false,
+        user,
+        userWord,
+        wordId,
+      });
       promises.push(promise);
     });
     const a = await Promise.all(promises);
