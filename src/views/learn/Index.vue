@@ -67,7 +67,7 @@
         </v-window-item>
       </v-window>
 
-      <v-divider></v-divider>
+      <v-divider class="mx-4"></v-divider>
 
       <v-card-actions>
         <v-btn text color="indigo accent-4" title="Добавить в раздел сложные слова">
