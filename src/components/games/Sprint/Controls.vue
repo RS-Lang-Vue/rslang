@@ -47,9 +47,9 @@
         <v-card-title class="headline">Какие слова использовать?</v-card-title>
 
         <div>
-          <v-radio-group class="radio-word">
-            <v-radio :label="'Изученные'" @change="changeWord(true)"></v-radio>
-            <v-radio :label="'Новые'" @change="changeWord(false)"></v-radio>
+          <v-radio-group v-model="radio" class="radio-word">
+            <v-radio :label="'Изученные'" @change="changeWord(true)" :value="true"></v-radio>
+            <v-radio :label="'Новые'" @change="changeWord(false)" :value="false"></v-radio>
           </v-radio-group>
           <form>
             <v-slider
@@ -82,11 +82,12 @@ export default {
   props: ["round", "level", "words"],
   data() {
     return {
+      radio: this.words,
       localRound: this.round,
       localLevel: this.level,
       statisticVisible: false,
       settings: false,
-      formDisabled: false,
+      formDisabled: this.words,
       statistic: JSON.parse(localStorage.getItem("SprintStatistic")) || [],
     };
   },
