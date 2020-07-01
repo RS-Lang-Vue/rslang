@@ -24,6 +24,7 @@ export default {
         keyWords = [...userWords];
         keyWords = utils.shuffle(keyWords);
         keyWords = keyWords.splice(0, 20);
+        keyWords = keyWords.map((w) => w.optional.word);
       }
       return keyWords;
     },

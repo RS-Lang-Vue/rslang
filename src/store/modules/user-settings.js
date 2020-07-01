@@ -71,9 +71,11 @@ export default {
       );
       if (res.ok) {
         const userSettings = await res.json();
-        commit("setUserSettings", userSettings);
-      } else if (res.status === 404) {
-        this.dispatch("uploadSettings");
+        if (userSettings.optional !== undefined && userSettings.optional !== {}) {
+          commit("setUserSettings", userSettings);
+        } else if (userSettings.optional === {}) {
+          this.dispatch("uploadSettings");
+        }
       }
     },
     setGameSetting({ commit }, { gameName, gameSettings }) {
@@ -83,40 +85,7 @@ export default {
   },
   mutations: {
     setUserSettings(state, userSettings) {
-      if (userSettings.wordsPerDay !== undefined) {
-        state.userSettings.wordsPerDay = userSettings.wordsPerDay;
-      }
-      if (userSettings.optional !== undefined && userSettings.optional !== {}) {
-        if (userSettings.globalSettings !== {}) {
-          ["maxCards", "answerBtn", "deleteBtn", "btnDifficult", "btnSet"].forEach((setting) => {
-            if (userSettings.globalSettings[setting] !== undefined)
-              state.userSettings.globalSettings[setting] = userSettings.globalSettings[setting];
-          });
-        }
-        if (userSettings.wordsTraining !== {}) {
-          ["wordTranslate", "textMeaning", "textExample", "transcription", "image"].forEach(
-            (setting) => {
-              if (userSettings.globalSettings[setting] !== undefined)
-                state.userSettings.globalSettings[setting] = userSettings.globalSettings[setting];
-            }
-          );
-        }
-        [
-          "gameSpeakIt",
-          "gamePuzzle",
-          "gameSavannah",
-          "gameAuidioCall",
-          "gameSprint",
-          "gameOwnGame",
-        ].forEach((game) => {
-          if (userSettings[game] !== {}) {
-            ["nextRound", "group", "useUserWords"].forEach((setting) => {
-              if (userSettings[game][setting] !== undefined)
-                state.userSettings[game][setting] = userSettings[game][setting];
-            });
-          }
-        });
-      }
+      this.state.userSettings = userSettings;
     },
     setGameSetting(state, { gameName, gameSettings }) {
       state.optional[gameName] = gameSettings;

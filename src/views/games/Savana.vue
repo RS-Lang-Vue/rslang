@@ -58,6 +58,35 @@ export default {
   async mounted() {
     this.$store.dispatch("setGame", "gameSavannah");
     this.$store.dispatch("getRoundWords");
+
+    const { user } = this.$store.state.user;
+
+    const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, round: 0 });
+    console.log(firstWords);
+    const promises = [];
+    firstWords.forEach((word) => {
+      const optional = {
+        group: word.group,
+        repeatCount: 0,
+        lastDate: 0,
+        repeatDate: 0,
+        description: "hard",
+        word,
+      };
+      const userWord = {
+        difficulty: "hard",
+        optional,
+      };
+      console.log(userWord);
+      const promise = this.$store.dispatch("setUserWords", { isNewWord: false, user, userWord });
+      promises.push(promise);
+    });
+    const a = await Promise.all(promises);
+    console.log(a);
+
+    const group = undefined;
+    const userWords = await this.$store.dispatch("getUserWords", { user, group });
+    console.log(userWords);
   },
   methods: {
     nextRound() {
