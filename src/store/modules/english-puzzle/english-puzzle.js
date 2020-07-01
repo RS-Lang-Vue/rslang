@@ -7,19 +7,26 @@ export default {
     statistics,
   },
   state: {
-    hintOptions: {
-      showTranslation: true,
-      showBackground: true,
-      showAudio: true,
-      autoPlayAudio: true,
+    settingsEP: {
+      level: 0,
+      round: [0, 0, 0, 0, 0, 0],
+      roundsInLevelCount: 0,
+      levelCount: 5,
+      hints: {
+        translation: true,
+        showBackground: true,
+        speak: true,
+        speakAuto: true,
+      },
     },
     isUserChangedRound: false,
     sourceCards: [],
     resultsCards: [],
   },
   mutations: {
-    updateHintOptionsEP(state, options) {
-      state.hintOptions = options;
+    updateSettingsEP(state, options) {
+      state.settingsEP = options;
+      localStorage.setItem("englishPuzzleSettings", JSON.stringify(options));
     },
     updateIsUserChangedRoundEP(state, value) {
       state.isUserChangedRound = value;
@@ -30,10 +37,13 @@ export default {
     updateResultsCardsEP(state, value) {
       state.resultsCards = value;
     },
+    updateRoundsPerLevelCountEP(state, value) {
+      state.settingsEP.roundsInLevelCount = value;
+    },
   },
   actions: {
-    setHintOptionsEP({ commit }, options) {
-      commit("updateHintOptionsEP", options);
+    setSettingsEP({ commit }, options) {
+      commit("updateSettingsEP", options);
     },
     setIsUserChangedRoundEP({ commit }, value) {
       commit("updateIsUserChangedRoundEP", value);
@@ -59,8 +69,8 @@ export default {
     },
   },
   getters: {
-    getHintOptionsEP(state) {
-      return state.hintOptions;
+    getSettingsEP(state) {
+      return state.settingsEP;
     },
     getIsUserChangedRoundEP(state) {
       return state.isUserChangedRound;

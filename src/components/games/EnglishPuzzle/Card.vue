@@ -58,7 +58,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getSourceCardsEP", "getHintOptionsEP"]),
+    ...mapGetters(["getSourceCardsEP", "getSettingsEP"]),
     error() {
       return this.card.isCheck && this.card.isError;
     },
@@ -79,7 +79,7 @@ export default {
         : "0px";
     },
     isCardBackground() {
-      return this.getHintOptionsEP.showBackground || this.isPhraseCollected;
+      return this.getSettingsEP.hints.showBackground || this.isPhraseCollected;
     },
   },
   methods: {

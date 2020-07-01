@@ -145,8 +145,7 @@ export default {
   computed: {
     ...mapGetters([
       "getWordsForRoundEP",
-      "getOptionsEP",
-      "getHintOptionsEP",
+      "getSettingsEP",
       "getSourceCardsEP",
       "getResultsCardsEP",
       "getIsUserChangedRoundEP",
@@ -165,10 +164,10 @@ export default {
       return this.isAllСardsInResults && !this.isPhraseCollected;
     },
     showTranslate() {
-      return this.getHintOptionsEP.showTranslation || this.isPhraseCollected;
+      return this.getSettingsEP.hints.translation || this.isPhraseCollected;
     },
     isShowAudioHint() {
-      return this.getHintOptionsEP.showAudio || this.isPhraseCollected;
+      return this.getSettingsEP.hints.speak || this.isPhraseCollected;
     },
   },
   watch: {
@@ -177,6 +176,7 @@ export default {
     },
   },
   mounted() {
+    this.updateSettingsFromLocaleStorage();
     this.audio = new AudioControl();
     this.startNewRound();
     this.updateStatisticsEPFromLocaleStorage();
@@ -184,19 +184,29 @@ export default {
   methods: {
     ...mapActions([
       "fetchWordsForRoundEP",
-      "setOptionsEP",
+      "setSettingsEP",
       "setSourceCardsEP",
       "setResultsCardsEP",
       "fetchRoundsPerLevelCountEP",
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
     ]),
+    updateSettingsFromLocaleStorage() {
+      const options = localStorage.getItem("englishPuzzleSettings");
+      if (options) {
+        this.setSettingsEP(JSON.parse(options));
+      } else {
+        this.fetchRoundsPerLevelCountEP(0).catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
+      }
+    },
     startNewRound() {
       this.roundResults = new RoundResults();
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
       this.clearGameState();
-      this.fetchWordsForRoundEP(this.getOptionsEP)
+      this.fetchWordsForRoundEP(this.getSettingsEP)
         .then(() => {
           setTimeout(() => {
             this.startNewPhrasePuzzle();
@@ -216,7 +226,7 @@ export default {
       }, 0);
       this.setAudioUrl();
       this.setTranslate();
-      if (this.getHintOptionsEP.autoPlayAudio) this.audio.play(this.AUDIO_URL);
+      if (this.getSettingsEP.hints.speakAuto) this.audio.play(this.AUDIO_URL);
     },
     clearGameState() {
       this.setResultsCardsEP([]);
@@ -228,22 +238,17 @@ export default {
       this.AUDIO_URL = "";
     },
     goToNextRound() {
-      const options = { ...this.getOptionsEP };
-      if (options.page === options.numOfPagesInGroup) {
-        if (options.group === options.numOfGroups) return false;
-        options.group += 1;
-        this.fetchRoundsPerLevelCountEP(options.group)
-          .then((num) => {
-            options.numOfPagesInGroup = num;
-            options.page = 0;
-          })
-          .catch((err) => {
-            this.showAlert("error", "Error", err.message);
-          });
+      const options = { ...this.getSettingsEP };
+      if (options.round[options.level] === options.roundsInLevelCount) {
+        if (options.level === options.levelCount) return false;
+        options.level += 1;
+        this.fetchRoundsPerLevelCountEP(options.level).catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
       } else {
-        options.page += 1;
+        options.round[options.level] += 1;
       }
-      this.setOptionsEP(options);
+      this.setSettingsEP(options);
       this.startNewRound();
       return true;
     },
@@ -272,8 +277,8 @@ export default {
     },
     updateStatisticsEP() {
       const statisticsItem = new StatisticsItem(
-        this.getOptionsEP.group,
-        this.getOptionsEP.page,
+        this.getSettingsEP.level,
+        this.getSettingsEP.round[this.getSettingsEP.level],
         this.roundResults.getWordsId()
       );
       const statisticsArray = [...this.getStatisticsEP];
@@ -325,8 +330,9 @@ export default {
       this.translateText = this.getWordsForRoundEP[this.currentPhraseNumber].textExampleTranslate;
     },
     setRoundPainting() {
-      const { group, page } = this.getOptionsEP;
-      const newPainting = new Painting(group, page);
+      const { level, round } = this.getSettingsEP;
+      const rnd = round[level];
+      const newPainting = new Painting(level, rnd);
       this.painting = newPainting.getPainting();
     },
     checkResult() {

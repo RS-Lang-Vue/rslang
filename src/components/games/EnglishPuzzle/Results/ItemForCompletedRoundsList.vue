@@ -33,9 +33,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["getHintOptionsEP"]),
+    ...mapGetters(["getSettingsEP"]),
     isCardBackground() {
-      return this.getHintOptionsEP.showBackground;
+      return this.getSettingsEP.hints.showBackground;
     },
   },
 };

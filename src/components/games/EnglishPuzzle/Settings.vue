@@ -8,7 +8,7 @@
         color="primary"
         thumb-label="always"
         :thumb-size="24"
-        :max="getOptionsEP.numOfGroups"
+        :max="getSettingsEP.levelCount"
         :min="0"
         hide-details
       >
@@ -16,12 +16,12 @@
       </v-slider>
       <v-card-title>Round</v-card-title>
       <v-slider
-        v-model="page"
+        v-model="round"
         class="align-center ma-5 mb-0"
         color="primary"
         thumb-label="always"
         :thumb-size="24"
-        :max="getOptionsEP.numOfPagesInGroup"
+        :max="getSettingsEP.roundsInLevelCount"
         :min="0"
         hide-details
       >
@@ -56,56 +56,56 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["getOptionsEP", "getHintOptionsEP"]),
-    page: {
+    ...mapGetters(["getSettingsEP"]),
+    round: {
       get() {
-        return this.getOptionsEP.page;
+        return this.getSettingsEP.round[this.getSettingsEP.level];
       },
       set(value) {
-        const options = { ...this.getOptionsEP };
-        options.page = value;
-        this.setOptionsEP(options);
+        const options = { ...this.getSettingsEP };
+        options.round[options.level] = value;
+        this.setSettingsEP(options);
         this.setIsUserChangedRoundEP(true);
       },
     },
     group: {
       get() {
-        return this.getOptionsEP.group;
+        return this.getSettingsEP.level;
       },
       set(value) {
-        this.updateProgressOptionGroup(value);
+        this.updateProgressOptionLevel(value);
       },
     },
     translation: {
       get() {
-        return this.getHintOptionsEP.showTranslation;
+        return this.getSettingsEP.hints.translation;
       },
       set() {
-        this.updateHintOptionsEP("showTranslation");
+        this.updateHintSettingsEP("translation");
       },
     },
     picture: {
       get() {
-        return this.getHintOptionsEP.showBackground;
+        return this.getSettingsEP.hints.showBackground;
       },
       set() {
-        this.updateHintOptionsEP("showBackground");
+        this.updateHintSettingsEP("showBackground");
       },
     },
     audio: {
       get() {
-        return this.getHintOptionsEP.showAudio;
+        return this.getSettingsEP.hints.speak;
       },
       set() {
-        this.updateHintOptionsEP("showAudio");
+        this.updateHintSettingsEP("speak");
       },
     },
     audioAuto: {
       get() {
-        return this.getHintOptionsEP.autoPlayAudio;
+        return this.getSettingsEP.hints.speakAuto;
       },
       set() {
-        this.updateHintOptionsEP("autoPlayAudio");
+        this.updateHintSettingsEP("speakAuto");
       },
     },
     dialogControl: {
@@ -117,49 +117,25 @@ export default {
       },
     },
   },
-  created() {
-    this.updateSettingsFromLocaleStorage();
-  },
   methods: {
     ...mapActions([
-      "setOptionsEP",
-      "setHintOptionsEP",
+      "setSettingsEP",
       "logoutUser",
       "fetchRoundsPerLevelCountEP",
       "setIsUserChangedRoundEP",
     ]),
-    updateHintOptionsEP(option) {
-      const options = { ...this.getHintOptionsEP };
-      options[option] = !options[option];
-      this.setHintOptionsEP(options);
-      localStorage.setItem("englishPuzzleHintOptions", JSON.stringify(options));
+    updateHintSettingsEP(option) {
+      const options = { ...this.getSettingsEP };
+      options.hints[option] = !options.hints[option];
+      this.setSettingsEP(options);
+      localStorage.setItem("englishPuzzleSettings", JSON.stringify(options));
     },
-    updateSettingsFromLocaleStorage() {
-      const hints = localStorage.getItem("englishPuzzleHintOptions");
-      if (hints) this.setHintOptionsEP(JSON.parse(hints));
-      let options = localStorage.getItem("englishPuzzleRounds");
-      if (options) {
-        this.setOptionsEP(JSON.parse(options));
-      } else {
-        options = { ...this.getOptionsEP };
-        this.fetchRoundsPerLevelCountEP(0)
-          .then((num) => {
-            options.numOfPagesInGroup = num;
-            this.setOptionsEP(options);
-          })
-          .catch((err) => {
-            this.showAlert("error", "Error", err.message);
-          });
-      }
-    },
-    async updateProgressOptionGroup(value) {
-      const options = { ...this.getOptionsEP };
+    updateProgressOptionLevel(value) {
       this.fetchRoundsPerLevelCountEP(value)
-        .then((num) => {
-          options.numOfPagesInGroup = num;
-          options.group = value;
-          options.page = 0;
-          this.setOptionsEP(options);
+        .then(() => {
+          const options = { ...this.getSettingsEP };
+          options.level = value;
+          this.setSettingsEP(options);
           this.setIsUserChangedRoundEP(true);
         })
         .catch((err) => {
