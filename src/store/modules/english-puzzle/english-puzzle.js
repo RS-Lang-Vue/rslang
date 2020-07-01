@@ -26,7 +26,6 @@ export default {
   mutations: {
     updateSettingsEP(state, options) {
       state.settingsEP = options;
-      localStorage.setItem("englishPuzzleSettings", JSON.stringify(options));
     },
     updateIsUserChangedRoundEP(state, value) {
       state.isUserChangedRound = value;
@@ -42,8 +41,20 @@ export default {
     },
   },
   actions: {
-    setSettingsEP({ commit }, options) {
+    setSettingsEP({ commit, dispatch }, options) {
       commit("updateSettingsEP", options);
+      dispatch("setUserSettingsEpRootState", options);
+    },
+    async downloadSettingsEP({ commit, dispatch, rootState }) {
+      await dispatch("downloadSettings");
+      const { optional } = rootState.userSettings;
+      commit("updateSettingsEP", optional.gamePuzzle);
+    },
+    setUserSettingsEpRootState({ commit, dispatch, rootState }, options) {
+      const { userSettings } = rootState;
+      userSettings.optional.gamePuzzle = options;
+      commit("setUserSettings", userSettings);
+      dispatch("uploadSettings");
     },
     setIsUserChangedRoundEP({ commit }, value) {
       commit("updateIsUserChangedRoundEP", value);

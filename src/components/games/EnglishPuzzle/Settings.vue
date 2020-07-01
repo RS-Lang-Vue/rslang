@@ -128,7 +128,6 @@ export default {
       const options = { ...this.getSettingsEP };
       options.hints[option] = !options.hints[option];
       this.setSettingsEP(options);
-      localStorage.setItem("englishPuzzleSettings", JSON.stringify(options));
     },
     updateProgressOptionLevel(value) {
       this.fetchRoundsPerLevelCountEP(value)

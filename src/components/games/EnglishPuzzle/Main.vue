@@ -179,8 +179,8 @@ export default {
       if (this.getIsUserChangedRoundEP) this.startNewRound();
     },
   },
-  mounted() {
-    this.updateSettingsFromLocaleStorage();
+  async mounted() {
+    await this.updateSettingsFromServer();
     this.audio = new AudioControl();
     this.startNewRound();
     this.updateStatisticsEPFromLocaleStorage();
@@ -194,12 +194,11 @@ export default {
       "fetchRoundsPerLevelCountEP",
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
+      "downloadSettingsEP",
     ]),
-    updateSettingsFromLocaleStorage() {
-      const options = localStorage.getItem("englishPuzzleSettings");
-      if (options) {
-        this.setSettingsEP(JSON.parse(options));
-      } else {
+    async updateSettingsFromServer() {
+      await this.downloadSettingsEP();
+      if (this.getSettingsEP.roundsInLevelCount === 0) {
         this.fetchRoundsPerLevelCountEP(0).catch((err) => {
           this.showAlert("error", "Error", err.message);
         });
