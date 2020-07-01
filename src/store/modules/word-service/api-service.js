@@ -39,9 +39,8 @@ export default {
       const userWords = await res.json();
       return userWords[0].paginatedResults;
     },
-    async setUserWords(ctx, { isNewWord, user, userWord }) {
-      const { id } = userWord.optional.word;
-      const url = `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/words/${id}`;
+    async setUserWords(ctx, { isNewWord, user, userWord, wordId }) {
+      const url = `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/words/${wordId}`;
       const method = isNewWord ? "POST" : "PUT";
       const res = await fetch(url, {
         method,
