@@ -81,6 +81,7 @@
         v-on:continueGame="continueGame"
         v-on:openGameStatistics="isShowGameStatistics = true"
       />
+      <EndGameInfo :isShowEndGameInfo="isEndGame" v-on:closeEndGameInfo="closeEndGameInfo" />
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="showSkipPhrasePuzzle">
@@ -107,6 +108,7 @@ import Results from "@/components/games/EnglishPuzzle/Results/Results.vue";
 import PaintingInformation from "@/components/games/EnglishPuzzle/PaintingInformation.vue";
 import Settings from "@/components/games/EnglishPuzzle/Settings.vue";
 import RoundStatistics from "@/components/games/EnglishPuzzle/RoundStatistics.vue";
+import EndGameInfo from "@/components/games/EnglishPuzzle/EndGameInfo.vue";
 import GameStatistics from "@/components/games/EnglishPuzzle/GameStatistics.vue";
 import Card from "@/helpers/english-puzzle/card";
 import RoundResults from "@/helpers/english-puzzle/round-results";
@@ -122,6 +124,7 @@ export default {
     Settings,
     RoundStatistics,
     GameStatistics,
+    EndGameInfo,
   },
   data() {
     return {
@@ -139,6 +142,7 @@ export default {
       roundResults: {},
       isShowResultsRound: false,
       isShowGameStatistics: false,
+      isEndGame: false,
       fab: false,
     };
   },
@@ -240,7 +244,10 @@ export default {
     goToNextRound() {
       const options = { ...this.getSettingsEP };
       if (options.round[options.level] === options.roundsInLevelCount) {
-        if (options.level === options.levelCount) return false;
+        if (options.level === options.levelCount) {
+          this.isEndGame = true;
+          return false;
+        }
         options.level += 1;
         this.fetchRoundsPerLevelCountEP(options.level).catch((err) => {
           this.showAlert("error", "Error", err.message);
@@ -385,6 +392,10 @@ export default {
     openRoundStatistics() {
       this.audio.stop();
       this.isShowResultsRound = true;
+    },
+    closeEndGameInfo() {
+      this.isEndGame = false;
+      this.startNewRound();
     },
     showAlert(type, title, text) {
       this.$notify({
