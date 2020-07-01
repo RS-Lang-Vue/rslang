@@ -21,19 +21,21 @@
 
       <v-window v-model="step">
         <v-window-item v-for="wordObject in wordsArray" :key="wordObject.id">
-          <div class="d-flex flex-no-wrap justify-space-between align-center">
-            <v-btn icon class="ma-2">
-              <v-icon @click="audio.play(wordObject.audio)">mdi-volume-high</v-icon>
-            </v-btn>
-            <v-card-text>
-              <span class="text-sm-h4 text-h5">
-                {{ wordObject.word }}
-              </span>
-              <p class="text-body-1">
-                {{ wordObject.transcription }}
-              </p>
-              <div class="text-subtitle-1">{{ wordObject.wordTranslate }}</div>
-            </v-card-text>
+          <div class="d-flex flex-xs-nowrap flex-wrap justify-space-between align-center">
+            <div class="d-flex flex-no-wrap justify-space-between align-center">
+              <v-btn icon class="ma-2">
+                <v-icon @click="audio.play(wordObject.audio)">mdi-volume-high</v-icon>
+              </v-btn>
+              <v-card-text>
+                <span class="text-sm-h4 text-h5">
+                  {{ wordObject.word }}
+                </span>
+                <p class="text-body-1">
+                  {{ wordObject.transcription }}
+                </p>
+                <div class="text-subtitle-1">{{ wordObject.wordTranslate }}</div>
+              </v-card-text>
+            </div>
             <v-avatar class="ma-3" size="125" tile>
               <v-img :src="`${prefixImagePath}${wordObject.image}`"></v-img>
             </v-avatar>
@@ -87,12 +89,19 @@
           Back
         </v-btn>
         <v-spacer></v-spacer>
+        <div class="counter ml-4 mr-4">{{ step + 1 }} / {{ wordsArray.length }}</div>
+        <v-spacer></v-spacer>
         <v-btn :disabled="step === wordsArray.length - 1" color="primary" depressed @click="step++">
           Next
         </v-btn>
       </v-card-actions>
+
+      <v-progress-linear
+        class="mt-1"
+        :height="8"
+        :value="(100 / wordsArray.length) * (step + 1)"
+      ></v-progress-linear>
     </v-card>
-    <p>Степ = {{ step }}</p>
   </div>
 </template>
 
@@ -110,6 +119,7 @@ export default {
   }),
   mounted() {
     this.audio = new AudioControl();
+    this.audio.play(wordsArray[this.step].audio);
   },
   watch: {
     step: function steps() {
