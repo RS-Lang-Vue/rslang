@@ -37,7 +37,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app collapse-on-scroll color="indigo" dark>
+    <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>RS Lang{{ title }}</v-toolbar-title>
     </v-app-bar>

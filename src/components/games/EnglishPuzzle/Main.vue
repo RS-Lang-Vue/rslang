@@ -4,6 +4,16 @@
     justify="center"
     class="fill-height text-sm-body-2 text-md-body-1 text-lg-subtitle-1"
   >
+    <v-speed-dial absolute right top class="game-btn">
+      <template v-slot:activator>
+        <v-btn dark class="game-btn" color="transparent" @click.stop="isShowGameStatistics = true">
+          <v-icon>mdi-chart-bar</v-icon>
+        </v-btn>
+        <v-btn dark class="game-btn" color="transparent" @click.stop="isShowSettings = true">
+          <v-icon>mdi-cog-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-speed-dial>
     <GameStatistics
       :isShowGameStatistics="isShowGameStatistics"
       v-on:closeGameStatistics="isShowGameStatistics = false"
@@ -32,28 +42,6 @@
         >
           {{ translateText }}
         </v-card-title>
-        <v-speed-dial
-          absolute
-          right
-          top
-          direction="bottom"
-          v-model="fab"
-          open-on-hover
-          class="game-btn-settings"
-        >
-          <template v-slot:activator>
-            <v-btn v-model="fab" color="primary" dark fab>
-              <v-icon v-if="fab">mdi-close</v-icon>
-              <v-icon v-else>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <v-btn fab dark small color="indigo" @click.stop="isShowSettings = true">
-            <v-icon>mdi-cog-outline</v-icon>
-          </v-btn>
-          <v-btn fab dark small color="green" @click.stop="isShowGameStatistics = true">
-            <v-icon>mdi-chart-bar</v-icon>
-          </v-btn>
-        </v-speed-dial>
         <Settings :isShowSettings="isShowSettings" v-on:closeSettings="isShowSettings = false" />
       </v-card>
       <Results
@@ -68,6 +56,7 @@
           :isEndRound="isEndRound"
           :painting="painting"
           :currentPhraseNumber="currentPhraseNumber"
+          :isVisible="isVisible"
           v-on:transferCard="transferCardFromSourcesToResults"
           v-if="!isEndRound"
         />
@@ -143,7 +132,7 @@ export default {
       isShowResultsRound: false,
       isShowGameStatistics: false,
       isEndGame: false,
-      fab: false,
+      isVisible: false,
     };
   },
   computed: {
@@ -195,6 +184,7 @@ export default {
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
       "downloadSettingsEP",
+      "setLoading",
     ]),
     async updateSettingsFromServer() {
       await this.downloadSettingsEP();
@@ -205,6 +195,7 @@ export default {
       }
     },
     startNewRound() {
+      this.isVisible = false;
       this.roundResults = new RoundResults();
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
@@ -212,6 +203,7 @@ export default {
       this.fetchWordsForRoundEP(this.getSettingsEP)
         .then(() => {
           setTimeout(() => {
+            this.setLoading(true);
             this.startNewPhrasePuzzle();
             this.setRoundPainting();
             this.setIsUserChangedRoundEP(false);
@@ -220,6 +212,10 @@ export default {
         .catch((err) => {
           this.showAlert("error", "Error", err.message);
         });
+      setTimeout(() => {
+        this.isVisible = true;
+        this.setLoading(false);
+      }, 600);
     },
     startNewPhrasePuzzle() {
       const phrase = this.getPhrase();
@@ -435,8 +431,13 @@ export default {
     width: auto;
   }
 }
-.game-btn-settings {
-  top: -10px !important;
+.game-btn {
+  @media (max-width: 600px) {
+    font-size: 0.75rem !important;
+    height: 28px !important;
+    min-width: 50px !important;
+    padding: 0 12.4444444444px !important;
+  }
 }
 .hint-translation {
   box-sizing: content-box;

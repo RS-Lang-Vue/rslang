@@ -130,7 +130,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.5) !important;
   background: transparent;
   opacity: 0;
-  transition: opacity 0.3s linear;
+  transition: opacity 0.1s linear;
   box-shadow: inset 2px 2px 2px rgba(154, 147, 140, 0.5), 1px 1px 2px rgba(255, 255, 255, 1);
   font-size: 10px;
   text-align: center;

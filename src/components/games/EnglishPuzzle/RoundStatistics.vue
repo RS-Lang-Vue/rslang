@@ -1,7 +1,11 @@
 <template>
   <v-dialog v-model="dialogControl" scrollable max-width="500">
     <v-card justify="center">
-      <v-img :src="painting.cutSrc" max-height="281"></v-img>
+      <v-img
+        :src="painting.cutSrc"
+        max-height="281"
+        lazy-src="../../../assets/images/placeholder.png"
+      ></v-img>
       <v-card-title class="painting-title pt-0">{{ painting.author }}</v-card-title>
       <v-card-subtitle class="pb-0 mb-5 text-center">
         {{ painting.name }}, {{ painting.year }}
