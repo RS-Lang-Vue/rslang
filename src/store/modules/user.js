@@ -35,6 +35,7 @@ export default {
             localStorage.setItem("userId", userId);
             localStorage.setItem("tokenReceiptTime", tokenReceiptTime);
             commit("setUser", { token, userId, tokenReceiptTime });
+            dispatch("downloadSettings");
             dispatch("setLoading", false);
             resolve(res);
           })
