@@ -12,32 +12,32 @@ export default {
   },
   actions: {
     async getKeyWords() {
-      const { group } = this.state.game.gameSettings;
-      const round = this.state.game.gameSettings.nextRound[group];
+      const { level } = this.state.game.gameSettings;
+      const round = this.state.game.gameSettings.round[level];
       let keyWords = [];
-      if (round < 30) {
-        keyWords = await this.dispatch("getFreeWords", { group, round });
+      if (round < this.state.game.PAGE_COUNT) {
+        keyWords = await this.dispatch("getFreeWords", { group: level, page: round });
         keyWords = utils.shuffle(keyWords);
       } else {
         const { user } = this.state.user;
-        const userWords = await this.dispatch("getUserAggregateWords", { user, group });
+        const userWords = await this.dispatch("getUserAggregateWords", { user, group: level });
         keyWords = [...userWords];
         keyWords = utils.shuffle(keyWords);
-        keyWords = keyWords.splice(0, 20);
+        keyWords = keyWords.splice(0, this.state.game.ROUND_WORD_COUNT);
         keyWords = keyWords.map((w) => w.optional.word);
       }
       return keyWords;
     },
     async getRandomWords() {
-      const keyGroup = this.state.game.gameSettings.group;
-      const keyRound = this.state.game.gameSettings.nextRound[keyGroup];
-      let group = 0;
+      const keyLevel = this.state.game.gameSettings.level;
+      const keyRound = this.state.game.gameSettings.round[keyLevel];
+      let level = 0;
       let round = 0;
       do {
-        group = Math.floor(Math.random() * this.state.game.GROUP_COUNT);
+        level = Math.floor(Math.random() * this.state.game.GROUP_COUNT);
         round = Math.floor(Math.random() * this.state.game.PAGE_COUNT);
-      } while (round === keyRound && group === keyGroup);
-      const randomWords = await this.dispatch("getFreeWords", { group, round });
+      } while (round === keyRound && level === keyLevel);
+      const randomWords = await this.dispatch("getFreeWords", { group: level, page: round });
       return utils.shuffle(randomWords);
     },
   },

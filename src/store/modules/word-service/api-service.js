@@ -1,8 +1,8 @@
 export default {
   actions: {
-    async getFreeWords(ctx, { group, round }) {
+    async getFreeWords(ctx, { group, page }) {
       const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/words?page=${round}&group=${group}`
+        `https://afternoon-falls-25894.herokuapp.com/words?page=${page}&group=${group}`
       );
       const freeWords = await res.json();
       return freeWords;

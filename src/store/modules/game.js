@@ -19,13 +19,13 @@ export default {
     setGame({ commit }, gameName) {
       commit("setGame", gameName);
     },
-    setGroup({ commit }, group) {
-      commit("setGroup", group);
+    setGroup({ commit }, level) {
+      commit("setGroup", level);
     },
     async setRound({ commit }, round) {
       if (round >= 30) {
-        const { group } = this.state.game.gameSettings;
-        const userWords = await this.dispatch("getUserWords", group);
+        const { level } = this.state.game.gameSettings;
+        const userWords = await this.dispatch("getUserWords", level);
         if (userWords.length < this.state.game.ROUND_WORD_COUNT) return;
       }
       commit("setRound", round);
@@ -36,8 +36,8 @@ export default {
       commit("setRoundWords", { keyWords, randomWords });
     },
     compliteRound({ commit }) {
-      const { group } = this.state.game.gameSettings;
-      if (this.state.game.gameSettings.nextRound[group] === this.state.game.PAGE_COUNT - 1) {
+      const { level } = this.state.game.gameSettings;
+      if (this.state.game.gameSettings.nextRound[level] === this.state.game.PAGE_COUNT - 1) {
         return;
       }
       commit("compliteRound");
@@ -51,26 +51,26 @@ export default {
       state.gameName = gameName;
       state.gameSettings = this.state.userSettings.optional[gameName];
     },
-    setGroup(state, group) {
-      state.gameSettings.group = group;
+    setGroup(state, level) {
+      state.gameSettings.level = level;
     },
     setRound(state, round) {
-      const { group } = state.gameSettings;
-      state.gameSettings.nextRound[group] = round;
+      const { level } = state.gameSettings;
+      state.gameSettings.nextRound[level] = round;
     },
     setRoundWords(state, { keyWords, randomWords }) {
       state.roundWords = { keyWords, randomWords };
     },
     compliteRound(state) {
-      let { group } = state.gameSettings;
-      let round = state.gameSettings.nextRound[group];
+      let { level } = state.gameSettings;
+      let round = state.gameSettings.round[level];
       round += 1;
-      state.gameSettings.nextRound[group] = round;
-      if (round === state.PAGE_COUNT - 1 && group < state.GROUP_COUNT) {
-        group += 1;
-        state.gameSettings.group = group;
+      state.gameSettings.round[level] = round;
+      if (round === state.PAGE_COUNT - 1 && level < state.LEVEL_COUNT) {
+        level += 1;
+        state.gameSettings.level = level;
       } else {
-        state.gameSettings.nextRound[group] = round;
+        state.gameSettings.nextRound[level] = round;
       }
     },
   },
@@ -78,14 +78,14 @@ export default {
     roundWords(state) {
       return state.roundWords;
     },
-    currentGroup(state) {
+    currentLevel(state) {
       if (state.gameSettings === undefined) return undefined;
-      return state.gameSettings.group;
+      return state.gameSettings.level;
     },
     currentRound(state) {
       if (state.gameSettings === undefined) return undefined;
-      const { group } = state.gameSettings;
-      return state.gameSettings.nextRound[group];
+      const { level } = state.gameSettings;
+      return state.gameSettings.round[level];
     },
   },
 };

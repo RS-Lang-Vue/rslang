@@ -17,28 +17,36 @@ export default {
         image: false,
       },
       gameSpeakIt: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
       },
       gamePuzzle: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
+        roundsInLevelCount: 0,
+        levelCount: 5,
+        hints: {
+          translation: true,
+          showBackground: true,
+          speak: true,
+          speakAuto: true,
+        },
       },
       gameSavannah: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
       },
       gameAuidioCall: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
       },
       gameSprint: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
       },
       gameOwnGame: {
-        nextRound: [0, 0, 0, 0, 0, 0],
-        group: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        level: 0,
       },
     },
   },
@@ -72,7 +80,10 @@ export default {
       );
       if (res.ok) {
         const userSettings = await res.json();
-        if (userSettings.optional !== undefined && userSettings.optional !== {}) {
+        if (
+          userSettings.optional !== undefined &&
+          Object.keys(userSettings.optional).length !== 0
+        ) {
           commit("setUserSettings", userSettings);
         } else if (userSettings.optional === {}) {
           this.dispatch("uploadSettings");

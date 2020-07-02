@@ -6,7 +6,7 @@
     <p>this.$store.dispatch("setGame", "gameSavannah");</p>
     <p>Узнаём какой уровень и раунд у игрока в этой игре через геттеры</p>
     <p>
-      getters: "currentGroup" = <a>{{ currentGroup }}</a
+      getters: "currentLevel" = <a>{{ currentLevel }}</a
       >, "currentRound" <a>{{ currentRound }}</a>
     </p>
     <p>Получаем слова для этого раунда:</p>
@@ -34,7 +34,7 @@
     </p>
 
     <h3>Пример полученных 20 слов:</h3>
-    <h3>Уровень - {{ currentGroup + 1 }}, раунд - {{ currentRound + 1 }}</h3>
+    <h3>Уровень - {{ currentLevel + 1 }}, раунд - {{ currentRound + 1 }}</h3>
     <h3>keyWords:</h3>
     <div class="keyWords" v-for="word in roundWords.keyWords" :key="word.id">
       {{ word.word }} - {{ word.wordTranslate }}
@@ -54,13 +54,13 @@
 import { mapGetters } from "vuex";
 
 export default {
-  computed: mapGetters(["roundWords", "currentGroup", "currentRound"]),
+  computed: mapGetters(["roundWords", "currentLevel", "currentRound"]),
   async mounted() {
     this.$store.dispatch("setGame", "gameSavannah");
     this.$store.dispatch("getRoundWords");
 
     const { user } = this.$store.state.user;
-    const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, round: 0 });
+    const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, page: 0 });
     console.log(firstWords);
     const promises = [];
     firstWords.forEach((word) => {
