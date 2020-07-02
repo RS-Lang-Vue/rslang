@@ -85,7 +85,7 @@ export default {
           Object.keys(userSettings.optional).length !== 0
         ) {
           commit("setUserSettings", userSettings);
-        } else if (userSettings.optional === {}) {
+        } else {
           this.dispatch("uploadSettings");
         }
       }
