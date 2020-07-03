@@ -2,20 +2,19 @@
   <v-card
     flat
     elevation="8"
-    height="45"
     justify="center"
     align="center"
-    class="text-center rounded-0"
+    class="text-center rounded-0 ep-card-height"
     color="rgba(0, 0, 0, 0.2)"
   >
-    <draggable class="cards" group="words" v-model="cards" ref="cards">
+    <draggable class="cards" group="words" v-model="cards" :class="{ 'opacity-cards': isVisible }">
       <Card
         v-for="card of cards"
         :key="card.id"
         :card="card"
         :painting="painting"
+        :currentPhraseNumber="currentPhraseNumber"
         v-on:transferCard="transferCard"
-        v-on:setWidthCard="setWidthCard"
       />
     </draggable>
   </v-card>
@@ -36,9 +35,16 @@ export default {
       type: Boolean,
       required: true,
     },
+    isVisible: {
+      type: Boolean,
+      required: true,
+    },
     painting: {
       type: Object,
       required: true,
+    },
+    currentPhraseNumber: {
+      type: Number,
     },
   },
   computed: {
@@ -57,16 +63,18 @@ export default {
     transferCard(id) {
       this.$emit("transferCard", id);
     },
-    setWidthCard(value) {
-      this.$emit("setWidthCard", value);
-    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.opacity-cards {
+  opacity: 1 !important;
+}
 .cards {
   display: flex;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.6s linear;
 }
 </style>

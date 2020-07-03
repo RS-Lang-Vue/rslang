@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img src="https://cdn.vuetifyjs.com/images/parallax/material.jpg" class="bg cyan" />
+    <div class="bg"></div>
     <Main />
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-img.bg {
+.bg {
   min-height: 100%;
   min-width: 1024px;
   width: 100%;
@@ -24,6 +24,8 @@ img.bg {
   position: fixed;
   top: 0;
   left: 0;
+  background-color: #193c6d;
+  background-image: linear-gradient(135deg, #003073, #029797);
   @media screen and (max-width: 1024px) {
     left: 50%;
     margin-left: -512px;

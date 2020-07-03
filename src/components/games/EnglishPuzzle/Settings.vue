@@ -1,39 +1,50 @@
 <template>
   <v-dialog v-model="dialogControl" max-width="290">
     <v-card align="center" justify="center">
-      <v-card-title>Level</v-card-title>
+      <v-card-title>Уровень</v-card-title>
       <v-slider
         v-model="group"
         class="align-center ma-5 mb-0"
-        color="teal"
+        color="primary"
         thumb-label="always"
         :thumb-size="24"
-        :max="getOptionsEP.numOfGroups"
+        :max="getSettingsEP.levelCount"
         :min="0"
         hide-details
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
-      <v-card-title>Round</v-card-title>
+      <v-card-title>Раунд</v-card-title>
       <v-slider
-        v-model="page"
+        v-model="round"
         class="align-center ma-5 mb-0"
-        color="teal"
+        color="primary"
         thumb-label="always"
         :thumb-size="24"
-        :max="getOptionsEP.numOfPagesInGroup"
+        :max="getSettingsEP.roundsInLevelCount"
         :min="0"
         hide-details
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
-      <v-card-title>Hints</v-card-title>
-      <v-switch v-model="translation" class="ma-2" color="teal" label="Translation"></v-switch>
-      <v-switch v-model="audio" class="ma-2" color="teal" label="Speak"></v-switch>
-      <v-switch v-model="audioAuto" class="ma-2" color="teal" label="Speak Auto"></v-switch>
+      <v-card-title>Подсказки</v-card-title>
+      <v-switch v-model="translation" class="ma-2" color="primary" label="Перевод"></v-switch>
+      <v-switch
+        v-model="picture"
+        class="ma-2 hint-picture"
+        color="primary"
+        label="Фоновый рисунок"
+      ></v-switch>
+      <v-switch v-model="audio" class="ma-2" color="primary" label="Произношение"></v-switch>
+      <v-switch
+        v-model="audioAuto"
+        class="ma-2"
+        color="primary"
+        label="Автопроизношение"
+      ></v-switch>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="teal" text @click="closeSettings">Close</v-btn>
+        <v-btn color="primary" text @click="closeSettings">Закрыть</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -50,48 +61,56 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["getOptionsEP", "getHintOptionsEP"]),
-    page: {
+    ...mapGetters(["getSettingsEP"]),
+    round: {
       get() {
-        return this.getOptionsEP.page;
+        return this.getSettingsEP.round[this.getSettingsEP.level];
       },
       set(value) {
-        const options = { ...this.getOptionsEP };
-        options.page = value;
-        this.setOptionsEP(options);
+        const options = { ...this.getSettingsEP };
+        options.round[options.level] = value;
+        this.setSettingsEP(options);
         this.setIsUserChangedRoundEP(true);
       },
     },
     group: {
       get() {
-        return this.getOptionsEP.group;
+        return this.getSettingsEP.level;
       },
       set(value) {
-        this.updateProgressOptionGroup(value);
+        this.updateProgressOptionLevel(value);
       },
     },
     translation: {
       get() {
-        return this.getHintOptionsEP.showTranslation;
+        return this.getSettingsEP.hints.translation;
       },
       set() {
-        this.updateHintOptionsEP("showTranslation");
+        this.updateHintSettingsEP("translation");
+      },
+    },
+    picture: {
+      get() {
+        return this.getSettingsEP.hints.showBackground;
+      },
+      set() {
+        this.updateHintSettingsEP("showBackground");
       },
     },
     audio: {
       get() {
-        return this.getHintOptionsEP.showAudio;
+        return this.getSettingsEP.hints.speak;
       },
       set() {
-        this.updateHintOptionsEP("showAudio");
+        this.updateHintSettingsEP("speak");
       },
     },
     audioAuto: {
       get() {
-        return this.getHintOptionsEP.autoPlayAudio;
+        return this.getSettingsEP.hints.speakAuto;
       },
       set() {
-        this.updateHintOptionsEP("autoPlayAudio");
+        this.updateHintSettingsEP("speakAuto");
       },
     },
     dialogControl: {
@@ -103,49 +122,19 @@ export default {
       },
     },
   },
-  created() {
-    this.updateSettingsFromLocaleStorage();
-  },
   methods: {
-    ...mapActions([
-      "setOptionsEP",
-      "setHintOptionsEP",
-      "logoutUser",
-      "fetchRoundsPerLevelCountEP",
-      "setIsUserChangedRoundEP",
-    ]),
-    updateHintOptionsEP(option) {
-      const options = { ...this.getHintOptionsEP };
-      options[option] = !options[option];
-      this.setHintOptionsEP(options);
-      localStorage.setItem("englishPuzzleHintOptions", JSON.stringify(options));
+    ...mapActions(["setSettingsEP", "fetchRoundsPerLevelCountEP", "setIsUserChangedRoundEP"]),
+    updateHintSettingsEP(option) {
+      const options = { ...this.getSettingsEP };
+      options.hints[option] = !options.hints[option];
+      this.setSettingsEP(options);
     },
-    updateSettingsFromLocaleStorage() {
-      const hints = localStorage.getItem("englishPuzzleHintOptions");
-      if (hints) this.setHintOptionsEP(JSON.parse(hints));
-      let options = localStorage.getItem("englishPuzzleRounds");
-      if (options) {
-        this.setOptionsEP(JSON.parse(options));
-      } else {
-        options = { ...this.getOptionsEP };
-        this.fetchRoundsPerLevelCountEP(0)
-          .then((num) => {
-            options.numOfPagesInGroup = num;
-            this.setOptionsEP(options);
-          })
-          .catch((err) => {
-            this.showAlert("error", "Error", err.message);
-          });
-      }
-    },
-    async updateProgressOptionGroup(value) {
-      const options = { ...this.getOptionsEP };
+    updateProgressOptionLevel(value) {
       this.fetchRoundsPerLevelCountEP(value)
-        .then((num) => {
-          options.numOfPagesInGroup = num;
-          options.group = value;
-          options.page = 0;
-          this.setOptionsEP(options);
+        .then(() => {
+          const options = { ...this.getSettingsEP };
+          options.level = value;
+          this.setSettingsEP(options);
           this.setIsUserChangedRoundEP(true);
         })
         .catch((err) => {
@@ -171,5 +160,10 @@ export default {
 .progress-option {
   width: 65px;
   margin-right: 10px;
+}
+.hint-picture {
+  @media (max-width: 800px) {
+    display: none;
+  }
 }
 </style>
