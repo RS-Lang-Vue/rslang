@@ -7,14 +7,15 @@
         </div>
         <h1 class="promo__header">ENGLISH PUZZLE</h1>
         <p class="promo__title">
-          Click on words, collect phrases. Words can be drag and drop. Select tooltips in the menu
+          Нажимайте на слова, собирайте фразы. Слова можно перетаскивать. Выберите необходимые
+          подсказки в меню.
         </p>
         <v-btn
           class="promo__button"
           large
           color="primary"
           @click="$router.push('/games/english-puzzle')"
-          >Start game</v-btn
+          >Начать игру</v-btn
         >
       </v-col>
     </v-row>

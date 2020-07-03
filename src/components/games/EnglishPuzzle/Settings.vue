@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogControl" max-width="290">
     <v-card align="center" justify="center">
-      <v-card-title>Level</v-card-title>
+      <v-card-title>Уровень</v-card-title>
       <v-slider
         v-model="group"
         class="align-center ma-5 mb-0"
@@ -14,7 +14,7 @@
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
-      <v-card-title>Round</v-card-title>
+      <v-card-title>Раунд</v-card-title>
       <v-slider
         v-model="round"
         class="align-center ma-5 mb-0"
@@ -27,19 +27,24 @@
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
-      <v-card-title>Hints</v-card-title>
-      <v-switch v-model="translation" class="ma-2" color="primary" label="Translation"></v-switch>
+      <v-card-title>Подсказки</v-card-title>
+      <v-switch v-model="translation" class="ma-2" color="primary" label="Перевод"></v-switch>
       <v-switch
         v-model="picture"
         class="ma-2 hint-picture"
         color="primary"
-        label="Background picture"
+        label="Фоновый рисунок"
       ></v-switch>
-      <v-switch v-model="audio" class="ma-2" color="primary" label="Speak"></v-switch>
-      <v-switch v-model="audioAuto" class="ma-2" color="primary" label="Speak Auto"></v-switch>
+      <v-switch v-model="audio" class="ma-2" color="primary" label="Произношение"></v-switch>
+      <v-switch
+        v-model="audioAuto"
+        class="ma-2"
+        color="primary"
+        label="Автопроизношение"
+      ></v-switch>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="closeSettings">Close</v-btn>
+        <v-btn color="primary" text @click="closeSettings">Закрыть</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -118,12 +123,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      "setSettingsEP",
-      "logoutUser",
-      "fetchRoundsPerLevelCountEP",
-      "setIsUserChangedRoundEP",
-    ]),
+    ...mapActions(["setSettingsEP", "fetchRoundsPerLevelCountEP", "setIsUserChangedRoundEP"]),
     updateHintSettingsEP(option) {
       const options = { ...this.getSettingsEP };
       options.hints[option] = !options.hints[option];

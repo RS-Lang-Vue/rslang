@@ -74,16 +74,16 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="showSkipPhrasePuzzle">
-          I don't know
+          Не знаю
         </v-btn>
         <v-btn v-if="isCheckButtonAccessibility" color="primary" @click="checkResult">
-          Check
+          Проверить
         </v-btn>
         <v-btn v-if="isPhraseCollected" color="primary" @click="continueGame">
-          Continue
+          Продолжить
         </v-btn>
         <v-btn v-if="isEndRound" color="primary" @click="openRoundStatistics">
-          Results
+          Результат
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -102,7 +102,7 @@ import GameStatistics from "@/components/games/EnglishPuzzle/GameStatistics.vue"
 import Card from "@/helpers/english-puzzle/card";
 import RoundResults from "@/helpers/english-puzzle/round-results";
 import Painting from "@/helpers/english-puzzle/paintings";
-import AudioControl from "@/helpers/english-puzzle/audio-control";
+import AudioControl from "@/helpers/audio-control";
 import StatisticsItem from "@/helpers/english-puzzle/statistics-item";
 
 export default {

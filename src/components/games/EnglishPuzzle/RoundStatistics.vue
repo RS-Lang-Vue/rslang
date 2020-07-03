@@ -14,7 +14,7 @@
       <v-card-text style="height: 300px;">
         <v-list two-line subheader>
           <v-subheader inset>
-            <span class="mr-2">I don't know</span>
+            <span class="mr-2">Я не знаю</span>
             <v-chip color="red" text-color="white" small>{{ arraySkipLength() }}</v-chip>
           </v-subheader>
           <v-list-item v-for="(round, i) of roundResults.skip" :key="i">
@@ -37,7 +37,7 @@
         <v-divider inset></v-divider>
         <v-list two-line subheader>
           <v-subheader inset>
-            <span class="mr-2">I know</span>
+            <span class="mr-2">Я знаю</span>
             <v-chip color="green" text-color="white" small>
               {{ arraySuccessLength() }}
             </v-chip>
@@ -64,11 +64,11 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="closeRoundStatistics" v-if="isGameStatisticsOpen">
-          Close
+          Закрыть
         </v-btn>
         <template v-else>
-          <v-btn color="primary" text @click="continueGame">Continue</v-btn>
-          <v-btn color="primary" text @click="openGameStatistics">Statistics</v-btn>
+          <v-btn color="primary" text @click="continueGame">Продолжить</v-btn>
+          <v-btn color="primary" text @click="openGameStatistics">Статистика</v-btn>
         </template>
       </v-card-actions>
     </v-card>
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import AudioControl from "@/helpers/english-puzzle/audio-control";
+import AudioControl from "@/helpers/audio-control";
 
 export default {
   props: {
