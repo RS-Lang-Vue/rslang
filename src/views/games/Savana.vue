@@ -92,11 +92,12 @@ export default {
     const userWord1 = await this.$store.dispatch("getUserWords", { user });
     console.log(userWord1);
 
-    const group = 0;
+    const group = undefined;
+    const isLearned = true;
     const userWords = await this.$store.dispatch("getUserAggregateWords", {
       user,
-      group,
-      maxCount: 20,
+      isLearned,
+      group
     });
     console.log(userWords);
   },

@@ -23,8 +23,12 @@ export default {
       const userWords = await res.json();
       return userWords;
     },
-    async getUserAggregateWords(ctx, { user, group, maxCount = 20 }) {
-      const url = `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/aggregatedWords?group=${group}&wordsPerPage=${maxCount}`;
+    async getUserAggregateWords(ctx, { user, group, isLearned, maxCount = 3600 }) {
+      let url = `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/aggregatedWords?wordsPerPage=${maxCount}`;
+      if (isLearned)
+        url += `&filter={"userWord":{"$exists":true}}`;
+      if (group !== undefined)
+        url += `&group=${group}`;
       const res = await fetch(url, {
         method: "GET",
         withCredentials: true,
@@ -38,8 +42,8 @@ export default {
       }
       const userWords = await res.json();
       return userWords[0].paginatedResults;
-    },
-    async setUserWords(ctx, { isNewWord, user, userWord, wordId }) {
+    },    
+    async setUserWords(ctx, { isNewWord, user, userWord, wordId }) { 
       const url = `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/words/${wordId}`;
       const method = isNewWord ? "POST" : "PUT";
       const res = await fetch(url, {
