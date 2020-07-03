@@ -3,11 +3,7 @@
     <v-card class="mx-auto text-start" max-width="700">
       <v-card-title class="cyan darken-1">
         <div class="dots">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
+          <span v-for="n in 5" :key="n" class="dot"></span>
         </div>
 
         <span class="white--text">новое слово</span>
@@ -109,6 +105,7 @@
 import AudioControl from "@/helpers/english-puzzle/audio-control";
 import config from "@/config/config";
 import wordsArray from "./learnObjects/wordsArray";
+// import learnSettingsObject from "./learnObjects/learnSettingsObject";
 
 export default {
   data: () => ({
