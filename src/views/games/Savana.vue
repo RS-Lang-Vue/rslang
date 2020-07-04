@@ -119,7 +119,7 @@ export default {
     console.log("---- результат", res);
 
     console.log("--- Запрашиваем отсортированные по повторению изученные слова");
-    res = await this.$store.dispatch("getLearnedWordsSortByRepeateDete", { count: 30 });
+    res = await this.$store.dispatch("getLearnedWordsSortByRepeatDate", { count: 30 });
     console.log("---- результат", res);
 
     console.log("!! Test ApiTest Words complite");

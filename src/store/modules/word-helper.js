@@ -32,7 +32,7 @@ export default {
       }
       return res;
     },
-    async getLearnedWordsSortByRepeateDete(ctx, { count }) {
+    async getLearnedWordsSortByRepeatDate(ctx, { count = undefined }) {
       const res = this.dispatch("getUserAggregateWords", { onlyLearned: true });
       if (!res.success) {
         // показать ошибку пользователю res.error
@@ -42,7 +42,9 @@ export default {
       learnedWords.result.sort((a, b) => {
         return a.UserWord.optional.repeatDate - b.UserWord.optional.repeatDate;
       });
-      learnedWords = learnedWords.splice(0, count);
+      if (count !== undefined) {
+        learnedWords = learnedWords.splice(0, count);
+      }
       return new UniResponse(true, learnedWords);
     },
   },
