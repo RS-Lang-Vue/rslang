@@ -86,7 +86,7 @@ export default {
     await this.$store.dispatch("addAnswerResult", { wordId: "5e9f5ee35eb9e72bc21af4b0" });
     console.log("addAnswerResult...");
 
-    const { user } = this.$store.state.user;
+    const user = await this.$store.dispatch('getUser');
     const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, page: 0 });
     console.log(firstWords);
     const promises = [];

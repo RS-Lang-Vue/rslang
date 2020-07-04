@@ -19,7 +19,7 @@ export default {
         keyWords = await this.dispatch("getFreeWords", { group: level, page: round });
         keyWords = utils.shuffle(keyWords);
       } else {
-        const { user } = this.state.user;
+        const user = await this.dispatch('getUser');
         const userWords = await this.dispatch("getUserAggregateWords", {
           user,
           isLearned: true,

@@ -5,8 +5,8 @@ export default {
   state: {},
   actions: {
     async getUsersWordsById(ctx, { wordId }) {
-      const { user } = this.getters;
-      if (user.userId === undefined) {
+      const user = await this.dispatch('getUser');
+      if (user === undefined) {
         return new Response(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words/${wordId}`;
@@ -34,8 +34,8 @@ export default {
         difficulty: userWord.difficulty,
         optional: userWord.optional,
       };
-      const { user } = this.getters;
-      if (user.userId === undefined) {
+      const user = await this.dispatch('getUser');
+      if (user === undefined) {
         return new Response(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words/${wordId}`;
