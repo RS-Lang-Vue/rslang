@@ -6,11 +6,11 @@ export default {
     optional: {
       learn: {
         wordsPerDay: settingsConstants.DEFAULT_WORDS_PER_DAY,
-        newWordsPerDay: settingsConstants.MIN_WORDS_PER_DAY,
+        newWordsPerDay: settingsConstants.DEFAULT_NEW_WORDS_PER_DAY,
         toggles: {
           wordTranslate: {
             title: "Перевод слова",
-            state: false,
+            state: true,
           },
           textMeaning: {
             title: "Объяснение значения",
