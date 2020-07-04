@@ -11,7 +11,7 @@
     <div class="wrapper__help">
       <div class="help" @click="makeTextVisible()">
         <span class="text-example hide" v-html="sourceData[countWords].textExample"></span>
-        <v-icon large dark>mdi-help-circle-outline</v-icon>
+        <v-icon class="help__icon" large dark>mdi-help-circle-outline</v-icon>
       </div>
     </div>
   </div>
@@ -32,12 +32,13 @@ export default {
 .text-content__wrapper {
   display: flex;
   height: 50%;
+  width: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
 }
 .words-wrapper {
-  width: 80%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,6 +71,27 @@ export default {
   }
   .text-example.hide {
     filter: blur(5px);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .words-wrapper {
+    flex-direction: column;
+
+    span {
+      font-size: 25px;
+    }
+  }
+  .help {
+    max-height: 100px;
+    overflow: scroll;
+    .text-example {
+      font-size: 20px;
+    }
+  }
+
+  .help__icon {
+    font-size: 24px !important;
   }
 }
 </style>

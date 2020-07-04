@@ -5,6 +5,7 @@ export default {
     user: {
       token: localStorage.getItem("token") || "",
       userId: localStorage.getItem("userId") || "",
+      tokenReceiptTime: localStorage.getItem("tokenReceiptTime") || "",
     },
   },
   actions: {
@@ -19,7 +20,8 @@ export default {
           .catch((err) => reject(err));
       });
     },
-    loginUser({ commit }, user) {
+    loginUser({ commit, dispatch }, user) {
+      dispatch("setLoading", true);
       return new Promise((resolve, reject) => {
         request({
           method: "POST",
@@ -28,12 +30,19 @@ export default {
         })
           .then((res) => {
             const { token, userId } = res.data;
+            const tokenReceiptTime = Date.now();
             localStorage.setItem("token", token);
             localStorage.setItem("userId", userId);
-            commit("setUser", { token, userId });
+            localStorage.setItem("tokenReceiptTime", tokenReceiptTime);
+            commit("setUser", { token, userId, tokenReceiptTime });
+            dispatch("downloadSettings");
+            dispatch("setLoading", false);
             resolve(res);
           })
-          .catch((err) => reject(err));
+          .catch((err) => {
+            dispatch("setLoading", false);
+            reject(err);
+          });
       });
     },
   },
@@ -44,8 +53,10 @@ export default {
     unsetUser(state) {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
+      localStorage.removeItem("tokenReceiptTime");
       state.user.token = "";
       state.user.userId = "";
+      state.user.tokenReceiptTime = "";
     },
   },
   getters: {

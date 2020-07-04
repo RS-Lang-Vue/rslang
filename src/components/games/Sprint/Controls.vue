@@ -7,7 +7,9 @@
       transition="dialog-bottom-transition"
     >
       <template v-slot:activator="{ on }">
-        <v-icon v-on="on" @click="visible()" color="white" large class="icon">mdi-equalizer</v-icon>
+        <v-icon v-on="on" @click="visible()" color="white" large class="icon statistic-btn"
+          >mdi-equalizer</v-icon
+        >
       </template>
       <v-card>
         <v-toolbar dark color="primary">
@@ -137,8 +139,13 @@ export default {
   display: flex;
   justify-content: space-around;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -55px;
+  right: 30px;
+  z-index: 10;
+
+  .statistic-btn {
+    margin-right: 10px;
+  }
 }
 .icon {
   padding: 2px;
@@ -158,5 +165,12 @@ form {
 }
 .slider {
   width: 80%;
+}
+
+@media screen and (max-width: 948px) {
+  .control-bar {
+    top: -50px;
+    right: 45px;
+  }
 }
 </style>

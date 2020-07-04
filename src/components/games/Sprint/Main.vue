@@ -14,7 +14,7 @@
       @closeModal="closeModal()"
     />
     <div class="content" v-if="!loading">
-      <Header />
+      <Header v-if="!startGame" />
       <v-card :elevation="0" class="card rounded-t-xl transparent">
         <v-card :elevation="20" class="game" v-if="startGame">
           <StatusBar :streak="streak" :score="score" />
@@ -26,6 +26,7 @@
 
           <div class="controls" v-if="startGame">
             <v-btn
+              class="answer-btn"
               width="200px"
               v-on:click="checkAnswer(true)"
               :disabled="buttonActivity"
@@ -34,6 +35,7 @@
               ><v-icon dark large>mdi-arrow-left-bold-box</v-icon>Верно</v-btn
             >
             <v-btn
+              class="answer-btn"
               width="200px"
               v-on:click="checkAnswer(false)"
               :disabled="buttonActivity"
@@ -97,6 +99,10 @@ export default {
     RoundStatistic,
   },
   async mounted() {
+    // ЗАПРОС НА КОЛ-ВО СЛОВ В USERWORDS, ЕСЛИ бОЛЬШЕ 20, БРАТЬ ОТТУДА
+    /* if( words ) {
+      делаем запрос к UserWords
+    } */
     const res = await fetch(
       `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
     );
@@ -125,6 +131,9 @@ export default {
       this.getData();
     },
     async getData() {
+      /* if( words ) {
+      делаем запрос к UserWords
+    } */
       const res = await fetch(
         `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
       );
@@ -175,9 +184,11 @@ export default {
           this.streakCount();
           this.score += 10 * (this.streak.count + 1);
           this.changeStatistic(true);
+          // Отослать статистику по слову
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
+          // Отослать статистику по слову
         }
       } else if (x === false) {
         if (
@@ -187,13 +198,16 @@ export default {
           this.streakCount();
           this.score += 10 + 10 * (this.streak.count + 1);
           this.changeStatistic(true);
+          // Отослать статистику по слову
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
+          // Отослать статистику по слову
         }
       } else {
         this.streak = { count: 0, seriesCorrectAnswer: 0 };
         this.changeStatistic(false);
+        // Отослать статистику по слову
       }
       clearInterval(this.interval);
       this.hideText();
@@ -257,7 +271,7 @@ export default {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
+  height: 89vh;
   position: relative;
   background: linear-gradient(#00000099, #00000099),
     center/ cover url("../../../assets/images/sprint/fon.png");
@@ -304,5 +318,26 @@ export default {
 .next-btn__icon {
   padding-bottom: 15px;
   padding-right: 10px;
+}
+
+@media screen and (max-width: 980px) {
+  .game {
+    width: 90vw;
+  }
+  .timer {
+    width: 90vw;
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .game {
+    height: 75vh;
+  }
+  .controls {
+    width: 100%;
+  }
+  .answer-btn {
+    width: 120px !important;
+  }
 }
 </style>

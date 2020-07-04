@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="roundModalActive" persistent max-width="40vw">
+  <v-dialog class="roundStatistic" v-model="roundModalActive" persistent max-width="100vw">
     <v-card>
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="$emit('closeModal')">
@@ -76,5 +76,11 @@ export default {
   align-items: center;
   font-size: 20px;
   font-weight: 600;
+}
+@media screen and (max-width: 700px) {
+  .comment {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

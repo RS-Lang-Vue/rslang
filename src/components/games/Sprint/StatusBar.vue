@@ -8,7 +8,6 @@
         :key="n"
       />
     </div>
-    <div class="message-area"></div>
     <div class="score">{{ score }}</div>
   </div>
 </template>
@@ -25,9 +24,8 @@ export default {
   justify-content: center;
   width: 100%;
   .score,
-  .streak,
-  .message-area {
-    width: 30%;
+  .streak {
+    width: 50%;
   }
 
   .score {
@@ -49,6 +47,16 @@ export default {
 
   .streak__img.hide {
     opacity: 0;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .status-bar {
+    flex-direction: column;
+    .score,
+    .streak {
+      width: 100%;
+    }
   }
 }
 </style>
