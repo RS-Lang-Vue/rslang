@@ -98,8 +98,10 @@ export default {
     res = await this.$store.dispatch("addAnswerResult", { wordId: learnedWordId });
     console.log("---- результат", res);
 
+    console.log("--- Заходим в игру Савана и запрашиваем слова для игры");
     this.$store.dispatch("setGame", "gameSavannah");
-    this.$store.dispatch("getRoundWords");
+    res = await this.$store.dispatch("getRoundWords");
+    console.log("---- результат", res);
 
     console.log("!! Test ApiTest Words complite");
   },
