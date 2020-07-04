@@ -64,6 +64,7 @@ import Header from "./Header.vue";
 import StatusBar from "./StatusBar.vue";
 import TextContent from "./TextContent.vue";
 import RoundStatistic from "./RoundStatistic.vue";
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -99,24 +100,30 @@ export default {
     RoundStatistic,
   },
   async mounted() {
-    // ЗАПРОС НА КОЛ-ВО СЛОВ В USERWORDS, ЕСЛИ бОЛЬШЕ 20, БРАТЬ ОТТУДА
-    /* if( words ) {
-      делаем запрос к UserWords
-    } */
-    const res = await fetch(
-      `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
-    );
-    const data = await res.json();
-    this.sourceData = data;
     function getRandom() {
       return Math.round(Math.random() * 19);
     }
-    this.exampleData = data.map((el) => {
+    const learnedWords = await this.getUserAggregateWords({onlyLearned: true})
+    if( words && learnedWords.success && learnedWords.result.length > 19) {
+      this.sourceData = learnedWords.result.slice(0, 20);
+      this.exampleData = data.map((el) => {
       return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
     });
     this.loading = false;
+    }else {    
+      const res = await fetch(
+        `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
+      );
+      const data = await res.json();
+      this.sourceData = data;    
+      this.exampleData = data.map((el) => {
+        return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
+      });
+      this.loading = false;
+    }
   },
   methods: {
+    ...mapActions(["getUserAggregateWords", "addAnswerResult"]),
     changeWord(x) {
       this.words = x;
     },
@@ -131,26 +138,32 @@ export default {
       this.getData();
     },
     async getData() {
-      /* if( words ) {
-      делаем запрос к UserWords
-    } */
-      const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
-      );
-      const data = await res.json();
-      this.sourceData = data;
-      function getRandom() {
+        function getRandom() {
         return Math.round(Math.random() * 19);
       }
-      this.exampleData = data.map((el) => {
+      const learnedWords = await getUserAggregateWords({onlyLearned: true})
+      if( words && learnedWords.success && learnedWords.result.length > 19) {
+        this.sourceData = learnedWords.result.slice(0, 20);
+        this.exampleData = data.map((el) => {
         return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
       });
-      clearInterval(this.interval);
-      this.startGame = false;
-      this.countWords = 0;
-      this.score = 0;
-      this.streak = { count: 0, seriesCorrectAnswer: 0 };
       this.loading = false;
+      }else {
+        const res = await fetch(
+          `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
+        );
+        const data = await res.json();
+        this.sourceData = data;
+        this.exampleData = data.map((el) => {
+          return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
+        });
+        clearInterval(this.interval);
+        this.startGame = false;
+        this.countWords = 0;
+        this.score = 0;
+        this.streak = { count: 0, seriesCorrectAnswer: 0 };
+        this.loading = false;
+      }
     },
     gameStarted() {
       this.timer = 0;
@@ -185,10 +198,12 @@ export default {
           this.score += 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           // Отослать статистику по слову
+          this.addAnswerResult({ wordId: this.sourceData[this.countWords].id, isCorrectAnswer: true});
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           // Отослать статистику по слову
+          this.addAnswerResult({ wordId: this.sourceData[this.countWords].id, isCorrectAnswer: false});
         }
       } else if (x === false) {
         if (
@@ -199,15 +214,18 @@ export default {
           this.score += 10 + 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           // Отослать статистику по слову
+          this.addAnswerResult({ wordId: this.sourceData[this.countWords].id, isCorrectAnswer: true});
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           // Отослать статистику по слову
+          this.addAnswerResult({ wordId: this.sourceData[this.countWords].id, isCorrectAnswer: false});
         }
       } else {
         this.streak = { count: 0, seriesCorrectAnswer: 0 };
         this.changeStatistic(false);
         // Отослать статистику по слову
+        this.addAnswerResult({ wordId: this.sourceData[this.countWords].id, isCorrectAnswer: false});
       }
       clearInterval(this.interval);
       this.hideText();
