@@ -10,6 +10,7 @@ import apiService from "./modules/api-service/api-service";
 import wordHelper from "./modules/word-helper";
 
 import englishPuzzle from "./modules/english-puzzle/english-puzzle";
+import findThePair from "./modules/find-the-pair/find-the-pair";
 
 import savannah from "./modules/savannah/savannah";
 
