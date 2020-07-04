@@ -9,7 +9,7 @@ export default {
         newWordsPerDay: settingsConstants.DEFAULT_NEW_WORDS_PER_DAY,
         toggles: {
           wordTranslate: {
-            title: "Перевод слова",
+            title: "Перевод",
             state: true,
           },
           textMeaning: {

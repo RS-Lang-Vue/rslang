@@ -10,7 +10,12 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn dark icon title="Удалить слово из изучаемых">
+        <v-btn
+          v-if="learnSettingsToggles.deleteButton.state"
+          dark
+          icon
+          title="Удалить слово из изучаемых"
+        >
           <v-icon>mdi-delete-outline</v-icon>
         </v-btn>
       </v-card-title>
@@ -26,18 +31,23 @@
                 <span class="text-sm-h4 text-h5">
                   {{ wordObject.word }}
                 </span>
-                <p class="text-body-1">
+                <p v-if="learnSettingsToggles.transcription.state" class="text-body-1">
                   {{ wordObject.transcription }}
                 </p>
-                <div class="text-subtitle-1">{{ wordObject.wordTranslate }}</div>
+                <div v-if="isWordTranslate" class="text-subtitle-1">
+                  {{ wordObject.wordTranslate }}
+                </div>
               </v-card-text>
             </div>
-            <v-avatar class="ma-3" size="125" tile>
+            <v-avatar v-if="learnSettingsToggles.image.state" class="ma-3" size="125" tile>
               <v-img :src="`${prefixImagePath}${wordObject.image}`"></v-img>
             </v-avatar>
           </div>
 
-          <div class="d-flex flex-no-wrap justify-space-between align-center">
+          <div
+            v-if="learnSettingsToggles.textMeaning.state"
+            class="d-flex flex-no-wrap justify-space-between align-center"
+          >
             <v-btn icon class="ma-2">
               <v-icon @click="audio.play(wordObject.audioMeaning)">mdi-volume-high</v-icon>
             </v-btn>
@@ -45,19 +55,24 @@
               <p class="text-body-1 mb-2">
                 <span v-html="wordObject.textMeaning"></span>
               </p>
-              <p class="text-body-2 mb-0">
+              <p v-if="isWordTranslate" class="text-body-2 mb-0">
                 {{ wordObject.textMeaningTranslate }}
               </p>
             </v-card-text>
           </div>
 
-          <div class="d-flex flex-no-wrap justify-space-between align-center">
+          <div
+            v-if="learnSettingsToggles.textExample.state"
+            class="d-flex flex-no-wrap justify-space-between align-center"
+          >
             <v-btn icon class="ma-2">
               <v-icon @click="audio.play(wordObject.audioExample)">mdi-volume-high</v-icon>
             </v-btn>
             <v-card-text class="text-body-1">
               <p class="text-body-1 mb-2"><span v-html="wordObject.textExample"></span></p>
-              <p class="text-body-2 mb-0">{{ wordObject.textExampleTranslate }}</p>
+              <p v-if="isWordTranslate" class="text-body-2 mb-0">
+                {{ wordObject.textExampleTranslate }}
+              </p>
             </v-card-text>
           </div>
         </v-window-item>
@@ -66,10 +81,20 @@
       <v-divider class="mx-4"></v-divider>
 
       <v-card-actions>
-        <v-btn text color="indigo accent-4" title="Добавить в раздел сложные слова">
+        <v-btn
+          v-if="learnSettingsToggles.answerButton.state"
+          text
+          color="indigo accent-4"
+          title="Добавить в раздел сложные слова"
+        >
           сложное
         </v-btn>
-        <v-btn text color="indigo accent-4" title="Добавить в раздел сложные слова">
+        <v-btn
+          v-if="learnSettingsToggles.difficultButton.state"
+          text
+          color="indigo accent-4"
+          title="Показать правильные ответ"
+        >
           ответ
         </v-btn>
         <v-spacer></v-spacer>
@@ -78,7 +103,7 @@
         </v-btn>
       </v-card-actions>
 
-      <v-divider></v-divider>
+      <!-- <v-divider></v-divider> -->
 
       <v-card-actions>
         <v-btn :disabled="step === 0" text @click="step--">
@@ -98,10 +123,39 @@
         :value="(100 / wordsArray.length) * (step + 1)"
       ></v-progress-linear>
     </v-card>
+
+    <p class="text-h5 text-center mt-8">Оцените сложность слова</p>
+    <div class="d-flex justify-center flex-wrap text-center">
+      <div class="d-flex flex-column mb-2">
+        <v-icon large color="teal darken-4">mdi-repeat</v-icon>
+        <v-btn class="ma-1" text color="teal accent-4">
+          Снова
+        </v-btn>
+      </div>
+      <div class="d-flex flex-column">
+        <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
+        <v-btn class="ma-1" text color="deep-purple accent-4">
+          Трудно
+        </v-btn>
+      </div>
+      <div class="d-flex flex-column">
+        <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
+        <v-btn class="ma-1" text color="green accent-4">
+          Хорошо
+        </v-btn>
+      </div>
+      <div class="d-flex flex-column">
+        <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
+        <v-btn class="ma-1" text color="light-blue accent-4">
+          Легко
+        </v-btn>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+// import { mapState } from "vuex";
 import AudioControl from "@/helpers/english-puzzle/audio-control";
 import config from "@/config/config";
 import wordsArray from "./learnObjects/wordsArray";
@@ -114,13 +168,28 @@ export default {
     audio: {},
     prefixImagePath: config.audioBaseUrl,
   }),
+  computed: {
+    learnSettingsToggles() {
+      return this.$store.state.userSettings.optional.learn.toggles;
+    },
+    isWordTranslate() {
+      return this.$store.state.userSettings.optional.learn.toggles.wordTranslate.state;
+    },
+  },
   mounted() {
     this.audio = new AudioControl();
-    this.audio.play(wordsArray[this.step].audio);
+    this.autoAudioPlay();
   },
   watch: {
     step: function steps() {
-      this.audio.play(wordsArray[this.step].audio);
+      this.autoAudioPlay();
+    },
+  },
+  methods: {
+    autoAudioPlay() {
+      if (this.learnSettingsToggles.autoPronunciation.state) {
+        this.audio.play(wordsArray[this.step].audio);
+      }
     },
   },
 };
@@ -142,5 +211,9 @@ export default {
 
 .dot:nth-child(1) {
   background-color: orange;
+}
+
+.icon-block {
+  display: block;
 }
 </style>
