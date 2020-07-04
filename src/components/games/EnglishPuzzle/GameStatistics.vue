@@ -11,13 +11,13 @@
         <v-btn icon dark @click="closeGameStatistics">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Statistics</v-toolbar-title>
+        <v-toolbar-title>Статистика</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-card-text class="pa-0">
         <v-container class="fill-height text-sm-body-2 text-md-body-1 text-lg-subtitle-1" fluid>
           <v-list two-line class="ml-auto mr-auto">
-            <v-list-item v-if="!isStatistics">Statistics are not available</v-list-item>
+            <v-list-item v-if="!isStatistics">Статистика недоступна</v-list-item>
             <template v-else>
               <v-list-item v-for="(item, i) of getStatisticsEP" :key="i" class="pa-0">
                 <v-chip color="primary" text-color="white" class="mr-4">{{ i + 1 }}</v-chip>
@@ -26,8 +26,8 @@
                     {{ statisticsLineTitle(item) }}
                   </v-list-item-title>
                   <v-list-item-subtitle class="wrap">
-                    <span class="red--text">"I don't know"</span>/
-                    <span class="green--text">"I know"</span>
+                    <span class="red--text">"Я не знаю"</span>/
+                    <span class="green--text">"Я знаю"</span>
                     :
                     <span class="red--text">{{ skipCount(item) }}</span>
                     /
@@ -113,7 +113,7 @@ export default {
     },
     statisticsLineTitle(item) {
       const date = new Date(item.date).toString().replace(/(.+) (GMT.+)/i, "$1");
-      return `${date}, Level: ${item.level}, Round: ${item.round}`;
+      return `${date}, Уровень: ${item.level + 1}, Раунд: ${item.round + 1}`;
     },
     successCount(item) {
       return item.results.success.length;
