@@ -123,7 +123,7 @@ export default {
     const userWords = await this.$store.dispatch("getUserAggregateWords", {
       user,
       isLearned,
-      group,
+      group
     });
     console.log(userWords);
   },
