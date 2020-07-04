@@ -7,12 +7,6 @@ export default {
     statistics,
   },
   state: {
-<<<<<<< HEAD
-    hintOptions: {
-      showTranslation: true,
-      showAudio: true,
-      autoPlayAudio: true,
-=======
     settingsEP: {
       level: 0,
       round: [0, 0, 0, 0, 0, 0],
@@ -24,20 +18,14 @@ export default {
         speak: true,
         speakAuto: true,
       },
->>>>>>> develop
     },
     isUserChangedRound: false,
     sourceCards: [],
     resultsCards: [],
   },
   mutations: {
-<<<<<<< HEAD
-    updateHintOptionsEP(state, options) {
-      state.hintOptions = options;
-=======
     updateSettingsEP(state, options) {
       state.settingsEP = options;
->>>>>>> develop
     },
     updateIsUserChangedRoundEP(state, value) {
       state.isUserChangedRound = value;
@@ -48,12 +36,6 @@ export default {
     updateResultsCardsEP(state, value) {
       state.resultsCards = value;
     },
-<<<<<<< HEAD
-  },
-  actions: {
-    setHintOptionsEP({ commit }, options) {
-      commit("updateHintOptionsEP", options);
-=======
     updateRoundsPerLevelCountEP(state, value) {
       state.settingsEP.roundsInLevelCount = value;
     },
@@ -73,7 +55,6 @@ export default {
       userSettings.optional.gamePuzzle = options;
       commit("setUserSettings", userSettings);
       dispatch("uploadSettings");
->>>>>>> develop
     },
     setIsUserChangedRoundEP({ commit }, value) {
       commit("updateIsUserChangedRoundEP", value);
@@ -99,13 +80,8 @@ export default {
     },
   },
   getters: {
-<<<<<<< HEAD
-    getHintOptionsEP(state) {
-      return state.hintOptions;
-=======
     getSettingsEP(state) {
       return state.settingsEP;
->>>>>>> develop
     },
     getIsUserChangedRoundEP(state) {
       return state.isUserChangedRound;

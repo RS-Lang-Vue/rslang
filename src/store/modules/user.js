@@ -82,15 +82,9 @@ export default {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("tokenReceiptTime");
-<<<<<<< HEAD
-      state.user.token = "";
-      state.user.userId = "";
-      state.user.tokenReceiptTime = "";
-=======
       state._user.token = "";
       state._user.userId = "";
       state._user.tokenReceiptTime = "";
->>>>>>> develop
     },
   },
   getters: {

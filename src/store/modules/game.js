@@ -1,8 +1,5 @@
 import wordService from "./word-service/word-service";
-<<<<<<< HEAD
-=======
 import UniResponse from "../../models/UniResponse";
->>>>>>> develop
 
 export default {
   modules: {
@@ -29,22 +26,13 @@ export default {
     async setRound({ commit }, round) {
       if (round >= 30) {
         const { level } = this.state.game.gameSettings;
-<<<<<<< HEAD
-        const userWords = await this.dispatch("getUserWords", level);
-=======
         const res = await this.dispatch("getUsersAggregatedWords", level);
         const userWords = res.result;
->>>>>>> develop
         if (userWords.length < this.state.game.ROUND_WORD_COUNT) return;
       }
       commit("setRound", round);
     },
     async getRoundWords({ commit }, needRandom = true) {
-<<<<<<< HEAD
-      const keyWords = await this.dispatch("getKeyWords");
-      const randomWords = needRandom ? await this.dispatch("getRandomWords") : [];
-      commit("setRoundWords", { keyWords, randomWords });
-=======
       let res = await this.dispatch("getKeyWords");
       if (!res.success) return res;
       const keyWords = res.result;
@@ -54,7 +42,6 @@ export default {
       const randomWords = needRandom ? res.result : [];
       commit("setRoundWords", { keyWords, randomWords });
       return new UniResponse(true, { keyWords, randomWords });
->>>>>>> develop
     },
     compliteRound({ commit }) {
       const { level } = this.state.game.gameSettings;

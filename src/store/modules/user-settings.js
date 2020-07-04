@@ -51,16 +51,6 @@ export default {
     },
   },
   actions: {
-<<<<<<< HEAD
-    uploadSettings() {
-      const { user } = this.state;
-      const { wordsPerDay, optional } = this.state.userSettings;
-      fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`, {
-        method: "PUT",
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${user.user.token}`,
-=======
     async uploadSettings() {
       const user = await this.dispatch("getUser");
       const { wordsPerDay, optional } = this.state.userSettings;
@@ -69,7 +59,6 @@ export default {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${user.token}`,
->>>>>>> develop
           Accept: "application/json",
           "Content-Type": "application/json",
         },
@@ -77,24 +66,14 @@ export default {
       });
     },
     async downloadSettings({ commit }) {
-<<<<<<< HEAD
-      const { user } = this.state;
-      const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`,
-=======
       const user = await this.dispatch("getUser");
       const res = await fetch(
         `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
->>>>>>> develop
         {
           method: "GET",
           withCredentials: true,
           headers: {
-<<<<<<< HEAD
-            Authorization: `Bearer ${user.user.token}`,
-=======
             Authorization: `Bearer ${user.token}`,
->>>>>>> develop
             Accept: "application/json",
           },
         }
