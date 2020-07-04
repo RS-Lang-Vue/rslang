@@ -59,6 +59,33 @@ export default {
     this.$store.dispatch("setGame", "gameSavannah");
     this.$store.dispatch("getRoundWords");
 
+    console.log("Тестирование:");
+
+    console.log("- ApiService");
+
+    console.log("-- Words");
+    console.log(
+      "--- Получаем первые 20 слов свободного списка (для неаторизованного пользователя)"
+    );
+    let words = await this.$store.dispatch("getWords", {});
+    console.log("---- words", words);
+    console.log(
+      "--- Получаем первые 5 слов 2-ого уровня с третьей страницы, где слов в примере не больше 10"
+    );
+    words = await this.$store.dispatch("getWords", {
+      group: 1,
+      page: 2,
+      wordsPerPage: 5,
+      wordsPerExampleSentenceLTE: 10,
+    });
+    console.log("---- words", words);
+
+    console.log("!! Test ApiTest Words complite");
+
+    console.log("...addAnswerResult");
+    await this.$store.dispatch("addAnswerResult", { wordId: "5e9f5ee35eb9e72bc21af4b0" });
+    console.log("addAnswerResult...");
+
     const { user } = this.$store.state.user;
     const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, page: 0 });
     console.log(firstWords);
@@ -80,7 +107,6 @@ export default {
       const wordId = userWord.optional.word.id;
       const promise = this.$store.dispatch("setUserWords", {
         isNewWord: false,
-        user,
         userWord,
         wordId,
       });
@@ -97,7 +123,7 @@ export default {
     const userWords = await this.$store.dispatch("getUserAggregateWords", {
       user,
       isLearned,
-      group
+      group,
     });
     console.log(userWords);
   },

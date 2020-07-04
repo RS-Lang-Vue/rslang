@@ -20,7 +20,11 @@ export default {
         keyWords = utils.shuffle(keyWords);
       } else {
         const { user } = this.state.user;
-        const userWords = await this.dispatch("getUserAggregateWords", { user, isLearned: true, group: level });
+        const userWords = await this.dispatch("getUserAggregateWords", {
+          user,
+          isLearned: true,
+          group: level,
+        });
         keyWords = [...userWords];
         keyWords = utils.shuffle(keyWords);
         keyWords = keyWords.splice(0, this.state.game.ROUND_WORD_COUNT);

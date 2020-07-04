@@ -61,5 +61,6 @@ export default {
   },
   getters: {
     isLoggedIn: (state) => Boolean(state.user.token),
+    user: (state) => (state.user.userId === "" ? undefined : state.user),
   },
 };
