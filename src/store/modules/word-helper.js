@@ -1,8 +1,9 @@
+import UniResponse from "../../models/UniResponse";
+
 export default {
   state: {},
   actions: {
     async addAnswerResult(ctx, { wordId, isCorrectAnswer }) {
-      console.log(wordId);
       let res = await this.dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
         // показать ошибку пользователю res.error
@@ -23,13 +24,26 @@ export default {
       }
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
-      userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 10000 : 50000);
+      userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         // показать ошибку пользователю res.error
         return res;
       }
       return res;
+    },
+    async getLearnedWordsSortByRepeateDete(ctx, { count }) {
+      const res = this.dispatch("getUserAggregateWords", { onlyLearned: true });
+      if (!res.success) {
+        // показать ошибку пользователю res.error
+        return res;
+      }
+      let learnedWords = [...res.result];
+      learnedWords.result.sort((a, b) => {
+        return a.UserWord.optional.repeatDate - b.UserWord.optional.repeatDate;
+      });
+      learnedWords = learnedWords.splice(0, count);
+      return new UniResponse(true, learnedWords);
     },
   },
   mutations: {},
