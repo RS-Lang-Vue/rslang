@@ -5,7 +5,7 @@ export default {
       console.log(wordId);
       let res = await this.dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
-        // показать ошибка res.error
+        // показать ошибку пользователю res.error
         return res;
       }
       let userWord = res.result;
@@ -24,9 +24,11 @@ export default {
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
       userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 10000 : 50000);
-      console.log("dd", { isNewWord, userWord, wordId });
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
-      console.log("res", res);
+      if (!res.success) {
+        // показать ошибку пользователю res.error
+        return res;
+      }
       return res;
     },
   },

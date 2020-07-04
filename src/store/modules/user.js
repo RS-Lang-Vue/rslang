@@ -11,11 +11,10 @@ export default {
   },
   actions: {
     async getUser({ commit }) {
-      if (this.state.user._user.userId === "")
-        return undefined;
+      if (this.state.user._user.userId === "") return undefined;
       const deltaTime = Date.now() - this.state.user._user.tokenReceiptTime;
       if (deltaTime > config.tokenLifetime) {
-        commit('unsetUser');
+        commit("unsetUser");
       } else if (deltaTime > config.tokenLifetime / 2) {
         await this.dispatch("refreshToken");
       }
@@ -56,7 +55,7 @@ export default {
             reject(err);
           });
       });
-    },    
+    },
     async refreshToken() {
       const user = this.state.user._user;
       const res = await fetch(
@@ -73,7 +72,7 @@ export default {
       const tokens = await res.json();
       this.state.user._user.token = tokens.refreshToken;
       this.state.user._user.tokenReceiptTime = Date.now();
-    }
+    },
   },
   mutations: {
     setUser(state, user) {
@@ -89,12 +88,10 @@ export default {
     },
   },
   getters: {
-    isLoggedIn: (state) => { 
-      if (state._user.userId === "")
-        return false;
+    isLoggedIn: (state) => {
+      if (state._user.userId === "") return false;
       const deltaTime = Date.now() - state._user.tokenReceiptTime;
       return deltaTime < config.tokenLifetime;
-    }
-      
-  }
+    },
+  },
 };

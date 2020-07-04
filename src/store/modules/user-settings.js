@@ -52,7 +52,7 @@ export default {
   },
   actions: {
     async uploadSettings() {
-      const user = await this.dispatch('getUser');
+      const user = await this.dispatch("getUser");
       const { wordsPerDay, optional } = this.state.userSettings;
       fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`, {
         method: "PUT",
@@ -66,7 +66,7 @@ export default {
       });
     },
     async downloadSettings({ commit }) {
-      const user = await this.dispatch('getUser');
+      const user = await this.dispatch("getUser");
       const res = await fetch(
         `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
         {

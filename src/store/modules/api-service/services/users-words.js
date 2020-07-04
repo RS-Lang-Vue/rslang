@@ -1,13 +1,36 @@
-import Response from "../../utils/Response";
+import UniResponse from "../../../../models/UniResponse";
 import errorList from "../../../../config/errors";
 
 export default {
   state: {},
   actions: {
-    async getUsersWordsById(ctx, { wordId }) {
-      const user = await this.dispatch('getUser');
+    async getUsersWords() {
+      const user = await this.dispatch("getUser");
       if (user === undefined) {
-        return new Response(false, errorList.unauthorized);
+        return new UniResponse(false, errorList.unauthorized);
+      }
+      const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words`;
+      const res = await fetch(url, {
+        method: "GET",
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          Accept: "application/json",
+        },
+      });
+      switch (res.status) {
+        case 200:
+          return new UniResponse(true, await res.json());
+        case 402:
+          return new UniResponse(false, errorList.token);
+        default:
+          return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
+      }
+    },
+    async getUsersWordsById(ctx, { wordId }) {
+      const user = await this.dispatch("getUser");
+      if (user === undefined) {
+        return new UniResponse(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words/${wordId}`;
       const res = await fetch(url, {
@@ -20,13 +43,13 @@ export default {
       });
       switch (res.status) {
         case 200:
-          return new Response(true, await res.json());
+          return new UniResponse(true, await res.json());
         case 401:
-          return new Response(false, errorList.token);
+          return new UniResponse(false, errorList.token);
         case 404:
-          return new Response(true, undefined);
+          return new UniResponse(true, undefined);
         default:
-          return new Response(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
+          return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
       }
     },
     async setUserWords(ctx, { isNewWord, userWord, wordId }) {
@@ -34,7 +57,7 @@ export default {
         difficulty: userWord.difficulty,
         optional: userWord.optional,
       };
-      const user = await this.dispatch('getUser');
+      const user = await this.dispatch("getUser");
       if (user === undefined) {
         return new Response(false, errorList.unauthorized);
       }
@@ -52,13 +75,13 @@ export default {
       });
       switch (res.status) {
         case 200:
-          return new Response(true, await res.json());
+          return new UniResponse(true, await res.json());
         case 401:
-          return new Response(false, errorList.token);
+          return new UniResponse(false, errorList.token);
         case 400:
-          return new Response(true, errorList.badRequest);
+          return new UniResponse(true, errorList.badRequest);
         default:
-          return new Response(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
+          return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
       }
     },
   },

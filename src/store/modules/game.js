@@ -25,7 +25,8 @@ export default {
     async setRound({ commit }, round) {
       if (round >= 30) {
         const { level } = this.state.game.gameSettings;
-        const userWords = await this.dispatch("getUserWords", level);
+        const res = await this.dispatch("getUsersAggregatedWords", level);
+        const userWords = res.result;
         if (userWords.length < this.state.game.ROUND_WORD_COUNT) return;
       }
       commit("setRound", round);

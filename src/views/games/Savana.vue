@@ -1,52 +1,7 @@
 <template>
   <div>
     <h2>Savana game's page</h2>
-    <h3>Пример работы с game-модулем:</h3>
-    <p>Зашли в игру, вызываем setGame передавая название игры из опций:</p>
-    <p>this.$store.dispatch("setGame", "gameSavannah");</p>
-    <p>Узнаём какой уровень и раунд у игрока в этой игре через геттеры</p>
-    <p>
-      getters: "currentLevel" = <a>{{ currentLevel }}</a
-      >, "currentRound" <a>{{ currentRound }}</a>
-    </p>
-    <p>Получаем слова для этого раунда:</p>
-    <p>
-      Вызывая this.$store.dispatch("getRoundWords") и получая в геттере roundWords
-    </p>
-    <p>
-      Если для игры не нужны случайные ложные слова, то можно вызвать
-      this.$store.dispatch("getRoundWords", false)
-    </p>
-    <p>Тогда в roundWords.randomWords будет пустой массив</p>
-    <p>
-      По умолачнию же roundWords.keyWords содержит 20 слов, часть из которых (или все) нужно
-      использовать в игре
-    </p>
-    <p>roundWords.randomWords сожержит случайных 20 слов для генерации ложных вариантов ответа</p>
-    <p>
-      Слова в обоих массивах уже перемешаны, поэтому во время раунда можно брать слова по порядку
-    </p>
-
-    <p>После окончания раунда вызываем this.$store.dispatch("compliteRound")</p>
-    <p>
-      При этом меняются значения "currentGroup" и "currentRound" и настройки игры сохраняются на
-      бэкенде
-    </p>
-
-    <h3>Пример полученных 20 слов:</h3>
-    <h3>Уровень - {{ currentLevel + 1 }}, раунд - {{ currentRound + 1 }}</h3>
-    <h3>keyWords:</h3>
-    <div class="keyWords" v-for="word in roundWords.keyWords" :key="word.id">
-      {{ word.word }} - {{ word.wordTranslate }}
-    </div>
-    <h3>randomWords:</h3>
-    <div class="randomWords" v-for="word in roundWords.randomWords" :key="word.id">
-      {{ word.word }} - {{ word.wordTranslate }}
-    </div>
-
-    <v-btn class="complete_round__button" large color="primary" @click="nextRound"
-      >Round Complete</v-btn
-    >
+    <h3>Смотри в консоле тестирование и некоторрое описание модуля</h3>
   </div>
 </template>
 
@@ -56,76 +11,97 @@ import { mapGetters } from "vuex";
 export default {
   computed: mapGetters(["roundWords", "currentLevel", "currentRound"]),
   async mounted() {
-    this.$store.dispatch("setGame", "gameSavannah");
-    this.$store.dispatch("getRoundWords");
-
     console.log("Тестирование:");
 
     console.log("- ApiService");
 
-    console.log("-- Words");
-    console.log(
-      "--- Получаем первые 20 слов свободного списка (для неаторизованного пользователя)"
-    );
-    let words = await this.$store.dispatch("getWords", {});
-    console.log("---- words", words);
+    console.log("-- Words (получение слов для неавторизованного пользователя)");
+    console.log("--- Получаем первые 20");
+    let res = await this.$store.dispatch("getWords", {});
+    console.log("---- words", res);
+
+    console.log("--- Получаем слова для 3-ого уровня 6 раунда");
+    res = await this.$store.dispatch("getWords", {
+      group: 2,
+      page: 5,
+      wordsPerPage: 20,
+    });
+    const wordsG3P6 = res.result;
+    console.log("---- words", res);
+
     console.log(
       "--- Получаем первые 5 слов 2-ого уровня с третьей страницы, где слов в примере не больше 10"
     );
-    words = await this.$store.dispatch("getWords", {
+    res = await this.$store.dispatch("getWords", {
       group: 1,
       page: 2,
       wordsPerPage: 5,
       wordsPerExampleSentenceLTE: 10,
     });
-    console.log("---- words", words);
+    console.log("---- words", res);
+
+    console.log("-- UsersWords (получение слов для авторизованного пользователя)");
+
+    console.log("--- Получаем все изученные слова");
+    res = await this.$store.dispatch("getUsersWords");
+    console.log("---- words", res);
+
+    console.log("--- Получаем изученное слово по id");
+    const learnedWordId = "5e9f5ee35eb9e72bc21af4a3";
+    res = await this.$store.dispatch("getUsersWordsById", { wordId: learnedWordId });
+    let learnedUserWord = res.result;
+    console.log("---- words", res);
+
+    console.log("--- Пытаемся получить неизученное ранее слово из библиотеки изученных слов");
+    res = await this.$store.dispatch("getUsersWordsById", { wordId: "5e9f5ee35eb9e72bc21af706" });
+    console.log("---- words", res);
+
+    console.log("--- Меняем статистику слова");
+    const random = Math.floor(Math.random() * 1000);
+    console.log("---- Установим случайное количество повторений repeatCount -", random);
+    learnedUserWord.optional.repeatCount = random;
+    res = await this.$store.dispatch("setUserWords", {
+      isNewWord: false,
+      userWord: learnedUserWord,
+      wordId: learnedWordId,
+    });
+    learnedUserWord = res.result;
+    console.log("---- words", res);
+
+    console.log("-- AggregatedWords (получение комбинированных слов)");
+
+    console.log("--- Пытаемся получить все 3600 комбинированных слов");
+    res = await this.$store.dispatch("getUserAggregateWords", {});
+    console.log("---- words", res);
+
+    console.log("--- Пытаемся получить первые 30 изученных слов (но изучено 20)");
+    res = await this.$store.dispatch("getUserAggregateWords", {
+      page: 0,
+      wordsPerPage: 30,
+      onlyLearned: true,
+    });
+    console.log("---- words", res);
+
+    console.log("--- Пытаемся получить словая для 3-ого уровня 6 раунда");
+    res = await this.$store.dispatch("getUserAggregateWords", {
+      group: 2,
+      page: 5,
+      wordsPerPage: 20,
+    });
+    console.log("---- words", res);
+    console.log("---- можно свериться этим же раундом из свободной библиотеки", wordsG3P6);
+
+    console.log("- WordHelper");
+
+    console.log("--- Отправляем в модуль айди слова и правльно ли ответил игрок");
+    console.log("---- Такая статистика была до вызова", learnedUserWord);
+    res = await this.$store.dispatch("addAnswerResult", { wordId: learnedWordId });
+    console.log("---- результат", res);
+
+    this.$store.dispatch("setGame", "gameSavannah");
+    this.$store.dispatch("getRoundWords");
 
     console.log("!! Test ApiTest Words complite");
-
-    console.log("...addAnswerResult");
-    await this.$store.dispatch("addAnswerResult", { wordId: "5e9f5ee35eb9e72bc21af4b0" });
-    console.log("addAnswerResult...");
-
-    const user = await this.$store.dispatch('getUser');
-    const firstWords = await this.$store.dispatch("getFreeWords", { group: 0, page: 0 });
-    console.log(firstWords);
-    const promises = [];
-    firstWords.forEach((word) => {
-      const optional = {
-        group: word.group,
-        repeatCount: 0,
-        lastDate: 0,
-        repeatDate: 0,
-        description: "hard",
-        word,
-      };
-      const userWord = {
-        difficulty: "hard",
-        optional,
-      };
-      console.log(userWord);
-      const wordId = userWord.optional.word.id;
-      const promise = this.$store.dispatch("setUserWords", {
-        isNewWord: false,
-        userWord,
-        wordId,
-      });
-      promises.push(promise);
-    });
-    const a = await Promise.all(promises);
-    console.log(a);
-
-    const userWord1 = await this.$store.dispatch("getUserWords", { user });
-    console.log(userWord1);
-
-    const group = undefined;
-    const isLearned = true;
-    const userWords = await this.$store.dispatch("getUserAggregateWords", {
-      user,
-      isLearned,
-      group
-    });
-    console.log(userWords);
   },
   methods: {
     nextRound() {

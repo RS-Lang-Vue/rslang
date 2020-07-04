@@ -1,10 +1,6 @@
-import apiService from "./api-service";
 import utils from "../utils/utils";
 
 export default {
-  modules: {
-    apiService,
-  },
   state: {
     ROUND_WORD_COUNT: 20,
     GROUP_COUNT: 6,
@@ -16,12 +12,11 @@ export default {
       const round = this.state.game.gameSettings.round[level];
       let keyWords = [];
       if (round < this.state.game.PAGE_COUNT) {
-        keyWords = await this.dispatch("getFreeWords", { group: level, page: round });
+        const res = await this.dispatch("getWords", { group: level, page: round });
+        keyWords = res.result;
         keyWords = utils.shuffle(keyWords);
       } else {
-        const user = await this.dispatch('getUser');
         const userWords = await this.dispatch("getUserAggregateWords", {
-          user,
           isLearned: true,
           group: level,
         });
@@ -41,7 +36,8 @@ export default {
         level = Math.floor(Math.random() * this.state.game.GROUP_COUNT);
         round = Math.floor(Math.random() * this.state.game.PAGE_COUNT);
       } while (round === keyRound && level === keyLevel);
-      const randomWords = await this.dispatch("getFreeWords", { group: level, page: round });
+      const res = await this.dispatch("getWords", { group: level, page: round });
+      const randomWords = res.result;
       return utils.shuffle(randomWords);
     },
   },

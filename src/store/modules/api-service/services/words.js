@@ -1,3 +1,6 @@
+import UniResponse from "../../../../models/UniResponse";
+import errorList from "../../../../config/errors";
+
 export default {
   state: {},
   actions: {
@@ -17,8 +20,12 @@ export default {
       if (wordsPerExampleSentenceLTE !== undefined)
         url += `&wordsPerExampleSentenceLTE=${wordsPerExampleSentenceLTE}`;
       const res = await fetch(url);
-      const freeWords = await res.json();
-      return freeWords;
+      switch (res.status) {
+        case 200:
+          return new UniResponse(true, await res.json());
+        default:
+          return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
+      }
     },
   },
   mutations: {},
