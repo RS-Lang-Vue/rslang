@@ -17,7 +17,9 @@
           width: 100%;
         "
         @click="handleClick(card)"
-      ></div>
+      >
+        <span class="text-caption text-sm-body-1">{{ card.word }}</span>
+      </div>
     </template>
     <template v-slot:back class="back" :class="{ invisible: deletedCard }">
       <v-img
@@ -78,7 +80,7 @@ export default {
   },
   methods: {
     handleClick(card) {
-      if (this.flipAvailable) {
+      if (this.flipAvailable && !this.flip) {
         if (this.isAutoPlay) {
           this.audio.stop();
           this.audio.play(card.audio);
@@ -93,28 +95,18 @@ export default {
 
 <style lang="scss">
 .front {
-  /* background-color: #673ab7; */
   width: 100%;
   height: 100%;
-  --rlist: var(--c) 0 3px, transparent 0 7px;
-  --dim: 100% 50% no-repeat;
-  --ang: 90deg;
-  overflow: hidden;
-  position: relative;
-  border-radius: 7px;
-  box-shadow: 2px 2px 17px #000;
-  background: repeating-linear-gradient(var(--ang-0, -45deg), var(--rlist)) var(--pos-0, 0 0) /
-      var(--dim),
-    repeating-linear-gradient(var(--ang-1, 45deg), var(--rlist)) var(--pos-1, 0 100%) / var(--dim),
-    linear-gradient(var(--ang), var(--nlist));
-  --c: #228f8a;
-  --nlist: #2b9c96, #90e1e2;
+  background-image: url("../../../../assets/images/pattern.png");
+  background-repeat: repeat;
+  background-position: center;
 }
 .back {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffc107;
+  background-color: #36096d;
+  background-image: linear-gradient(315deg, #36096d 0%, #37d5d6 74%);
   color: white;
   width: 100%;
   height: 100%;

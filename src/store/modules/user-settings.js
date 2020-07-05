@@ -45,8 +45,10 @@ export default {
         level: 0,
       },
       gameOwnGame: {
-        round: [0, 0, 0, 0, 0, 0],
         level: 0,
+        round: [0, 0, 0, 0, 0, 0],
+        roundsInLevelCount: 59,
+        levelCount: 5,
       },
     },
   },

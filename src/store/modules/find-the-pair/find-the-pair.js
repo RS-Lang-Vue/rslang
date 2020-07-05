@@ -1,8 +1,12 @@
 import words from "./words";
+import statistics from "./statistics";
+import images from "./images";
 
 export default {
   modules: {
     words,
+    statistics,
+    images,
   },
   state: {
     settingsFP: {
@@ -11,14 +15,14 @@ export default {
       roundsInLevelCount: 59,
       levelCount: 5,
     },
-    isUserChangedRound: false,
+    isUserChangedRoundFP: false,
   },
   mutations: {
     updateSettingsFP(state, options) {
       state.settingsFP = options;
     },
     updateIsUserChangedRoundFP(state, value) {
-      state.isUserChangedRound = value;
+      state.isUserChangedRoundFP = value;
     },
   },
   actions: {
@@ -29,11 +33,11 @@ export default {
     async downloadSettingsFP({ commit, dispatch, rootState }) {
       await dispatch("downloadSettings");
       const { optional } = rootState.userSettings;
-      commit("updateSettingsFP", optional.gameFindThePair);
+      commit("updateSettingsFP", optional.gameOwnGame);
     },
     setUserSettingsEpRootState({ commit, dispatch, rootState }, options) {
       const { userSettings } = rootState;
-      userSettings.optional.gameFindThePair = options;
+      userSettings.optional.gameOwnGame = options;
       commit("setUserSettings", userSettings);
       dispatch("uploadSettings");
     },
@@ -46,7 +50,7 @@ export default {
       return state.settingsFP;
     },
     getIsUserChangedRoundFP(state) {
-      return state.isUserChangedRound;
+      return state.isUserChangedRoundFP;
     },
   },
 };

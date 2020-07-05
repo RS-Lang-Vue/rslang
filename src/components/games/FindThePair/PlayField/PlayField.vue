@@ -1,6 +1,17 @@
 <template>
-  <div>
-    <v-card class="playing-field" flat elevation="8" color="rgba(0, 0, 0, 0.2)">
+  <div class="mb-5">
+    <v-card
+      class="playing-field"
+      flat
+      elevation="8"
+      :style="
+        bgField
+          ? {
+              background: `url(${bgField}) center/cover no-repeat rgba(0,0,0,0.2)`,
+            }
+          : { background: `rgba(0, 0, 0, 0.2)` }
+      "
+    >
       <Card
         v-for="(card, index) of cardsArray"
         :key="index"
@@ -31,6 +42,14 @@ export default {
       type: Boolean,
       required: true,
     },
+    bgField: {
+      type: String,
+      required: true,
+    },
+    isClearGameState: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -44,6 +63,14 @@ export default {
     flipAvailable() {
       return this.flippedСardsCount < 2;
     },
+    isEndRound() {
+      return this.guessedСards.length === 10;
+    },
+  },
+  watch: {
+    isClearGameState() {
+      if (this.isClearGameState) this.clearGameState();
+    },
   },
   methods: {
     checkCards(id) {
@@ -53,6 +80,7 @@ export default {
         setTimeout(() => {
           if (this.stack[0] === this.stack[1]) {
             this.guessedСards.push(id);
+            if (this.isEndRound) this.$emit("endRound", this.guessedСards);
           } else {
             this.isShirtCard = true;
             setTimeout(() => {
@@ -67,6 +95,11 @@ export default {
     deletedCard(id) {
       return this.guessedСards.includes(id);
     },
+    clearGameState() {
+      this.guessedСards = [];
+      this.stack = [];
+      this.flippedСardsCount = 0;
+    },
   },
 };
 </script>
@@ -77,6 +110,9 @@ export default {
   flex-wrap: wrap;
   justify-content: space-between;
   height: 213px !important;
+  background-blend-mode: multiply;
+
+  transition: background 0.7s ease;
   @media (min-width: 375px) {
     height: 250px !important;
   }

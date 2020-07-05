@@ -27,5 +27,6 @@ export default new Vuex.Store({
     apiService,
     wordHelper,
     savannah,
+    findThePair,
   },
 });
