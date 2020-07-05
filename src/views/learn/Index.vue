@@ -23,18 +23,38 @@
       <v-window v-model="step">
         <v-window-item v-for="wordObject in wordsArray" :key="wordObject.id">
           <div class="d-flex flex-xs-nowrap flex-wrap justify-space-between align-center">
-            <div class="d-flex flex-no-wrap justify-space-between align-center">
+            <div class="word-container d-flex flex-no-wrap justify-space-between align-center">
               <v-btn icon class="ma-2">
                 <v-icon @click="audio.play(wordObject.audio)">mdi-volume-high</v-icon>
               </v-btn>
               <v-card-text>
-                <span class="text-sm-h4 text-h5">
-                  {{ wordObject.word }}
-                </span>
-                <p v-if="learnSettingsToggles.transcription.state" class="text-body-1">
+                <div class="card-text__word pb-2">
+                  <div
+                    class="card-text__word-container text-sm-h4 text-h5 mb-3"
+                    style="color: rgba(0, 0, 0, 0.4); user-select: none;"
+                  >
+                    {{ wordObject.word }}
+                    <v-text-field
+                      v-model.lazy="inputValue"
+                      @keyup.enter="checkWord"
+                      class="card-text__word-element text-sm-h4 text-h5 ma-0 pa-0"
+                      style="top: 0; opacity: 0.7;"
+                      background-color="teal lighten-5"
+                      :height="40"
+                      :size="wordObject.word.length"
+                      :rules="nameRules"
+                      required
+                      autofocus
+                    ></v-text-field>
+                  </div>
+                </div>
+                <p
+                  v-if="learnSettingsToggles.transcription.state && isTranslateNow"
+                  class="text-body-1"
+                >
                   {{ wordObject.transcription }}
                 </p>
-                <div v-if="isWordTranslate" class="text-subtitle-1">
+                <div v-if="isTranslateNow" class="text-subtitle-1">
                   {{ wordObject.wordTranslate }}
                 </div>
               </v-card-text>
@@ -55,7 +75,7 @@
               <p class="text-body-1 mb-2">
                 <span v-html="wordObject.textMeaning"></span>
               </p>
-              <p v-if="isWordTranslate" class="text-body-2 mb-0">
+              <p v-if="isTranslateNow" class="text-body-2 mb-0">
                 {{ wordObject.textMeaningTranslate }}
               </p>
             </v-card-text>
@@ -70,7 +90,7 @@
             </v-btn>
             <v-card-text class="text-body-1">
               <p class="text-body-1 mb-2"><span v-html="wordObject.textExample"></span></p>
-              <p v-if="isWordTranslate" class="text-body-2 mb-0">
+              <p v-if="isTranslateNow" class="text-body-2 mb-0">
                 {{ wordObject.textExampleTranslate }}
               </p>
             </v-card-text>
@@ -98,12 +118,10 @@
           ответ
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn text color="indigo accent-4">
+        <v-btn text @click.stop="checkWord" color="indigo accent-4">
           Далее
         </v-btn>
       </v-card-actions>
-
-      <!-- <v-divider></v-divider> -->
 
       <v-card-actions>
         <v-btn :disabled="step === 0" text @click="step--">
@@ -155,11 +173,10 @@
 </template>
 
 <script>
-// import { mapState } from "vuex";
-import AudioControl from "@/helpers/english-puzzle/audio-control";
+import AudioPlayer from "@/helpers/learn/AudioPlayer";
+import playAudioSequence from "@/helpers/learn/audioUtils";
 import config from "@/config/config";
 import wordsArray from "./learnObjects/wordsArray";
-// import learnSettingsObject from "./learnObjects/learnSettingsObject";
 
 export default {
   data: () => ({
@@ -167,29 +184,75 @@ export default {
     step: 0,
     audio: {},
     prefixImagePath: config.audioBaseUrl,
+    nameRules: [(v) => !!v || "Введите слово"],
+    inputValue: "",
+    isCardStudied: false,
   }),
   computed: {
+    currentWord() {
+      return wordsArray[this.step].word;
+    },
     learnSettingsToggles() {
       return this.$store.state.userSettings.optional.learn.toggles;
     },
-    isWordTranslate() {
+    isTranslateState() {
       return this.$store.state.userSettings.optional.learn.toggles.wordTranslate.state;
+    },
+    isTranslateNow() {
+      return this.isCardStudied && this.isTranslateState;
     },
   },
   mounted() {
-    this.audio = new AudioControl();
-    this.autoAudioPlay();
+    this.audio = new AudioPlayer();
+    this.autoAudioPlayWord();
   },
   watch: {
     step: function steps() {
-      this.autoAudioPlay();
+      this.autoAudioPlayWord();
+      this.clear();
     },
   },
   methods: {
-    autoAudioPlay() {
+    autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
         this.audio.play(wordsArray[this.step].audio);
       }
+    },
+    playAllAudio() {
+      if (this.learnSettingsToggles.autoPronunciation.state) {
+        const srcArray = [wordsArray[this.step].audio];
+        if (this.learnSettingsToggles.textMeaning.state) {
+          srcArray.push(wordsArray[this.step].audioMeaning);
+        }
+        if (this.learnSettingsToggles.textExample.state) {
+          srcArray.push(wordsArray[this.step].audioExample);
+        }
+        playAudioSequence(srcArray);
+        // todo  add wait play all audios
+      }
+    },
+    checkWord() {
+      console.log("inputValue >>> ", this.inputValue);
+      const isState = !!this.inputValue;
+      if (isState) {
+        this.isCardStudied = true;
+        this.playAllAudio();
+        if (this.inputValue.trim() === this.currentWord) {
+          // todo show this.currentWord by green for input
+          setTimeout(this.nextStep, 3000);
+        } else {
+          // todo show currentWord whith misstake by red for input
+        }
+      }
+    },
+    clear() {
+      this.inputValue = "";
+      this.isCardStudied = false;
+    },
+
+    nextStep() {
+      this.clear();
+      this.step += 1;
     },
   },
 };
@@ -213,7 +276,11 @@ export default {
   background-color: orange;
 }
 
-.icon-block {
-  display: block;
+.card-text__word-element {
+  position: absolute;
+}
+.card-text__word-container {
+  position: relative;
+  height: 40px;
 }
 </style>
