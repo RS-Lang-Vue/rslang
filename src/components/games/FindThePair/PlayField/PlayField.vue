@@ -1,17 +1,15 @@
 <template>
-  <div class="mb-5">
-    <v-card
-      class="playing-field"
-      flat
-      elevation="8"
-      :style="
-        bgField
-          ? {
-              background: `url(${bgField}) center/cover no-repeat rgba(0,0,0,0.2)`,
-            }
-          : { background: `rgba(0, 0, 0, 0.2)` }
-      "
-    >
+  <div
+    class="field-wrap mb-5"
+    :style="
+      bgField
+        ? {
+            background: `url(${bgField}) center/cover no-repeat rgba(0,0,0,0.2)`,
+          }
+        : { background: `rgba(0, 0, 0, 0.2)` }
+    "
+  >
+    <v-card class="playing-field" flat elevation="8">
       <Card
         v-for="(card, index) of cardsArray"
         :key="index"
@@ -105,18 +103,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.playing-field {
-  display: flex !important;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  height: 213px !important;
+.field-wrap {
   background-blend-mode: multiply;
+  overflow: hidden;
 
   transition: background 0.7s ease;
+}
+.playing-field {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 2px;
+  height: 213px !important;
+  background: transparent;
   @media (min-width: 375px) {
     height: 250px !important;
   }
   @media (min-width: 600px) {
+    grid-gap: 4px;
     height: 400px !important;
   }
   @media (min-width: 735px) {

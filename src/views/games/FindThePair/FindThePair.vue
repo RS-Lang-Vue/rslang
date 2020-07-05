@@ -25,7 +25,6 @@ export default {
   top: 0;
   left: 0;
   background-color: #193c6d;
-  /* background-image: linear-gradient(135deg, #003073, #029797); */
   background-image: url(https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg);
   background-size: cover;
   background-repeat: no-repeat;

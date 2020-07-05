@@ -3,7 +3,7 @@
     v-model="flip"
     class="card"
     width="auto"
-    height="19.9%"
+    height="auto"
     style="background-color: transparent;"
     :class="{ invisible: deletedCard }"
   >
@@ -29,7 +29,7 @@
         width="auto"
         max-height="100%"
       ></v-img>
-      <span v-else>{{ card.word }}</span>
+      <span v-else class="text-caption text-sm-body-1">{{ card.word }}</span>
     </template>
   </vue-flip>
 </template>
@@ -115,7 +115,6 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  flex-basis: 24.9%;
   cursor: pointer;
 }
 </style>
