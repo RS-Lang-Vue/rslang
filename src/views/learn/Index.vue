@@ -74,7 +74,7 @@
             </v-btn>
             <v-card-text class="text-body-1">
               <p class="text-body-1 mb-2">
-                <span v-html="wordObject.textMeaning"></span>
+                <span v-html="textMeaning"></span>
               </p>
               <p v-if="isTranslateNow" class="text-body-2 mb-0">
                 {{ wordObject.textMeaningTranslate }}
@@ -90,7 +90,7 @@
               <v-icon @click="audio.play(wordObject.audioExample)">mdi-volume-high</v-icon>
             </v-btn>
             <v-card-text class="text-body-1">
-              <p class="text-body-1 mb-2"><span v-html="wordObject.textExample"></span></p>
+              <p class="text-body-1 mb-2"><span v-html="textExample"></span></p>
               <p v-if="isTranslateNow" class="text-body-2 mb-0">
                 {{ wordObject.textExampleTranslate }}
               </p>
@@ -189,7 +189,10 @@ export default {
     inputValue: "",
     isCardStudied: false,
     isRightWord: false,
+    currentErrorWordHtml: "",
+    isErrorWord: false,
   }),
+
   computed: {
     currentWord() {
       return wordsArray[this.step].word;
@@ -203,17 +206,36 @@ export default {
     isTranslateNow() {
       return this.isCardStudied && this.isTranslateState;
     },
+    textMeaning() {
+      let text = this.wordsArray[this.step].textMeaning;
+      const regex = /<i>\w+<\/i>/;
+      if (!this.isCardStudied) {
+        text = text.replace(regex, " ... ");
+      }
+      return text;
+    },
+    textExample() {
+      let text = this.wordsArray[this.step].textExample;
+      const regex = /<b>\w+<\/b>/;
+      if (!this.isCardStudied) {
+        text = text.replace(regex, " ... ");
+      }
+      return text;
+    },
   },
+
   mounted() {
     this.audio = new AudioPlayer();
     this.autoAudioPlayWord();
   },
+
   watch: {
     step: function steps() {
       this.autoAudioPlayWord();
       this.clear();
     },
   },
+
   methods: {
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
@@ -238,18 +260,40 @@ export default {
       this.isRightWord = true;
     },
 
+    handleErrorWord(inputWord) {
+      this.isErrorWord = true;
+      const charsArrayCurrentWord = this.currentWord.split("");
+      const charsArrayInputWord = inputWord.split("");
+      let countError = 0;
+      const checkArray = charsArrayCurrentWord.map((char, index) => {
+        if (charsArrayInputWord[index] && charsArrayInputWord[index] === char) return true;
+        countError += 1;
+        return false;
+      });
+
+      console.log(this.currentWord, inputWord, checkArray);
+      // this.currentErrorWordHtml = "";
+      // TODO >>> here !!!
+      return countError;
+    },
     checkWord() {
       console.log("inputValue >>> ", this.inputValue);
-      const isState = !!this.inputValue;
-      if (isState) {
-        this.playAllAudio();
-        if (this.inputValue.trim() === this.currentWord) {
+      const isNotEmpty = !!this.inputValue;
+      if (isNotEmpty) {
+        const inputWord = this.inputValue.trim();
+        if (inputWord === this.currentWord) {
+          this.audio.play(wordsArray[this.step].audio);
           this.isCardStudied = true;
           this.displayWordRight();
-          // todo show this.currentWord by green for input
-          setTimeout(this.nextStep, 5000);
+          // todo set raiting word
+          setTimeout(this.nextStep, 3000);
         } else {
-          // todo show currentWord whith misstake by red for input
+          this.playAllAudio();
+          const countError = this.handleErrorWord(inputWord);
+          console.log("countError >>> ", countError);
+
+          // todo set focus on input
+          // todo set raiting word
         }
       }
     },
@@ -262,7 +306,7 @@ export default {
 
     nextStep() {
       this.clear();
-      this.step += 1;
+      if (this.step < wordsArray.length) this.step += 1;
     },
   },
 };
@@ -295,6 +339,6 @@ export default {
 }
 
 .theme--light.v-input.word-right input {
-  color: green !important;
+  color: green;
 }
 </style>

@@ -10,14 +10,16 @@ export default class AudioPlayer {
   }
 
   play(url) {
+    if (this._isAudioActive) this.stop();
     this.player.src = `${config.audioBaseUrl}${url}`;
     this._isAudioActive = true;
     this.player.play();
+    this._isAudioActive = false;
   }
 
   stop() {
-    this.player.pause();
-    this.player.currentTime = 0;
+    this.player.load();
+    this.player.src = "";
   }
 
   get isAudioActive() {
@@ -26,7 +28,7 @@ export default class AudioPlayer {
 
   playAudioSequence(arraySrcAudio) {
     const sounds = arraySrcAudio;
-    if (sounds.length > 0 && !this._isAudioActive) {
+    if (sounds.length > 0) {
       // todo interact play audio Sequence
       this.play(sounds[0]);
       sounds.shift();
