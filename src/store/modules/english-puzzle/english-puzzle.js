@@ -19,7 +19,7 @@ export default {
         speakAuto: true,
       },
     },
-    isUserChangedRound: false,
+    isUserChangedRoundEP: false,
     sourceCards: [],
     resultsCards: [],
   },
@@ -28,7 +28,7 @@ export default {
       state.settingsEP = options;
     },
     updateIsUserChangedRoundEP(state, value) {
-      state.isUserChangedRound = value;
+      state.isUserChangedRoundEP = value;
     },
     updateSourceCardsEP(state, value) {
       state.sourceCards = value;
@@ -84,7 +84,7 @@ export default {
       return state.settingsEP;
     },
     getIsUserChangedRoundEP(state) {
-      return state.isUserChangedRound;
+      return state.isUserChangedRoundEP;
     },
     getSourceCardsEP(state) {
       return state.sourceCards;

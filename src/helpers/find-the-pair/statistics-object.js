@@ -2,6 +2,7 @@ class RoundResults {
   constructor() {
     this._success = [];
     this._out = [];
+    this._time = "";
   }
 
   get success() {
@@ -20,10 +21,19 @@ class RoundResults {
     this._out.push(value);
   }
 
+  get time() {
+    return this._time;
+  }
+
+  set time(value) {
+    this._time = value;
+  }
+
   getWordsId() {
     return {
       success: this.success.map((item) => item.id),
       out: this.out.map((item) => item.id),
+      time: this.time,
     };
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialogControl" max-width="290">
     <v-card align="center" justify="center">
-      <v-card-title>Level</v-card-title>
+      <v-card-title>Уровень</v-card-title>
       <v-slider
         v-model="group"
         class="align-center ma-5 mb-0"
@@ -14,7 +14,7 @@
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
-      <v-card-title>Round</v-card-title>
+      <v-card-title>Раунд</v-card-title>
       <v-slider
         v-model="round"
         class="align-center ma-5 mb-0"
@@ -27,6 +27,20 @@
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
+      <v-card-title>Сложность игры</v-card-title>
+      <v-slider
+        v-model="complexity"
+        class="align-center ma-5 mt-0"
+        color="primary"
+        :max="2"
+        :min="0"
+        hide-details
+        :tick-labels="setOfDifficulties"
+        tick-size="4"
+      >
+      </v-slider>
+      <v-card-title>Подсказки</v-card-title>
+      <v-switch v-model="audio" class="ma-2" color="primary" label="Произношение"></v-switch>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="closeSettings">Close</v-btn>
@@ -44,6 +58,11 @@ export default {
       type: Boolean,
       required: true,
     },
+  },
+  data() {
+    return {
+      setOfDifficulties: ["easy", "midi", "hard"],
+    };
   },
   computed: {
     ...mapGetters(["getSettingsFP"]),
@@ -67,6 +86,26 @@ export default {
         options.level = value;
         this.setSettingsFP(options);
         this.setIsUserChangedRoundFP(true);
+      },
+    },
+    audio: {
+      get() {
+        return this.getSettingsFP.audio;
+      },
+      set(value) {
+        const options = { ...this.getSettingsFP };
+        options.audio = value;
+        this.setSettingsFP(options);
+      },
+    },
+    complexity: {
+      get() {
+        return this.getSettingsFP.complexity;
+      },
+      set(value) {
+        const options = { ...this.getSettingsFP };
+        options.complexity = value;
+        this.setSettingsFP(options);
       },
     },
     dialogControl: {

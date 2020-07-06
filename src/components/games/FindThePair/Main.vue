@@ -23,17 +23,25 @@
       max-width="800"
       min-width="290"
     >
-      <v-card class="pa-5" color="transparent" flat>
-        <v-btn icon @click="isAutoPlay = !isAutoPlay">
-          <v-icon large v-if="isAutoPlay">mdi-volume-high</v-icon>
-          <v-icon large v-else>mdi-volume-off</v-icon>
-        </v-btn>
+      <v-card class="pt-5" color="transparent" flat>
+        <circular-count-down-timer
+          :key="timer.timerKey"
+          :initial-value="timer.time"
+          :steps="timer.time + 0.01"
+          :size="120"
+          :show-negatives="false"
+          :second-label="''"
+          :paused="timer.pause"
+          @finish="timer.finished = true"
+          ref="timer"
+        ></circular-count-down-timer>
       </v-card>
       <PlayField
         :cardsArray="cardsArray"
-        :isAutoPlay="isAutoPlay"
         :isClearGameState="isClearGameState"
         :bgField="bgField"
+        :isTimeOver="timer.finished"
+        :isInit="isInit"
         @endRound="endRound"
       />
       <RoundStatistics
@@ -50,8 +58,12 @@
       <EndGameInfo :isShowEndGameInfo="isShowFinalInfo" v-on:closeEndGameInfo="closeEndGameInfo" />
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="startRound" class="game-btn">
-          <v-icon>mdi-refresh</v-icon>
+        <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="skipRound">
+          Пропустить
+        </v-btn>
+        <v-btn color="primary" @click="startGame(!isInit)" class="game-btn">
+          <span v-if="isInit">Старт</span>
+          <v-icon v-else>mdi-refresh</v-icon>
         </v-btn>
         <v-btn
           v-if="isEndRound"
@@ -95,10 +107,11 @@ export default {
   },
   data() {
     return {
+      GAME_TIME: [300, 240, 180],
       cardsArray: [],
       cardsText: [],
+      isInit: true,
       isShowSettings: false,
-      isAutoPlay: true,
       isEndRound: false,
       isEndGame: false,
       isShowFinalInfo: false,
@@ -107,6 +120,12 @@ export default {
       isShowGameStatistics: false,
       statisticsObject: {},
       bgField: "",
+      timer: {
+        time: 0,
+        pause: false,
+        finished: false,
+        timerKey: 0,
+      },
     };
   },
   computed: {
@@ -120,16 +139,22 @@ export default {
     isСontinueButtonAccessibility() {
       return this.isEndRound && !this.isEndGame;
     },
+    isHelpButtonAccessibility() {
+      return !this.isEndRound && !this.isInit && !this.isEndGame;
+    },
   },
   watch: {
     getIsUserChangedRoundFP() {
-      if (this.getIsUserChangedRoundFP) this.startRound();
+      if (this.getIsUserChangedRoundFP) {
+        this.setRoundData();
+        this.isInit = true;
+      }
     },
   },
   async mounted() {
     await this.downloadSettingsFP();
     this.updateStatisticsFPFromLocaleStorage();
-    this.startRound();
+    this.setRoundData();
   },
   methods: {
     ...mapActions([
@@ -138,10 +163,15 @@ export default {
       "setIsUserChangedRoundFP",
       "downloadSettingsFP",
       "setStatisticsFP",
-      "uploadSettings",
       "fetchImagesUnsplash",
+      "uploadSettings" /* удалить */,
     ]),
-    startRound() {
+    async startGame(newRound) {
+      if (newRound) this.setRoundData();
+      this.setTimer();
+      this.isInit = false;
+    },
+    setRoundData() {
       this.clearGameState();
       this.statisticsObject = new StatisticsObject();
       this.fetchWordsForRoundFP(this.getSettingsFP)
@@ -173,6 +203,7 @@ export default {
       this.isClearGameState = true;
       this.statisticsObject = {};
       this.bgField = "";
+      this.resetTimer();
       setTimeout(() => {
         this.isClearGameState = false;
       }, 0);
@@ -190,13 +221,17 @@ export default {
         options.round[options.level] += 1;
       }
       this.setSettingsFP(options);
-      this.startRound();
+      this.startGame(true);
       return true;
     },
     closeEndGameInfo() {
       this.isShowFinalInfo = false;
     },
+    skipRound() {
+      this.timer.finished = true;
+    },
     endRound(result) {
+      this.timer.pause = true;
       this.isEndRound = true;
       this.fillStatisticsObject(result);
       this.updateStatisticsFP();
@@ -210,6 +245,7 @@ export default {
           this.statisticsObject.out.push(item);
         }
       });
+      this.statisticsObject.time -= this.$refs.timer.value;
     },
     updateStatisticsFP() {
       const statisticsItem = new StatisticsItem(
@@ -234,6 +270,19 @@ export default {
         .catch(() => {
           this.bgField = "";
         });
+    },
+    setTimer() {
+      this.timer.pause = false;
+      this.timer.finished = false;
+      this.timer.time = this.GAME_TIME[this.getSettingsFP.complexity];
+      this.statisticsObject.time = this.timer.time;
+      this.timer.timerKey += 1;
+    },
+    resetTimer() {
+      this.timer.pause = false;
+      this.timer.finished = false;
+      this.timer.time = 0;
+      this.timer.timerKey += 1;
     },
     showAlert(type, title, text) {
       this.$notify({

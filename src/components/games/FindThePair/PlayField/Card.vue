@@ -35,8 +35,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import VueFlip from "vue-flip";
-import AudioControl from "@/helpers/audio-control";
 
 export default {
   components: {
@@ -45,10 +45,6 @@ export default {
   props: {
     card: {
       type: Object,
-      required: true,
-    },
-    isAutoPlay: {
-      type: Boolean,
       required: true,
     },
     flipAvailable: {
@@ -67,23 +63,21 @@ export default {
   data() {
     return {
       flip: false,
-      audio: {},
     };
+  },
+  computed: {
+    ...mapGetters(["getSettingsFP"]),
   },
   watch: {
     isShirtCard() {
-      if (this.isShirtCard) this.flip = false;
+      this.flip = this.isShirtCard;
     },
-  },
-  mounted() {
-    this.audio = new AudioControl();
   },
   methods: {
     handleClick(card) {
       if (this.flipAvailable && !this.flip) {
-        if (this.isAutoPlay) {
-          this.audio.stop();
-          this.audio.play(card.audio);
+        if (this.getSettingsFP.audio) {
+          this.$emit("playAudio", card.audio);
         }
         this.flip = true;
         this.$emit("checkCards", card.id);
@@ -94,12 +88,16 @@ export default {
 </script>
 
 <style lang="scss">
+.card {
+  opacity: 1 !important;
+}
 .front {
   width: 100%;
   height: 100%;
   background-image: url("../../../../assets/images/pattern.png");
   background-repeat: repeat;
   background-position: center;
+  cursor: pointer;
 }
 .back {
   display: flex;
@@ -110,11 +108,5 @@ export default {
   color: white;
   width: 100%;
   height: 100%;
-}
-</style>
-
-<style lang="scss" scoped>
-.card {
-  cursor: pointer;
 }
 </style>

@@ -14,6 +14,8 @@ export default {
       round: [0, 0, 0, 0, 0, 0],
       roundsInLevelCount: 59,
       levelCount: 5,
+      audio: true,
+      complexity: 0,
     },
     isUserChangedRoundFP: false,
   },

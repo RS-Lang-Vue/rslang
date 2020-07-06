@@ -33,6 +33,8 @@
                     <span class="red--text">"Не открытые"</span>
                     :
                     <span class="red--text">{{ outCount(item) }}</span>
+                    ,
+                    <div>Время игры: {{ item.results.time }}</div>
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
@@ -122,6 +124,7 @@ export default {
     },
     setValuesRoundStatistics(results) {
       this.setLoading(true);
+      this.roundResults.time = results.time;
       Promise.all(results.success.map((item) => this.fetchWordByIdFP(item)))
         .then((success) => {
           success.forEach((el) => {

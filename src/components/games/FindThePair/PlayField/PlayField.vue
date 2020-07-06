@@ -9,16 +9,16 @@
         : { background: `rgba(0, 0, 0, 0.2)` }
     "
   >
-    <v-card class="playing-field" flat elevation="8">
+    <v-card class="playing-field" flat elevation="8" :disabled="isInit">
       <Card
         v-for="(card, index) of cardsArray"
         :key="index"
         :card="card"
-        :isAutoPlay="isAutoPlay"
         :isShirtCard="isShirtCard"
         :flipAvailable="flipAvailable"
         :deletedCard="deletedCard(card.id)"
         v-on:checkCards="checkCards"
+        v-on:playAudio="playAudio"
       />
     </v-card>
   </div>
@@ -26,6 +26,7 @@
 
 <script>
 import Card from "@/components/games/FindThePair/PlayField/Card.vue";
+import AudioControl from "@/helpers/audio-control";
 
 export default {
   components: {
@@ -36,15 +37,19 @@ export default {
       type: Array,
       required: true,
     },
-    isAutoPlay: {
-      type: Boolean,
-      required: true,
-    },
     bgField: {
       type: String,
       required: true,
     },
     isClearGameState: {
+      type: Boolean,
+      required: true,
+    },
+    isTimeOver: {
+      type: Boolean,
+      required: true,
+    },
+    isInit: {
       type: Boolean,
       required: true,
     },
@@ -55,6 +60,7 @@ export default {
       guessedСards: [],
       stack: [],
       isShirtCard: false,
+      audio: {},
     };
   },
   computed: {
@@ -69,6 +75,12 @@ export default {
     isClearGameState() {
       if (this.isClearGameState) this.clearGameState();
     },
+    isTimeOver() {
+      if (this.isTimeOver) this.finishGame();
+    },
+  },
+  mounted() {
+    this.audio = new AudioControl();
   },
   methods: {
     checkCards(id) {
@@ -78,7 +90,7 @@ export default {
         setTimeout(() => {
           if (this.stack[0] === this.stack[1]) {
             this.guessedСards.push(id);
-            if (this.isEndRound) this.$emit("endRound", this.guessedСards);
+            if (this.isEndRound) this.finishGame();
           } else {
             this.isShirtCard = true;
             setTimeout(() => {
@@ -93,10 +105,20 @@ export default {
     deletedCard(id) {
       return this.guessedСards.includes(id);
     },
+    finishGame() {
+      this.isShirtCard = false;
+      setTimeout(() => {
+        this.isShirtCard = true;
+      }, 0);
+      this.$emit("endRound", this.guessedСards);
+    },
     clearGameState() {
       this.guessedСards = [];
       this.stack = [];
       this.flippedСardsCount = 0;
+    },
+    playAudio(value) {
+      this.audio.play(value);
     },
   },
 };

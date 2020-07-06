@@ -2,9 +2,10 @@
   <v-dialog v-model="dialogControl" scrollable max-width="400">
     <v-card justify="center">
       <v-card-title>Результат раунда</v-card-title>
-      <v-card-subtitle
+      <v-card-subtitle class="pb-1"
         ><span class="green--text">Открытые: {{ arraySuccessLength() }}</span> /
         <span class="red--text">Не открытые: {{ arrayOutLength() }}</span>
+        <div>Пройден за: {{ statisticsObject.time }} сек.</div>
       </v-card-subtitle>
       <v-card-text style="max-height: 500px;" class="px-1 px-sm-6">
         <v-list two-line subheader>
@@ -49,12 +50,15 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title class="wrap">
-                {{ card.textExample | removeTags }}
+                {{ card.word }}
               </v-list-item-title>
               <v-list-item-subtitle class="wrap">
-                {{ card.textExampleTranslate }}
+                {{ card.wordTranslate }}
               </v-list-item-subtitle>
             </v-list-item-content>
+            <v-list-item-avatar rounded="0" height="50px" width="75px">
+              <v-img :src="card.image"></v-img>
+            </v-list-item-avatar>
           </v-list-item>
         </v-list>
       </v-card-text>
