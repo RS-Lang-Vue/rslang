@@ -4,5 +4,6 @@ export default [
   {
     path: "",
     component: Index,
+    meta: { title: "Словарная тренировка" },
   },
 ];
