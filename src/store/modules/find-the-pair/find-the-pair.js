@@ -32,10 +32,17 @@ export default {
       commit("updateSettingsFP", options);
       dispatch("setUserSettingsEpRootState", options);
     },
-    async downloadSettingsFP({ commit, dispatch, rootState }) {
+    async downloadSettingsFP({ state, commit, dispatch, rootState }) {
       await dispatch("downloadSettings");
       const { optional } = rootState.userSettings;
-      commit("updateSettingsFP", optional.gameOwnGame);
+      const optionalKeys = Object.keys(state.settingsFP).sort();
+      let match = true;
+      Object.keys(optional.gameOwnGame)
+        .sort()
+        .forEach((item, index) => {
+          if (item !== optionalKeys[index]) match = false;
+        });
+      if (match) commit("updateSettingsFP", optional.gameOwnGame);
     },
     setUserSettingsEpRootState({ commit, dispatch, rootState }, options) {
       const { userSettings } = rootState;
