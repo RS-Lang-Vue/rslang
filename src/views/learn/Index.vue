@@ -37,8 +37,9 @@
                     <v-text-field
                       v-model.lazy="inputValue"
                       @keyup.enter="checkWord"
+                      :class="{ 'word-right': isRightWord }"
                       class="card-text__word-element text-sm-h4 text-h5 ma-0 pa-0"
-                      style="top: 0; opacity: 0.7;"
+                      style="top: 0; opacity: 0.7; color: red;"
                       background-color="teal lighten-5"
                       :height="40"
                       :size="wordObject.word.length"
@@ -174,7 +175,7 @@
 
 <script>
 import AudioPlayer from "@/helpers/learn/AudioPlayer";
-import playAudioSequence from "@/helpers/learn/audioUtils";
+// import playAudioSequence from "@/helpers/learn/audioUtils";
 import config from "@/config/config";
 import wordsArray from "./learnObjects/wordsArray";
 
@@ -187,6 +188,7 @@ export default {
     nameRules: [(v) => !!v || "Введите слово"],
     inputValue: "",
     isCardStudied: false,
+    isRightWord: false,
   }),
   computed: {
     currentWord() {
@@ -227,27 +229,35 @@ export default {
         if (this.learnSettingsToggles.textExample.state) {
           srcArray.push(wordsArray[this.step].audioExample);
         }
-        playAudioSequence(srcArray);
-        // todo  add wait play all audios
+        this.audio.playAudioSequence(srcArray);
+        // todo interact play audio Sequence
       }
     },
+
+    displayWordRight() {
+      this.isRightWord = true;
+    },
+
     checkWord() {
       console.log("inputValue >>> ", this.inputValue);
       const isState = !!this.inputValue;
       if (isState) {
-        this.isCardStudied = true;
         this.playAllAudio();
         if (this.inputValue.trim() === this.currentWord) {
+          this.isCardStudied = true;
+          this.displayWordRight();
           // todo show this.currentWord by green for input
-          setTimeout(this.nextStep, 3000);
+          setTimeout(this.nextStep, 5000);
         } else {
           // todo show currentWord whith misstake by red for input
         }
       }
     },
+
     clear() {
       this.inputValue = "";
       this.isCardStudied = false;
+      this.isRightWord = false;
     },
 
     nextStep() {
@@ -282,5 +292,9 @@ export default {
 .card-text__word-container {
   position: relative;
   height: 40px;
+}
+
+.theme--light.v-input.word-right input {
+  color: green !important;
 }
 </style>

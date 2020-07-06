@@ -1,3 +1,5 @@
+// May need to be deleted
+
 import config from "@/config/config";
 
 const playAudioSequence = (arraySrcAudio) => {
