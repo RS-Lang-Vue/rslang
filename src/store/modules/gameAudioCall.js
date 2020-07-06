@@ -40,7 +40,14 @@ export default {
     },
   },
   getters: {
-    GET_WORDS: (state) => state.words,
+    GET_WORDS: (state) =>
+      state.words.map((el) => ({
+        ...el,
+        image: config.dataBaseUrl + el.image,
+        audio: config.dataBaseUrl + el.audio,
+        audioMeaning: config.dataBaseUrl + el.audioMeaning,
+        audioExample: config.dataBaseUrl + el.audioExample,
+      })),
     GET_IS_AUDIO_CALL_STARTED: (state) => state.isGameStarted,
     GET_AUDIO_CALL_GONE_LEVEL: (state) => state.audioCallGoneLevel,
     GET_AUDIO_CALL_WORD_PAGE: (state) => state.audioCallWordPage,
