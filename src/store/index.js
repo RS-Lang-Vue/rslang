@@ -10,6 +10,8 @@ import wordHelper from "./modules/word-helper";
 
 import englishPuzzle from "./modules/english-puzzle/english-puzzle";
 
+import savannah from "./modules/savannah/savannah";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -21,5 +23,6 @@ export default new Vuex.Store({
     englishPuzzle,
     apiService,
     wordHelper,
+    savannah,
   },
 });
