@@ -78,6 +78,7 @@ export default {
           },
         }
       );
+
       if (res.ok) {
         const userSettings = await res.json();
         if (
@@ -88,6 +89,8 @@ export default {
         } else {
           this.dispatch("uploadSettings");
         }
+      } else if (res.status === 404) {
+        this.dispatch("uploadSettings");
       }
     },
     setGameSetting({ commit }, { gameName, gameSettings }) {
@@ -103,5 +106,9 @@ export default {
       state.optional[gameName] = gameSettings;
     },
   },
-  getters: {},
+  getters: {
+    getSavannahSettings(state) {
+      return state.optional.gameSavannah;
+    },
+  },
 };

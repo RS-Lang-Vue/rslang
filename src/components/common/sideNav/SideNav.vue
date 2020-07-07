@@ -37,7 +37,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="indigo" dark>
+    <v-app-bar app collapse-on-scroll color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>RS Lang{{ title }}</v-toolbar-title>
     </v-app-bar>
@@ -63,7 +63,7 @@ const drawerGroups = [
       icon: "mdi-nintendo-game-boy",
       title: 'Игра "English puzzle"',
     },
-    { link: "/games/savana", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
+    { link: "/games/savannah", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
     { link: "/games/audio-call", icon: "mdi-nintendo-game-boy", title: 'Игра "Аудиовызов"' },
     { link: "/games/sprint", icon: "mdi-nintendo-game-boy", title: 'Игра "Спринт"' },
     { link: "/games/our-game", icon: "mdi-nintendo-game-boy", title: 'Игра "Своя игра"' },

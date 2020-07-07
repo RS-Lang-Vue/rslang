@@ -15,6 +15,7 @@ export default {
         userWord = {
           difficulty: "hard",
           optional: {
+            correctAnswer: 0,
             repeatCount: 0,
             lastDate: 0,
             repeatDate: 0,
@@ -25,6 +26,7 @@ export default {
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
       userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
+      if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         // показать ошибку пользователю res.error
@@ -33,14 +35,13 @@ export default {
       return res;
     },
     async getLearnedWordsSortByRepeatDate(ctx, { count = undefined }) {
-      const res = this.dispatch("getUserAggregateWords", { onlyLearned: true });
+      const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true });
       if (!res.success) {
         // показать ошибку пользователю res.error
         return res;
       }
-      let learnedWords = [...res.result];
-      learnedWords.result.sort((a, b) => {
-        return a.UserWord.optional.repeatDate - b.UserWord.optional.repeatDate;
+      let learnedWords = [...res.result].sort((a, b) => {
+        return a.userWord.optional.repeatDate - b.userWord.optional.repeatDate;
       });
       if (count !== undefined) {
         learnedWords = learnedWords.splice(0, count);

@@ -31,4 +31,10 @@ export default {
 .main-layout {
   flex-grow: 2;
 }
+.fill-height {
+  padding: 0;
+}
+.text-center {
+  padding: 0;
+}
 </style>

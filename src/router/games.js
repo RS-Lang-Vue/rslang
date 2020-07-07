@@ -2,7 +2,7 @@ import Index from "@/views/games/Index.vue";
 import SpeakIt from "@/views/games/SpeakIt.vue";
 import StartEnglishPuzzle from "@/views/games/EnglishPuzzle/Start.vue";
 import EnglishPuzzle from "@/views/games/EnglishPuzzle/EnglishPuzzle.vue";
-import Savana from "@/views/games/Savana.vue";
+import Savannah from "@/views/games/Savannah.vue";
 import AudioCall from "@/views/games/AudioCall.vue";
 import Sprint from "@/views/games/Sprint.vue";
 import OurGame from "@/views/games/OurGame.vue";
@@ -28,8 +28,8 @@ export default [
     meta: { title: 'Игра "English puzzle"' },
   },
   {
-    path: "savana",
-    component: Savana,
+    path: "savannah",
+    component: Savannah,
     meta: { title: 'Игра "Саванна"' },
   },
   {
