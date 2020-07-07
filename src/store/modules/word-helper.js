@@ -15,6 +15,7 @@ export default {
         userWord = {
           difficulty: "hard",
           optional: {
+            correctAnswer: 0,
             repeatCount: 0,
             lastDate: 0,
             repeatDate: 0,
@@ -25,6 +26,7 @@ export default {
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
       userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
+      if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         // показать ошибку пользователю res.error
