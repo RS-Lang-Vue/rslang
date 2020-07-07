@@ -41,6 +41,7 @@ export default {
           Accept: "application/json",
         },
       });
+
       switch (res.status) {
         case 200:
           return new UniResponse(true, await res.json());

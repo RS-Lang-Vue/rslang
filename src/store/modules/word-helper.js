@@ -33,14 +33,13 @@ export default {
       return res;
     },
     async getLearnedWordsSortByRepeatDate(ctx, { count = undefined }) {
-      const res = this.dispatch("getUserAggregateWords", { onlyLearned: true });
+      const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true });
       if (!res.success) {
         // показать ошибку пользователю res.error
         return res;
       }
-      let learnedWords = [...res.result];
-      learnedWords.result.sort((a, b) => {
-        return a.UserWord.optional.repeatDate - b.UserWord.optional.repeatDate;
+      let learnedWords = [...res.result].sort((a, b) => {
+        return a.userWord.optional.repeatDate - b.userWord.optional.repeatDate;
       });
       if (count !== undefined) {
         learnedWords = learnedWords.splice(0, count);

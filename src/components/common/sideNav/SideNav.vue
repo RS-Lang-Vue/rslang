@@ -63,7 +63,7 @@ const drawerGroups = [
       icon: "mdi-nintendo-game-boy",
       title: 'Игра "English puzzle"',
     },
-    { link: "/games/savana", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
+    { link: "/games/savannah", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
     { link: "/games/audio-call", icon: "mdi-nintendo-game-boy", title: 'Игра "Аудиовызов"' },
     { link: "/games/sprint", icon: "mdi-nintendo-game-boy", title: 'Игра "Спринт"' },
     { link: "/games/our-game", icon: "mdi-nintendo-game-boy", title: 'Игра "Своя игра"' },
