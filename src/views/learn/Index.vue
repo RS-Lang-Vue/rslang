@@ -29,17 +29,15 @@
               </v-btn>
               <v-card-text>
                 <div class="card-text__word pb-2">
-                  <div
-                    class="card-text__word-container text-sm-h4 text-h5 mb-3"
-                    style="color: rgba(0, 0, 0, 0.4); user-select: none;"
-                  >
-                    {{ wordObject.word }}
+                  <div class="card-text__word-container text-sm-h4 text-h5 mb-3">
+                    <div class="card-text__word-element" v-html="currentErrorWordHtml"></div>
+                    {{ currentWord }}
                     <v-text-field
                       v-model.lazy="inputValue"
                       @keyup.enter="checkWord"
-                      :class="{ 'word-right': isRightWord }"
-                      class="card-text__word-element text-sm-h4 text-h5 ma-0 pa-0"
-                      style="top: 0; opacity: 0.7; color: red;"
+                      @input="inputField"
+                      :class="{ 'word-right': isRightWord, opacity: isIntutOpacity }"
+                      class="text-field card-text__word-element text-sm-h4 text-h5 ma-0 pa-0"
                       background-color="teal lighten-5"
                       :height="40"
                       :size="wordObject.word.length"
@@ -49,6 +47,7 @@
                     ></v-text-field>
                   </div>
                 </div>
+
                 <p
                   v-if="learnSettingsToggles.transcription.state && isTranslateNow"
                   class="text-body-1"
@@ -143,33 +142,35 @@
       ></v-progress-linear>
     </v-card>
 
-    <p class="text-h5 text-center mt-8">Оцените сложность слова</p>
-    <div class="d-flex justify-center flex-wrap text-center">
-      <div class="d-flex flex-column mb-2">
-        <v-icon large color="teal darken-4">mdi-repeat</v-icon>
-        <v-btn class="ma-1" text color="teal accent-4">
-          Снова
-        </v-btn>
+    <v-card class="evaluation-contaner mx-auto text-center" max-width="500">
+      <p class="text-h5 text-center mt-8">Оцените сложность слова</p>
+      <div class="d-flex justify-center flex-wrap text-center">
+        <div class="d-flex flex-column mb-2">
+          <v-icon large color="teal darken-4">mdi-repeat</v-icon>
+          <v-btn class="ma-1" text color="teal accent-4">
+            Снова
+          </v-btn>
+        </div>
+        <div class="d-flex flex-column">
+          <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
+          <v-btn class="ma-1" text color="deep-purple accent-4">
+            Трудно
+          </v-btn>
+        </div>
+        <div class="d-flex flex-column">
+          <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
+          <v-btn class="ma-1" text color="green accent-4">
+            Хорошо
+          </v-btn>
+        </div>
+        <div class="d-flex flex-column">
+          <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
+          <v-btn class="ma-1" text color="light-blue accent-4">
+            Легко
+          </v-btn>
+        </div>
       </div>
-      <div class="d-flex flex-column">
-        <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
-        <v-btn class="ma-1" text color="deep-purple accent-4">
-          Трудно
-        </v-btn>
-      </div>
-      <div class="d-flex flex-column">
-        <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
-        <v-btn class="ma-1" text color="green accent-4">
-          Хорошо
-        </v-btn>
-      </div>
-      <div class="d-flex flex-column">
-        <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
-        <v-btn class="ma-1" text color="light-blue accent-4">
-          Легко
-        </v-btn>
-      </div>
-    </div>
+    </v-card>
   </div>
 </template>
 
@@ -191,6 +192,7 @@ export default {
     isRightWord: false,
     currentErrorWordHtml: "",
     isErrorWord: false,
+    isIntutOpacity: false,
   }),
 
   computed: {
@@ -260,6 +262,13 @@ export default {
       this.isRightWord = true;
     },
 
+    inputField() {
+      if (this.inputValue) {
+        this.isIntutOpacity = false;
+        // this.currentErrorWordHtml = "";
+      }
+    },
+
     handleErrorWord(inputWord) {
       this.isErrorWord = true;
       const charsArrayCurrentWord = this.currentWord.split("");
@@ -271,8 +280,21 @@ export default {
         return false;
       });
 
-      console.log(this.currentWord, inputWord, checkArray);
-      // this.currentErrorWordHtml = "";
+      let errorCharColor = "red";
+      const rightCharColor = "green";
+      if (countError < 3) errorCharColor = "orange";
+
+      const tagArray = charsArrayCurrentWord.reduce((newArray, char, index) => {
+        let colorChar = errorCharColor;
+        if (checkArray[index]) colorChar = rightCharColor;
+        const tagSpanString = `<span style="color:${colorChar}">${char}</span>`;
+        newArray.push(tagSpanString);
+        return newArray;
+      }, []);
+
+      this.inputValue = "";
+      this.currentErrorWordHtml = tagArray.join("");
+      this.isIntutOpacity = true;
       // TODO >>> here !!!
       return countError;
     },
@@ -302,6 +324,8 @@ export default {
       this.inputValue = "";
       this.isCardStudied = false;
       this.isRightWord = false;
+      this.currentErrorWordHtml = "";
+      this.isIntutOpacity = false;
     },
 
     nextStep() {
@@ -332,13 +356,25 @@ export default {
 
 .card-text__word-element {
   position: absolute;
+  top: 0;
 }
 .card-text__word-container {
   position: relative;
   height: 40px;
+  color: rgba(0, 0, 0, 0.2);
+  user-select: none;
 }
 
 .theme--light.v-input.word-right input {
   color: green;
+}
+
+.text-field {
+  transition: opacity 1s;
+  opacity: 1;
+}
+
+.opacity {
+  opacity: 0.35;
 }
 </style>
