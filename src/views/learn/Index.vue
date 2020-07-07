@@ -5,7 +5,6 @@
         <div class="dots">
           <span v-for="n in 5" :key="n" class="dot"></span>
         </div>
-
         <span class="white--text">новое слово</span>
 
         <v-spacer></v-spacer>
@@ -35,7 +34,7 @@
                     <v-text-field
                       v-model.lazy="inputValue"
                       @keyup.enter="checkWord"
-                      @input="inputField"
+                      @input="setInputFieldOpacity"
                       :class="{ 'word-right': isRightWord, opacity: isIntutOpacity }"
                       class="text-field card-text__word-element text-sm-h4 text-h5 ma-0 pa-0"
                       background-color="teal lighten-5"
@@ -48,10 +47,7 @@
                   </div>
                 </div>
 
-                <p
-                  v-if="learnSettingsToggles.transcription.state && isTranslateNow"
-                  class="text-body-1"
-                >
+                <p v-if="learnSettingsToggles.transcription.state" class="text-body-1">
                   {{ wordObject.transcription }}
                 </p>
                 <div v-if="isTranslateNow" class="text-subtitle-1">
@@ -111,6 +107,7 @@
         </v-btn>
         <v-btn
           v-if="learnSettingsToggles.difficultButton.state"
+          @click="showAnswer"
           text
           color="indigo accent-4"
           title="Показать правильные ответ"
@@ -142,35 +139,47 @@
       ></v-progress-linear>
     </v-card>
 
-    <v-card class="evaluation-contaner mx-auto text-center" max-width="500">
-      <p class="text-h5 text-center mt-8">Оцените сложность слова</p>
-      <div class="d-flex justify-center flex-wrap text-center">
-        <div class="d-flex flex-column mb-2">
-          <v-icon large color="teal darken-4">mdi-repeat</v-icon>
-          <v-btn class="ma-1" text color="teal accent-4">
-            Снова
-          </v-btn>
+    <v-bottom-sheet v-model="isShowEvaluation">
+      <v-sheet class="text-center" height="300px">
+        <v-btn class="mt-4" text color="red" @click="isShowEvaluation = !isShowEvaluation"
+          >close</v-btn
+        >
+        <div class="py-3">
+          <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
+          <div class="d-flex justify-center flex-wrap text-center">
+            <div>
+              <v-btn class="d-flex flex-column mb-2 ma-1" text color="teal accent-4">
+                <v-icon large color="teal darken-4">mdi-repeat</v-icon>
+                <p>
+                  Снова
+                </p>
+              </v-btn>
+            </div>
+            <div class="d-flex flex-column">
+              <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
+              <v-btn class="ma-1" text color="deep-purple accent-4">
+                Трудно
+              </v-btn>
+            </div>
+            <div class="d-flex flex-column">
+              <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
+              <v-btn class="ma-1" text color="green accent-4">
+                Хорошо
+              </v-btn>
+            </div>
+            <div class="d-flex flex-column">
+              <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
+              <v-btn class="ma-1" text color="light-blue accent-4">
+                Легко
+              </v-btn>
+            </div>
+          </div>
         </div>
-        <div class="d-flex flex-column">
-          <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
-          <v-btn class="ma-1" text color="deep-purple accent-4">
-            Трудно
-          </v-btn>
-        </div>
-        <div class="d-flex flex-column">
-          <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
-          <v-btn class="ma-1" text color="green accent-4">
-            Хорошо
-          </v-btn>
-        </div>
-        <div class="d-flex flex-column">
-          <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
-          <v-btn class="ma-1" text color="light-blue accent-4">
-            Легко
-          </v-btn>
-        </div>
-      </div>
-    </v-card>
+      </v-sheet>
+    </v-bottom-sheet>
+
+    <!-- <v-card v-if="isShowEvaluation" class="evaluation-contaner mx-auto text-center" max-width="500">
+    </v-card> -->
   </div>
 </template>
 
@@ -193,6 +202,7 @@ export default {
     currentErrorWordHtml: "",
     isErrorWord: false,
     isIntutOpacity: false,
+    isShowEvaluation: false,
   }),
 
   computed: {
@@ -262,11 +272,14 @@ export default {
       this.isRightWord = true;
     },
 
-    inputField() {
+    setInputFieldOpacity() {
       if (this.inputValue) {
         this.isIntutOpacity = false;
-        // this.currentErrorWordHtml = "";
       }
+    },
+
+    setEvaluation() {
+      this.isShowEvaluation = true;
     },
 
     handleErrorWord(inputWord) {
@@ -295,20 +308,31 @@ export default {
       this.inputValue = "";
       this.currentErrorWordHtml = tagArray.join("");
       this.isIntutOpacity = true;
-      // TODO >>> here !!!
       return countError;
     },
+
+    handleAnswerWord() {
+      // this.audio.play(wordsArray[this.step].audio);
+      this.playAllAudio();
+      this.isCardStudied = true;
+      this.displayWordRight();
+      setTimeout(this.nextStep, 12000);
+    },
+
+    showAnswer() {
+      this.inputValue = this.currentWord;
+      this.handleAnswerWord();
+    },
+
     checkWord() {
       console.log("inputValue >>> ", this.inputValue);
       const isNotEmpty = !!this.inputValue;
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
         if (inputWord === this.currentWord) {
-          this.audio.play(wordsArray[this.step].audio);
-          this.isCardStudied = true;
-          this.displayWordRight();
+          this.handleAnswerWord();
+          this.setEvaluation();
           // todo set raiting word
-          setTimeout(this.nextStep, 3000);
         } else {
           this.playAllAudio();
           const countError = this.handleErrorWord(inputWord);
@@ -326,11 +350,14 @@ export default {
       this.isRightWord = false;
       this.currentErrorWordHtml = "";
       this.isIntutOpacity = false;
+      this.isShowEvaluation = false;
     },
 
     nextStep() {
       this.clear();
-      if (this.step < wordsArray.length) this.step += 1;
+      console.log("nextStep >> this.step:", this.step, "wordsArray.length:", wordsArray.length);
+
+      if (this.step < wordsArray.length - 1) this.step += 1;
     },
   },
 };
