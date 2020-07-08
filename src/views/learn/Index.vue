@@ -196,7 +196,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="isShowEndLearnInfo = false">
+          <v-btn color="primary" text @click="exitLearn">
             ok
           </v-btn>
         </v-card-actions>
@@ -347,7 +347,7 @@ export default {
       this.handleAnswerWord();
       this.setEvaluation();
       // todo set raiting word
-      // setTimeout(this.nextStep, 12000);
+      setTimeout(this.nextStep, 12000);
     },
 
     checkWord() {
@@ -379,14 +379,31 @@ export default {
     showEndLearnInfo() {
       // todo show end's learn info modal window
       console.log("runing showEndLearnInfo");
-      this.showEndLearnInfo = true;
+
+      this.isShowEndLearnInfo = true;
+    },
+
+    runEndLearn() {
+      console.log("runEndLearn");
+      this.isShowEvaluation = false;
+      // todo save statistic & etc.
+      // todo update statictics and goals
+      this.showEndLearnInfo();
+    },
+
+    exitLearn() {
+      this.isShowEndLearnInfo = false;
+      this.clear();
+      this.$router.push("/home");
     },
 
     nextStep() {
-      this.clear();
       console.log("nextStep > this.step:", this.step, ", wordsArray.length:", wordsArray.length);
-      if (this.step < wordsArray.length - 1) this.step += 1;
-      else this.showEndLearnInfo();
+      if (this.step === wordsArray.length - 1) this.runEndLearn();
+      else {
+        this.clear();
+        this.step += 1;
+      }
     },
   },
 };
