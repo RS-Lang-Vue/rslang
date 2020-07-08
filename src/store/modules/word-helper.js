@@ -37,7 +37,6 @@ export default {
     async getLearnedWordsSortByRepeatDate(ctx, { count = undefined }) {
       const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true });
       if (!res.success) {
-        // показать ошибку пользователю res.error
         return res;
       }
       let learnedWords = [...res.result].sort((a, b) => {
