@@ -4,12 +4,14 @@ export default class AudioControl {
   constructor() {
     this.player = new Audio();
     this._isAudioActive = false;
+    this.tracks = [];
     this.init();
   }
 
   init() {
     this.setHandlerLoaded();
-    this.setHandlersEndAndPause();
+    this.setHandlersPause();
+    this.setHandlersEnd();
   }
 
   setHandlerLoaded() {
@@ -20,32 +22,55 @@ export default class AudioControl {
     this.player.addEventListener("loadeddata", loadded);
   }
 
-  setHandlersEndAndPause() {
+  setHandlersPause() {
     const end = () => {
       this.isAudioActive = false;
     };
-    this.player.addEventListener("ended", end);
     this.player.addEventListener("pause", end);
   }
 
+  setHandlersEnd() {
+    const end = () => {
+      if (this.tracks.length === 0) {
+        this.isAudioActive = false;
+      } else {
+        this.player.src = this.tracks.shift();
+      }
+    };
+    this.player.addEventListener("ended", end);
+  }
+
   play(url) {
+    let correctUrl = "";
     if (/^files/i.test(url)) {
-      this.player.src = `${config.dataBaseUrl}${url}`;
+      correctUrl = `${config.dataBaseUrl}${url}`;
     } else {
-      this.player.src = `data:audio/mpeg;base64,${url}`;
+      correctUrl = `data:audio/mpeg;base64,${url}`;
+    }
+    if (this.tracks.length === 0 || correctUrl !== this.tracks[this.tracks.length - 1]) {
+      this.tracks.push(correctUrl);
+    }
+
+    if (!this.isPlaying()) {
+      this.player.src = this.tracks.shift();
     }
   }
 
   stop() {
-    const isPlaying =
-      this.player.currentTime > 0 &&
-      !this.player.paused &&
-      !this.player.ended &&
-      this.player.readyState > 2;
-    if (isPlaying) {
+    if (this.isPlaying()) {
       this.player.pause();
       this.player.currentTime = 0;
     }
+    this.tracks = [];
+  }
+
+  isPlaying() {
+    return (
+      this.player.currentTime > 0 &&
+      !this.player.paused &&
+      !this.player.ended &&
+      this.player.readyState > 2
+    );
   }
 
   get isAudioActive() {

@@ -177,15 +177,11 @@
         </div>
       </v-sheet>
     </v-bottom-sheet>
-
-    <!-- <v-card v-if="isShowEvaluation" class="evaluation-contaner mx-auto text-center" max-width="500">
-    </v-card> -->
   </div>
 </template>
 
 <script>
-import AudioPlayer from "@/helpers/learn/AudioPlayer";
-// import playAudioSequence from "@/helpers/learn/audioUtils";
+import AudioControl from "@/helpers/audio-control";
 import config from "@/config/config";
 import wordsArray from "./learnObjects/wordsArray";
 
@@ -237,7 +233,7 @@ export default {
   },
 
   mounted() {
-    this.audio = new AudioPlayer();
+    this.audio = new AudioControl();
     this.autoAudioPlayWord();
   },
 
@@ -256,15 +252,14 @@ export default {
     },
     playAllAudio() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        const srcArray = [wordsArray[this.step].audio];
+        setTimeout(() => this.audio.play(wordsArray[this.step].audio), 100);
+
         if (this.learnSettingsToggles.textMeaning.state) {
-          srcArray.push(wordsArray[this.step].audioMeaning);
+          setTimeout(() => this.audio.play(wordsArray[this.step].audioMeaning), 500);
         }
         if (this.learnSettingsToggles.textExample.state) {
-          srcArray.push(wordsArray[this.step].audioExample);
+          setTimeout(() => this.audio.play(wordsArray[this.step].audioExample), 2000);
         }
-        this.audio.playAudioSequence(srcArray);
-        // todo interact play audio Sequence
       }
     },
 
@@ -312,7 +307,6 @@ export default {
     },
 
     handleAnswerWord() {
-      // this.audio.play(wordsArray[this.step].audio);
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRight();
