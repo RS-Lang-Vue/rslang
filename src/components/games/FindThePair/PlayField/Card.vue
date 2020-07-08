@@ -28,6 +28,7 @@
         height="100%"
         width="auto"
         max-height="100%"
+        style="border-radius: 4px;"
       ></v-img>
       <span v-else class="text-caption text-sm-body-1">{{ card.word }}</span>
     </template>
@@ -88,6 +89,11 @@ export default {
 </script>
 
 <style lang="scss">
+.card,
+.front,
+.back {
+  border-radius: 4px;
+}
 .card {
   opacity: 1 !important;
 }

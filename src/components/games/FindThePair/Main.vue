@@ -14,7 +14,11 @@
         </v-btn>
       </template>
     </v-speed-dial>
-    <Settings :isShowSettings="isShowSettings" v-on:closeSettings="isShowSettings = false" />
+    <Settings
+      :isShowSettings="isShowSettings"
+      v-on:closeSettings="isShowSettings = false"
+      v-on:changeLearned="changeLearned"
+    />
     <v-card
       class="game-content text-center"
       dark
@@ -56,12 +60,21 @@
         v-on:closeGameStatistics="isShowGameStatistics = false"
       />
       <EndGameInfo :isShowEndGameInfo="isShowFinalInfo" v-on:closeEndGameInfo="closeEndGameInfo" />
+      <NotEnoughWordsMessage
+        :isEnoughWords="isShowMessageNotEnoughWords"
+        v-on:closeMessage="isShowMessageNotEnoughWords = false"
+      />
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="skipRound">
-          Пропустить
+        <v-btn
+          v-if="isHelpButtonAccessibility"
+          color="primary"
+          @click="skipRound"
+          :disabled="loading"
+        >
+          Сдаться
         </v-btn>
-        <v-btn color="primary" @click="startGame(!isInit)" class="game-btn">
+        <v-btn color="primary" @click="startGame(false)" class="game-btn" :disabled="loading">
           <span v-if="isInit">Старт</span>
           <v-icon v-else>mdi-refresh</v-icon>
         </v-btn>
@@ -87,12 +100,13 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import PlayField from "@/components/games/FindThePair/PlayField/PlayField.vue";
 import Settings from "@/components/games/FindThePair/Settings.vue";
 import RoundStatistics from "@/components/games/FindThePair/RoundStatistics.vue";
 import GameStatistics from "@/components/games/FindThePair/GameStatistics.vue";
 import EndGameInfo from "@/components/games/FindThePair/EndGameInfo.vue";
+import NotEnoughWordsMessage from "@/components/games/FindThePair/NotEnoughWordsMessage.vue";
 import Card from "@/helpers/find-the-pair/card";
 import StatisticsItem from "@/helpers/find-the-pair/statistics-item";
 import StatisticsObject from "@/helpers/find-the-pair/statistics-object";
@@ -104,6 +118,7 @@ export default {
     EndGameInfo,
     RoundStatistics,
     GameStatistics,
+    NotEnoughWordsMessage,
   },
   data() {
     return {
@@ -118,6 +133,8 @@ export default {
       isClearGameState: false,
       isShowResultsRound: false,
       isShowGameStatistics: false,
+      isShowMessageNotEnoughWords: false,
+      isGameFieldUpdated: false,
       statisticsObject: {},
       bgField: "",
       timer: {
@@ -135,6 +152,7 @@ export default {
       "getIsUserChangedRoundFP",
       "getStatisticsFP",
       "getImagesUnsplash",
+      "loading",
     ]),
     isСontinueButtonAccessibility() {
       return this.isEndRound && !this.isEndGame;
@@ -164,27 +182,46 @@ export default {
       "downloadSettingsFP",
       "setStatisticsFP",
       "fetchImagesUnsplash",
-      "uploadSettings" /* удалить */,
+      "getLearnedWordsSortByRepeatDate",
+      "setLoading",
     ]),
-    async startGame(newRound) {
-      if (newRound) this.setRoundData();
+    ...mapMutations(["updateWordsForRoundFP"]),
+    async startGame(setData) {
+      if (setData) {
+        await this.setRoundData();
+      } else if (!this.isGameFieldUpdated) {
+        this.clearGameState();
+        this.placeСards();
+      }
       this.setTimer();
       this.isInit = false;
     },
-    setRoundData() {
+    async setRoundData() {
       this.clearGameState();
-      this.statisticsObject = new StatisticsObject();
-      this.fetchWordsForRoundFP(this.getSettingsFP)
-        .then(() => {
+      if (this.getSettingsFP.learned) {
+        this.setLoading(true);
+        const words = await this.getLearnedWordsSortByRepeatDate({ count: 10 });
+        if (!words.success) {
+          this.showAlert("error", "Error", words.error);
+          this.updateOptions("learned", false);
+        } else {
+          this.updateWordsForRoundFP(words.result);
           this.placeСards();
-          this.setIsUserChangedRoundFP(false);
-        })
-        .catch((err) => {
-          this.showAlert("error", "Error", err.message);
-        });
+        }
+        this.setLoading(false);
+      } else {
+        this.fetchWordsForRoundFP(this.getSettingsFP)
+          .then(() => {
+            this.placeСards();
+            this.setIsUserChangedRoundFP(false);
+          })
+          .catch((err) => {
+            this.showAlert("error", "Error", err.message);
+          });
+      }
       setTimeout(() => {
         this.setBgField();
-      }, 100);
+      }, 50);
     },
     placeСards() {
       const words = this.getWordsForRoundFP;
@@ -194,6 +231,7 @@ export default {
         this.cardsText.push(new Card(item));
       });
       this.cardsArray = [...cardsImages, ...this.cardsText].sort(() => Math.random() - 0.5);
+      this.isGameFieldUpdated = true;
     },
     clearGameState() {
       this.cardsText = [];
@@ -201,26 +239,29 @@ export default {
       this.isEndRound = false;
       this.isEndGame = false;
       this.isClearGameState = true;
-      this.statisticsObject = {};
+      this.isGameFieldUpdated = false;
+      this.statisticsObject = new StatisticsObject();
       this.bgField = "";
       this.resetTimer();
       setTimeout(() => {
         this.isClearGameState = false;
       }, 0);
     },
-    goToNextRound() {
-      const options = { ...this.getSettingsFP };
-      if (options.round[options.level] === options.roundsInLevelCount) {
-        if (options.level === options.levelCount) {
-          this.isEndGame = true;
-          this.isShowFinalInfo = true;
-          return false;
+    async goToNextRound() {
+      if (!this.getSettingsFP.learned) {
+        const options = { ...this.getSettingsFP };
+        if (options.round[options.level] === options.roundsInLevelCount) {
+          if (options.level === options.levelCount) {
+            this.isEndGame = true;
+            this.isShowFinalInfo = true;
+            return false;
+          }
+          options.level += 1;
+        } else {
+          options.round[options.level] += 1;
         }
-        options.level += 1;
-      } else {
-        options.round[options.level] += 1;
+        this.setSettingsFP(options);
       }
-      this.setSettingsFP(options);
       this.startGame(true);
       return true;
     },
@@ -248,11 +289,11 @@ export default {
       this.statisticsObject.time -= this.$refs.timer.value;
     },
     updateStatisticsFP() {
-      const statisticsItem = new StatisticsItem(
-        this.getSettingsFP.level,
-        this.getSettingsFP.round[this.getSettingsFP.level],
-        this.statisticsObject.getWordsId()
-      );
+      const lvl = this.getSettingsFP.learned ? "-" : this.getSettingsFP.level;
+      const rnd = this.getSettingsFP.learned
+        ? "-"
+        : this.getSettingsFP.round[this.getSettingsFP.level];
+      const statisticsItem = new StatisticsItem(lvl, rnd, this.statisticsObject.getWordsId());
       const statisticsArray = [...this.getStatisticsFP];
       statisticsArray.push(statisticsItem);
       this.setStatisticsFP(statisticsArray);
@@ -277,12 +318,48 @@ export default {
       this.timer.time = this.GAME_TIME[this.getSettingsFP.complexity];
       this.statisticsObject.time = this.timer.time;
       this.timer.timerKey += 1;
+      this.isGameFieldUpdated = false;
     },
     resetTimer() {
       this.timer.pause = false;
       this.timer.finished = false;
       this.timer.time = 0;
       this.timer.timerKey += 1;
+    },
+    updateOptions(option, value) {
+      const options = { ...this.getSettingsFP };
+      options[option] = value;
+      this.setSettingsFP(options);
+    },
+    changeLearned(value) {
+      if (value) {
+        this.setRepeatMode();
+      } else {
+        this.updateOptions("learned", value);
+        this.setRoundData();
+        this.isInit = true;
+      }
+    },
+    async setRepeatMode() {
+      this.setLoading(true);
+      const words = await this.getLearnedWordsSortByRepeatDate({ count: 10 });
+      if (!words.success) {
+        this.showAlert("error", "Error", words.error);
+        this.updateOptions("learned", false);
+      } else if (words.result.length < 10) {
+        this.isShowMessageNotEnoughWords = true;
+        this.updateOptions("learned", false);
+      } else {
+        this.updateOptions("learned", true);
+        this.clearGameState();
+        this.updateWordsForRoundFP(words.result);
+        this.isInit = true;
+        this.placeСards();
+        setTimeout(() => {
+          this.setBgField();
+        }, 100);
+      }
+      this.setLoading(false);
     },
     showAlert(type, title, text) {
       this.$notify({

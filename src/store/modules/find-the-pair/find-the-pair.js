@@ -16,6 +16,7 @@ export default {
       levelCount: 5,
       audio: true,
       complexity: 0,
+      learned: false,
     },
     isUserChangedRoundFP: false,
   },

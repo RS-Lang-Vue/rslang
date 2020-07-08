@@ -114,7 +114,11 @@ export default {
     },
     statisticsLineTitle(item) {
       const date = new Date(item.date).toString().replace(/(.+) (GMT.+)/i, "$1");
-      return `${date}, Уровень: ${item.level + 1}, Раунд: ${item.round + 1}`;
+      const mode =
+        item.level === "-"
+          ? "Игра по выученным словам"
+          : `${item.level + 1}, Раунд: ${item.round + 1}`;
+      return `${date}, ${mode}`;
     },
     successCount(item) {
       return item.results.success.length;

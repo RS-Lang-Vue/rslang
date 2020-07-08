@@ -1,32 +1,41 @@
 <template>
   <v-dialog v-model="dialogControl" max-width="290">
     <v-card align="center" justify="center">
-      <v-card-title>Уровень</v-card-title>
-      <v-slider
-        v-model="group"
-        class="align-center ma-5 mb-0"
+      <v-switch
+        v-model="learned"
+        class="ma-0 pt-5"
         color="primary"
-        thumb-label="always"
-        :thumb-size="24"
-        :max="getSettingsFP.levelCount"
-        :min="0"
-        hide-details
-      >
-        <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
-      </v-slider>
-      <v-card-title>Раунд</v-card-title>
-      <v-slider
-        v-model="round"
-        class="align-center ma-5 mb-0"
-        color="primary"
-        thumb-label="always"
-        :thumb-size="24"
-        :max="getSettingsFP.roundsInLevelCount"
-        :min="0"
-        hide-details
-      >
-        <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
-      </v-slider>
+        label="Повторять изученные"
+      ></v-switch>
+      <v-divider inset></v-divider>
+      <v-card elevation="0" :disabled="learned">
+        <v-card-title>Уровень</v-card-title>
+        <v-slider
+          v-model="group"
+          class="align-center ma-5 mb-0"
+          color="primary"
+          thumb-label="always"
+          :thumb-size="24"
+          :max="getSettingsFP.levelCount"
+          :min="0"
+          hide-details
+        >
+          <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
+        </v-slider>
+        <v-card-title>Раунд</v-card-title>
+        <v-slider
+          v-model="round"
+          class="align-center ma-5 mb-0"
+          color="primary"
+          thumb-label="always"
+          :thumb-size="24"
+          :max="getSettingsFP.roundsInLevelCount"
+          :min="0"
+          hide-details
+        >
+          <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
+        </v-slider>
+      </v-card>
       <v-card-title>Сложность игры</v-card-title>
       <v-slider
         v-model="complexity"
@@ -61,7 +70,7 @@ export default {
   },
   data() {
     return {
-      setOfDifficulties: ["easy", "midi", "hard"],
+      setOfDifficulties: ["легко", "средне", "трудно"],
     };
   },
   computed: {
@@ -82,9 +91,7 @@ export default {
         return this.getSettingsFP.level;
       },
       set(value) {
-        const options = { ...this.getSettingsFP };
-        options.level = value;
-        this.setSettingsFP(options);
+        this.updateOptions("level", value);
         this.setIsUserChangedRoundFP(true);
       },
     },
@@ -93,9 +100,7 @@ export default {
         return this.getSettingsFP.audio;
       },
       set(value) {
-        const options = { ...this.getSettingsFP };
-        options.audio = value;
-        this.setSettingsFP(options);
+        this.updateOptions("audio", value);
       },
     },
     complexity: {
@@ -103,9 +108,15 @@ export default {
         return this.getSettingsFP.complexity;
       },
       set(value) {
-        const options = { ...this.getSettingsFP };
-        options.complexity = value;
-        this.setSettingsFP(options);
+        this.updateOptions("complexity", value);
+      },
+    },
+    learned: {
+      get() {
+        return this.getSettingsFP.learned;
+      },
+      set(value) {
+        this.$emit("changeLearned", value);
       },
     },
     dialogControl: {
@@ -119,6 +130,11 @@ export default {
   },
   methods: {
     ...mapActions(["setSettingsFP", "setIsUserChangedRoundFP"]),
+    updateOptions(option, value) {
+      const options = { ...this.getSettingsFP };
+      options[option] = value;
+      this.setSettingsFP(options);
+    },
     closeSettings() {
       this.$emit("closeSettings");
     },

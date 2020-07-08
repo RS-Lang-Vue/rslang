@@ -1,5 +1,5 @@
 <template>
-  <div
+  <v-card
     class="field-wrap mb-5"
     :style="
       bgField
@@ -11,8 +11,8 @@
   >
     <v-card class="playing-field" flat elevation="8" :disabled="isInit">
       <Card
-        v-for="(card, index) of cardsArray"
-        :key="index"
+        v-for="card of cardsArray"
+        :key="card.key"
         :card="card"
         :isShirtCard="isShirtCard"
         :flipAvailable="flipAvailable"
@@ -21,10 +21,11 @@
         v-on:playAudio="playAudio"
       />
     </v-card>
-  </div>
+  </v-card>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import Card from "@/components/games/FindThePair/PlayField/Card.vue";
 import AudioControl from "@/helpers/audio-control";
 
@@ -83,6 +84,7 @@ export default {
     this.audio = new AudioControl();
   },
   methods: {
+    ...mapActions(["addAnswerResult"]),
     checkCards(id) {
       this.flippedСardsCount += 1;
       this.stack.push(id);
@@ -90,6 +92,7 @@ export default {
         setTimeout(() => {
           if (this.stack[0] === this.stack[1]) {
             this.guessedСards.push(id);
+            this.addAnswerResult({ wordId: id, isCorrectAnswer: true });
             if (this.isEndRound) this.finishGame();
           } else {
             this.isShirtCard = true;
