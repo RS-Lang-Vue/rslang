@@ -147,9 +147,9 @@
         <div class="py-3">
           <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
           <div class="d-flex justify-center flex-wrap text-center">
-            <div>
-              <v-btn class="d-flex flex-column mb-2 ma-1" text color="teal accent-4">
-                <v-icon large color="teal darken-4">mdi-repeat</v-icon>
+            <div class="d-flex flex-column">
+              <v-icon large color="teal darken-4">mdi-repeat</v-icon>
+              <v-btn class="ma-1" text color="teal accent-4">
                 <p>
                   Снова
                 </p>
@@ -177,6 +177,29 @@
         </div>
       </v-sheet>
     </v-bottom-sheet>
+
+    <v-dialog v-model="isShowEndLearnInfo" width="500">
+      <v-card>
+        <v-card-title class="headline green lighten-3" primary-title>
+          Вы достигли цели
+        </v-card-title>
+
+        <v-card-text class="mt-5">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="isShowEndLearnInfo = false">
+            ok
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -199,6 +222,7 @@ export default {
     isErrorWord: false,
     isIntutOpacity: false,
     isShowEvaluation: false,
+    isShowEndLearnInfo: false,
   }),
 
   computed: {
@@ -308,14 +332,20 @@ export default {
 
     handleAnswerWord() {
       this.playAllAudio();
-      this.isCardStudied = true;
       this.displayWordRight();
-      setTimeout(this.nextStep, 12000);
     },
 
     showAnswer() {
       this.inputValue = this.currentWord;
       this.handleAnswerWord();
+    },
+
+    handleRightWord() {
+      this.isCardStudied = true;
+      this.handleAnswerWord();
+      this.setEvaluation();
+      // todo set raiting word
+      // setTimeout(this.nextStep, 12000);
     },
 
     checkWord() {
@@ -324,14 +354,11 @@ export default {
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
         if (inputWord === this.currentWord) {
-          this.handleAnswerWord();
-          this.setEvaluation();
-          // todo set raiting word
+          this.handleRightWord();
         } else {
           this.playAllAudio();
           const countError = this.handleErrorWord(inputWord);
           console.log("countError >>> ", countError);
-
           // todo set focus on input
           // todo set raiting word
         }
@@ -347,11 +374,17 @@ export default {
       this.isShowEvaluation = false;
     },
 
+    showEndLearnInfo() {
+      // todo show end's learn info modal window
+      console.log("runing showEndLearnInfo");
+      this.showEndLearnInfo = true;
+    },
+
     nextStep() {
       this.clear();
-      console.log("nextStep >> this.step:", this.step, "wordsArray.length:", wordsArray.length);
-
+      console.log("nextStep > this.step:", this.step, ", wordsArray.length:", wordsArray.length);
       if (this.step < wordsArray.length - 1) this.step += 1;
+      else this.showEndLearnInfo();
     },
   },
 };
