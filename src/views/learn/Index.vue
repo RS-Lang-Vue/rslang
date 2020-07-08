@@ -213,7 +213,7 @@ export default {
     wordsArray,
     step: 0,
     audio: {},
-    prefixImagePath: config.audioBaseUrl,
+    prefixImagePath: config.dataBaseUrl,
     nameRules: [(v) => !!v || "Введите слово"],
     inputValue: "",
     isCardStudied: false,
