@@ -24,7 +24,7 @@
           <div class="d-flex flex-xs-nowrap flex-wrap justify-space-between align-center">
             <div class="word-container d-flex flex-no-wrap justify-space-between align-center">
               <v-btn icon class="ma-2">
-                <v-icon @click="audio.play(wordObject.audio)">mdi-volume-high</v-icon>
+                <v-icon @click="audio.forcePlay(wordObject.audio)">mdi-volume-high</v-icon>
               </v-btn>
               <v-card-text>
                 <div class="card-text__word pb-2">
@@ -65,7 +65,7 @@
             class="d-flex flex-no-wrap justify-space-between align-center"
           >
             <v-btn icon class="ma-2">
-              <v-icon @click="audio.play(wordObject.audioMeaning)">mdi-volume-high</v-icon>
+              <v-icon @click="audio.forcePlay(wordObject.audioMeaning)">mdi-volume-high</v-icon>
             </v-btn>
             <v-card-text class="text-body-1">
               <p class="text-body-1 mb-2">
@@ -82,7 +82,7 @@
             class="d-flex flex-no-wrap justify-space-between align-center"
           >
             <v-btn icon class="ma-2">
-              <v-icon @click="audio.play(wordObject.audioExample)">mdi-volume-high</v-icon>
+              <v-icon @click="audio.forcePlay(wordObject.audioExample)">mdi-volume-high</v-icon>
             </v-btn>
             <v-card-text class="text-body-1">
               <p class="text-body-1 mb-2"><span v-html="textExample"></span></p>
@@ -150,9 +150,7 @@
             <div class="d-flex flex-column">
               <v-icon large color="teal darken-4">mdi-repeat</v-icon>
               <v-btn class="ma-1" text color="teal accent-4">
-                <p>
-                  Снова
-                </p>
+                Снова
               </v-btn>
             </div>
             <div class="d-flex flex-column">
@@ -185,9 +183,13 @@
         </v-card-title>
 
         <v-card-text class="mt-5">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          <p>Дневная норма выполнена.</p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+            dolor in
+          </p>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -271,12 +273,12 @@ export default {
   methods: {
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        this.audio.play(wordsArray[this.step].audio);
+        this.audio.forcePlay(wordsArray[this.step].audio);
       }
     },
     playAllAudio() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        setTimeout(() => this.audio.play(wordsArray[this.step].audio), 100);
+        setTimeout(() => this.audio.forcePlay(wordsArray[this.step].audio), 100);
 
         if (this.learnSettingsToggles.textMeaning.state) {
           setTimeout(() => this.audio.play(wordsArray[this.step].audioMeaning), 500);

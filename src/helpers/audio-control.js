@@ -64,6 +64,11 @@ export default class AudioControl {
     this.tracks = [];
   }
 
+  forcePlay(url) {
+    this.stop();
+    this.play(url);
+  }
+
   isPlaying() {
     return (
       this.player.currentTime > 0 &&
