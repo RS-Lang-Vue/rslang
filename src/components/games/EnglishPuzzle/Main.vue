@@ -1,9 +1,19 @@
 <template>
-  <v-row
+  <div
     align="center"
     justify="center"
     class="fill-height text-sm-body-2 text-md-body-1 text-lg-subtitle-1"
   >
+    <v-speed-dial absolute right top class="game-btn">
+      <template v-slot:activator>
+        <v-btn dark class="game-btn" color="transparent" @click.stop="isShowGameStatistics = true">
+          <v-icon>mdi-chart-bar</v-icon>
+        </v-btn>
+        <v-btn dark class="game-btn" color="transparent" @click.stop="isShowSettings = true">
+          <v-icon>mdi-cog-outline</v-icon>
+        </v-btn>
+      </template>
+    </v-speed-dial>
     <GameStatistics
       :isShowGameStatistics="isShowGameStatistics"
       v-on:closeGameStatistics="isShowGameStatistics = false"
@@ -16,7 +26,7 @@
       max-width="800"
       min-width="290"
     >
-      <v-card class="pt-4 pb-4" color="transparent" flat :class="{ invisible: isEndRound }">
+      <v-card class="pt-4" color="transparent" flat :class="{ invisible: isEndRound }">
         <v-btn
           icon
           @click="audio.play(AUDIO_URL)"
@@ -32,28 +42,6 @@
         >
           {{ translateText }}
         </v-card-title>
-        <v-speed-dial
-          absolute
-          right
-          top
-          direction="bottom"
-          v-model="fab"
-          open-on-hover
-          class="game-btn-settings"
-        >
-          <template v-slot:activator>
-            <v-btn v-model="fab" color="blue darken-2" dark fab>
-              <v-icon v-if="fab">mdi-close</v-icon>
-              <v-icon v-else>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <v-btn fab dark small color="indigo" @click.stop="isShowSettings = true">
-            <v-icon>mdi-cog-outline</v-icon>
-          </v-btn>
-          <v-btn fab dark small color="green" @click.stop="isShowGameStatistics = true">
-            <v-icon>mdi-chart-bar</v-icon>
-          </v-btn>
-        </v-speed-dial>
         <Settings :isShowSettings="isShowSettings" v-on:closeSettings="isShowSettings = false" />
       </v-card>
       <Results
@@ -67,8 +55,9 @@
         <Source
           :isEndRound="isEndRound"
           :painting="painting"
+          :currentPhraseNumber="currentPhraseNumber"
+          :isVisible="isVisible"
           v-on:transferCard="transferCardFromSourcesToResults"
-          v-on:setWidthCard="setWidthCard"
           v-if="!isEndRound"
         />
         <PaintingInformation :painting="painting" v-else />
@@ -81,23 +70,24 @@
         v-on:continueGame="continueGame"
         v-on:openGameStatistics="isShowGameStatistics = true"
       />
+      <EndGameInfo :isShowEndGameInfo="isEndGame" v-on:closeEndGameInfo="closeEndGameInfo" />
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="showSkipPhrasePuzzle">
-          I don't know
+          Не знаю
         </v-btn>
         <v-btn v-if="isCheckButtonAccessibility" color="primary" @click="checkResult">
-          Check
+          Проверить
         </v-btn>
         <v-btn v-if="isPhraseCollected" color="primary" @click="continueGame">
-          Continue
+          Продолжить
         </v-btn>
         <v-btn v-if="isEndRound" color="primary" @click="openRoundStatistics">
-          Results
+          Результат
         </v-btn>
       </v-card-actions>
     </v-card>
-  </v-row>
+  </div>
 </template>
 
 <script>
@@ -107,11 +97,12 @@ import Results from "@/components/games/EnglishPuzzle/Results/Results.vue";
 import PaintingInformation from "@/components/games/EnglishPuzzle/PaintingInformation.vue";
 import Settings from "@/components/games/EnglishPuzzle/Settings.vue";
 import RoundStatistics from "@/components/games/EnglishPuzzle/RoundStatistics.vue";
+import EndGameInfo from "@/components/games/EnglishPuzzle/EndGameInfo.vue";
 import GameStatistics from "@/components/games/EnglishPuzzle/GameStatistics.vue";
 import Card from "@/helpers/english-puzzle/card";
 import RoundResults from "@/helpers/english-puzzle/round-results";
 import Painting from "@/helpers/english-puzzle/paintings";
-import AudioControl from "@/helpers/english-puzzle/audio-control";
+import AudioControl from "@/helpers/audio-control";
 import StatisticsItem from "@/helpers/english-puzzle/statistics-item";
 
 export default {
@@ -122,6 +113,7 @@ export default {
     Settings,
     RoundStatistics,
     GameStatistics,
+    EndGameInfo,
   },
   data() {
     return {
@@ -139,14 +131,14 @@ export default {
       roundResults: {},
       isShowResultsRound: false,
       isShowGameStatistics: false,
-      fab: false,
+      isEndGame: false,
+      isVisible: false,
     };
   },
   computed: {
     ...mapGetters([
       "getWordsForRoundEP",
-      "getOptionsEP",
-      "getHintOptionsEP",
+      "getSettingsEP",
       "getSourceCardsEP",
       "getResultsCardsEP",
       "getIsUserChangedRoundEP",
@@ -165,10 +157,10 @@ export default {
       return this.isAllСardsInResults && !this.isPhraseCollected;
     },
     showTranslate() {
-      return this.getHintOptionsEP.showTranslation || this.isPhraseCollected;
+      return this.getSettingsEP.hints.translation || this.isPhraseCollected;
     },
     isShowAudioHint() {
-      return this.getHintOptionsEP.showAudio || this.isPhraseCollected;
+      return this.getSettingsEP.hints.speak || this.isPhraseCollected;
     },
   },
   watch: {
@@ -176,7 +168,8 @@ export default {
       if (this.getIsUserChangedRoundEP) this.startNewRound();
     },
   },
-  mounted() {
+  async mounted() {
+    await this.updateSettingsFromServer();
     this.audio = new AudioControl();
     this.startNewRound();
     this.updateStatisticsEPFromLocaleStorage();
@@ -184,21 +177,33 @@ export default {
   methods: {
     ...mapActions([
       "fetchWordsForRoundEP",
-      "setOptionsEP",
+      "setSettingsEP",
       "setSourceCardsEP",
       "setResultsCardsEP",
       "fetchRoundsPerLevelCountEP",
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
+      "downloadSettingsEP",
+      "setLoading",
     ]),
+    async updateSettingsFromServer() {
+      await this.downloadSettingsEP();
+      if (this.getSettingsEP.roundsInLevelCount === 0) {
+        this.fetchRoundsPerLevelCountEP(0).catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
+      }
+    },
     startNewRound() {
+      this.isVisible = false;
       this.roundResults = new RoundResults();
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
       this.clearGameState();
-      this.fetchWordsForRoundEP(this.getOptionsEP)
+      this.fetchWordsForRoundEP(this.getSettingsEP)
         .then(() => {
           setTimeout(() => {
+            this.setLoading(true);
             this.startNewPhrasePuzzle();
             this.setRoundPainting();
             this.setIsUserChangedRoundEP(false);
@@ -207,13 +212,20 @@ export default {
         .catch((err) => {
           this.showAlert("error", "Error", err.message);
         });
+      setTimeout(() => {
+        this.isVisible = true;
+        this.setLoading(false);
+      }, 600);
     },
     startNewPhrasePuzzle() {
       const phrase = this.getPhrase();
-      this.setCards(phrase);
+      this.createCards(phrase);
+      setTimeout(() => {
+        this.shuffleСards();
+      }, 0);
       this.setAudioUrl();
       this.setTranslate();
-      if (this.getHintOptionsEP.autoPlayAudio) this.audio.play(this.AUDIO_URL);
+      if (this.getSettingsEP.hints.speakAuto) this.audio.play(this.AUDIO_URL);
     },
     clearGameState() {
       this.setResultsCardsEP([]);
@@ -225,27 +237,25 @@ export default {
       this.AUDIO_URL = "";
     },
     goToNextRound() {
-      const options = { ...this.getOptionsEP };
-      if (options.page === options.numOfPagesInGroup) {
-        if (options.group === options.numOfGroups) return false;
-        options.group += 1;
-        this.fetchRoundsPerLevelCountEP(options.group)
-          .then((num) => {
-            options.numOfPagesInGroup = num;
-            options.page = 0;
-          })
-          .catch((err) => {
-            this.showAlert("error", "Error", err.message);
-          });
+      const options = { ...this.getSettingsEP };
+      if (options.round[options.level] === options.roundsInLevelCount) {
+        if (options.level === options.levelCount) {
+          this.isEndGame = true;
+          return false;
+        }
+        options.level += 1;
+        this.fetchRoundsPerLevelCountEP(options.level).catch((err) => {
+          this.showAlert("error", "Error", err.message);
+        });
       } else {
-        options.page += 1;
+        options.round[options.level] += 1;
       }
-      this.setOptionsEP(options);
+      this.setSettingsEP(options);
       this.startNewRound();
       return true;
     },
     continueGame() {
-      if (!this.isEndRound) this.arrayOfCardsOfCompletedRounds.push(this.getPhrase());
+      if (!this.isEndRound) this.arrayOfCardsOfCompletedRounds.push(this.getResultsCardsEP);
       if (this.arrayOfCardsOfCompletedRounds.length === this.MAX_NUM_PHRASES_ROUND) {
         this.finishRound();
       } else {
@@ -269,8 +279,8 @@ export default {
     },
     updateStatisticsEP() {
       const statisticsItem = new StatisticsItem(
-        this.getOptionsEP.group,
-        this.getOptionsEP.page,
+        this.getSettingsEP.level,
+        this.getSettingsEP.round[this.getSettingsEP.level],
         this.roundResults.getWordsId()
       );
       const statisticsArray = [...this.getStatisticsEP];
@@ -284,9 +294,14 @@ export default {
     },
     showSkipPhrasePuzzle() {
       this.roundResults.skip = this.getWordsForRoundEP[this.currentPhraseNumber];
-      const phrase = this.getPhrase();
-      const newCards = phrase.map((item, index) => new Card(item, index, true));
-      this.setResultsCardsEP(newCards);
+      const skip = [...this.getResultsCardsEP, ...this.getSourceCardsEP];
+      skip.forEach((el) => {
+        const item = el;
+        item.isCheck = false;
+        item.isError = false;
+      });
+      skip.sort((a, b) => a.id - b.id);
+      this.setResultsCardsEP(skip);
       this.setSourceCardsEP([]);
       this.isPhraseCollected = true;
       this.audio.play(this.AUDIO_URL);
@@ -295,10 +310,19 @@ export default {
       const phrase = this.getWordsForRoundEP[this.currentPhraseNumber].textExample;
       return phrase.split(" ").map((item) => item.replace(/<\/?[^>]+>/g, ""));
     },
-    setCards(phrase) {
-      const mixed = [...phrase].sort(() => Math.random() - 0.5);
-      const newCards = mixed.map((item, index) => new Card(item, index, false));
+    createCards(phrase) {
+      const newCards = phrase.map((item, index) => new Card(item, index, phrase.length, false));
       this.setSourceCardsEP(newCards);
+    },
+    shuffleСards() {
+      const mixed = this.getSourceCardsEP.sort(() => Math.random() - 0.5);
+      const orders = mixed.map((el, index) => {
+        const item = el;
+        item.order = index;
+        return item;
+      });
+      orders.sort((a, b) => a.order - b.order);
+      this.setSourceCardsEP(orders);
     },
     setAudioUrl() {
       const url = this.getWordsForRoundEP[this.currentPhraseNumber].audioExample;
@@ -308,8 +332,9 @@ export default {
       this.translateText = this.getWordsForRoundEP[this.currentPhraseNumber].textExampleTranslate;
     },
     setRoundPainting() {
-      const { group, page } = this.getOptionsEP;
-      const newPainting = new Painting(group, page);
+      const { level, round } = this.getSettingsEP;
+      const rnd = round[level];
+      const newPainting = new Painting(level, rnd);
       this.painting = newPainting.getPainting();
     },
     checkResult() {
@@ -354,24 +379,18 @@ export default {
         if (item.id === id) target = index;
       });
       if (id !== null) source.push(result.splice(target, 1)[0]);
-      source.sort((a, b) => a.id - b.id);
+      source.sort((a, b) => a.order - b.order);
       this.setSourceCardsEP(source);
       this.setResultsCardsEP(result);
       this.isErrors = false;
     },
-    setWidthCard(value) {
-      const newCards = this.getSourceCardsEP.map((el) => {
-        const item = el;
-        if (item.id === value.id) {
-          item.width = value.width;
-        }
-        return item;
-      });
-      this.setSourceCardsEP(newCards);
-    },
     openRoundStatistics() {
       this.audio.stop();
       this.isShowResultsRound = true;
+    },
+    closeEndGameInfo() {
+      this.isEndGame = false;
+      this.startNewRound();
     },
     showAlert(type, title, text) {
       this.$notify({
@@ -385,6 +404,26 @@ export default {
 };
 </script>
 
+<style lang="scss">
+.ep-card-height {
+  border: none !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  @media (min-width: 375px) {
+    height: 35px !important;
+    line-height: 35px !important;
+  }
+  @media (min-width: 600px) {
+    height: 40px !important;
+    line-height: 40px !important;
+  }
+  @media (min-width: 735px) {
+    height: 45px !important;
+    line-height: 45px !important;
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 .game-content {
   width: 290px;
@@ -392,12 +431,19 @@ export default {
     width: auto;
   }
 }
-.game-btn-settings {
-  top: -10px !important;
+.game-btn {
+  @media (max-width: 600px) {
+    font-size: 0.75rem !important;
+    height: 28px !important;
+    min-width: 50px !important;
+    padding: 0 12.4444444444px !important;
+  }
 }
 .hint-translation {
   box-sizing: content-box;
   justify-content: center;
+  font-size: 1em;
+  line-height: 1.2em;
   word-break: normal;
   min-height: 3.5em;
 }

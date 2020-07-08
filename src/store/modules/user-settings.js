@@ -85,14 +85,14 @@ export default {
     },
   },
   actions: {
-    uploadSettings() {
-      const { user } = this.state;
+    async uploadSettings() {
+      const user = await this.dispatch("getUser");
       const { wordsPerDay, optional } = this.state.userSettings;
-      fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`, {
+      fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`, {
         method: "PUT",
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${user.user.token}`,
+          Authorization: `Bearer ${user.token}`,
           Accept: "application/json",
           "Content-Type": "application/json",
         },
@@ -100,18 +100,19 @@ export default {
       });
     },
     async downloadSettings({ commit }) {
-      const { user } = this.state;
+      const user = await this.dispatch("getUser");
       const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/users/${user.user.userId}/settings`,
+        `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
         {
           method: "GET",
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${user.user.token}`,
+            Authorization: `Bearer ${user.token}`,
             Accept: "application/json",
           },
         }
       );
+
       if (res.ok) {
         const userSettings = await res.json();
         if (
@@ -122,6 +123,8 @@ export default {
         } else {
           this.dispatch("uploadSettings");
         }
+      } else if (res.status === 404) {
+        this.dispatch("uploadSettings");
       }
     },
     setGameSetting({ commit }, { gameName, gameSettings }) {
@@ -137,5 +140,9 @@ export default {
       state.optional[gameName] = gameSettings;
     },
   },
-  getters: {},
+  getters: {
+    getSavannahSettings(state) {
+      return state.optional.gameSavannah;
+    },
+  },
 };

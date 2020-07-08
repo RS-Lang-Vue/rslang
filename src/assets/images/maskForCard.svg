@@ -1,0 +1,10 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<mask id="cut">
+  <rect x="0" y="0" width="200" height="300" fill="white"></rect>
+  <circle cx="50" cy="150" r="50" fill="black"></circle>
+  <rect x="0" y="120" width="40" height="60" fill="black"></rect>
+</mask>
+  <rect x="0" y="0" width="200" height="300" mask="url(#cut)"></rect>
+  <circle cx="250" cy="150" r="45"></circle>
+  <rect x="190" y="126" width="40" height="50"></rect>
+</svg>

@@ -29,7 +29,11 @@ export default class AudioControl {
   }
 
   play(url) {
-    this.player.src = `${config.audioBaseUrl}${url}`;
+    if (/^files/i.test(url)) {
+      this.player.src = `${config.dataBaseUrl}${url}`;
+    } else {
+      this.player.src = `data:audio/mpeg;base64,${url}`;
+    }
   }
 
   stop() {
