@@ -5,15 +5,23 @@
       <v-row>
         <v-col cols="12" md="6" lg="4">
           <v-card class="mx-auto amber lighten-5" max-width="500">
-            <v-card-title class="headline">Цель на сегодня</v-card-title>
-            <v-card-text class="text-left">Завершить 50 карточек</v-card-text>
-            <v-card-text class="text-left"
-              >Сегодня вы выполнили 0 карточек. Для достижения цели завершите 50
-              карточек</v-card-text
+            <v-card-title class="headline">Задача на сегодня</v-card-title>
+            <v-card-text class="text-left pb-1"
+              >Изучить {{ wordsPerDay }} карточек, в том числе
+              {{ newWordsPerDay }} новых</v-card-text
             >
-
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/learn">Выполнить</v-btn>
+              <v-btn text color="indigo accent-4" @click="startLean('all')">Выполнить</v-btn>
+            </v-card-actions>
+
+            <v-card-text class="text-left pb-1"
+              >Сегодня вы изучили 0 карточек. Для достижения цели завершите 20 карточек</v-card-text
+            >
+            <v-card-actions>
+              <v-btn text color="indigo accent-4" @click="startLean('new')">Изучить новые</v-btn>
+              <v-btn text color="indigo accent-4" @click="startLean('repeat')"
+                >Повторить слова</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-col>
@@ -137,6 +145,24 @@ export default {
     cards,
     staticticList,
   }),
+  computed: {
+    wordsPerDay() {
+      return this.$store.state.userSettings.optional.learn.wordsPerDay;
+    },
+    newWordsPerDay() {
+      return this.$store.state.userSettings.optional.learn.newWordsPerDay;
+    },
+  },
+  methods: {
+    startLean(qualifier) {
+      if (qualifier === "new") {
+        // todo
+        this.$router.push("/learn");
+      }
+      if (qualifier === "repeat") this.$router.push("/learn");
+      if (qualifier === "all") this.$router.push("/learn");
+    },
+  },
 };
 </script>
 
