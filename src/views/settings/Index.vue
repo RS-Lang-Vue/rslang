@@ -21,20 +21,6 @@
         :rules="sliderRules"
         hide-details="auto"
       >
-        <!-- <template v-slot:append>
-          <v-text-field
-            v-model.number="learnSettings[item.field]"
-            @input="changeNumberOfCards()"
-            :step="stepSlider"
-            :max="item.max"
-            :min="item.min"
-            class="mt-0 pt-0"
-            hide-details
-            single-line
-            type="number"
-            style="width: 60px;"
-          ></v-text-field>
-        </template> -->
       </v-slider>
       <p
         class="font-weight-bold text-subtitle-1 ml-2text--accent-4"
@@ -100,13 +86,20 @@ export default {
   methods: {
     changeState() {
       this.$store.commit("setGameSetting", { gameName: "learn", gameSettings: this.learnSettings });
+      setTimeout(() => {
+        this.uploadSettingsToBack();
+      }, 1500);
     },
     changeNumberOfCards() {
       if (this.learnSettings.newWordsPerDay > this.learnSettings.wordsPerDay) {
         this.learnSettings.newWordsPerDay = this.learnSettings.wordsPerDay;
-        console.log("Новых слов не может быть больше общего колличесва");
       }
       this.changeState();
+    },
+    uploadSettingsToBack() {
+      console.log("uploadSettingsToBack");
+
+      this.$store.dispatch("uploadSettings");
     },
   },
 };

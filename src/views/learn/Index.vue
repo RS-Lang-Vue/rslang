@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mx-auto text-start" max-width="700">
+    <v-card class="mx-auto text-start mt-10" max-width="700">
       <v-card-title class="cyan darken-1">
         <div class="dots">
           <span v-for="n in 5" :key="n" class="dot"></span>
