@@ -11,18 +11,22 @@
               {{ newWordsPerDay }} новых</v-card-text
             >
             <v-card-actions>
-              <v-btn text color="indigo accent-4" @click="startLean('all')">Выполнить</v-btn>
+              <v-btn text color="indigo accent-4" @click="startLean(LEARN_TYPE_ALL)"
+                >Выполнить</v-btn
+              >
             </v-card-actions>
 
             <v-card-text class="text-left pb-1"
               >Сегодня вы изучили 0 карточек. Для достижения цели завершите 20 карточек</v-card-text
             >
             <v-card-actions>
-              <v-btn text color="indigo accent-4" @click="startLean('new')">Изучить новые</v-btn>
+              <v-btn text color="indigo accent-4" @click="startLean(LEARN_TYPE_NEW)"
+                >Изучить новые</v-btn
+              >
               <v-btn
                 text
                 color="indigo accent-4"
-                @click="startLean('repeat')"
+                @click="startLean(LEARN_TYPE_REPEAT)"
                 :disabled="wordsPerDay === newWordsPerDay"
                 >Повторить слова</v-btn
               >
@@ -71,6 +75,8 @@
 </template>
 
 <script>
+import { LEARN_TYPE_ALL, LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+
 const cards = [
   {
     cardTitle: "SpeakIt",
@@ -148,6 +154,9 @@ export default {
   data: () => ({
     cards,
     staticticList,
+    LEARN_TYPE_ALL,
+    LEARN_TYPE_NEW,
+    LEARN_TYPE_REPEAT,
   }),
   computed: {
     wordsPerDay() {
@@ -156,6 +165,16 @@ export default {
     newWordsPerDay() {
       return this.$store.state.userSettings.optional.learn.newWordsPerDay;
     },
+  },
+  async mounted() {
+    this.$store.dispatch("setLoading", true);
+    try {
+      await this.$store.dispatch("downloadSettings");
+    } catch (error) {
+      console.log("Error download settings", error);
+    } finally {
+      this.$store.dispatch("setLoading", false);
+    }
   },
   methods: {
     startLean(type) {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isLoad">
+  <div v-if="isVisibleContent">
     <v-card class="mx-auto text-start mt-1" max-width="700">
       <v-card-title class="cyan darken-1">
         <div class="dots">
@@ -207,14 +207,14 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import AudioControl from "@/helpers/audio-control";
 import config from "@/config/config";
-// import defaultWordsArray from "@/components/learn/learnObjects/wordsArray";
+import { LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+import AudioControl from "@/helpers/audio-control";
 
 export default {
   data: () => ({
-    isLoad: false,
-    wordsArray: this.getMixWordsArray,
+    isVisibleContent: false,
+    wordsArray: {},
     // todo getCurrentArray
     step: 0,
     audio: {},
@@ -231,7 +231,13 @@ export default {
   }),
 
   computed: {
-    ...mapGetters(["getLearnType", "getMixWordsArray", "getLearnSettings"]),
+    ...mapGetters([
+      "getLearnType",
+      "getNewWordsArray",
+      "getRepeatWordsArray",
+      "getMixWordsArray",
+      "getLearnSettings",
+    ]),
     currentWord() {
       return this.wordsArray[this.step].word;
     },
@@ -264,41 +270,17 @@ export default {
 
   async mounted() {
     this.setLoading(true);
-    console.log("type learn >>>", this.getLearnType);
-
-    const type = this.getLearnType;
-    // todo getAllWordsArray()
-    // todo getNewWordsArray()
-    // todo getRepeatWordsArray()
-
-    let requestObject = {
-      group: undefined,
-      page: 0,
-      wordsPerPage: 20,
-      onlyLearned: false,
-      onlyNotLearned: true,
-    };
-
-    if (type === "repeat") {
-      const wordsPerPage = this.getLearnSettings.wordsPerDay - this.getLearnSettings.newWordsPerDay;
-      if (!wordsPerPage) throw new Error("Change Settings. Words to repeat = 0");
-      requestObject = {
-        group: undefined,
-        page: 0,
-        wordsPerPage,
-        onlyLearned: false,
-        onlyNotLearned: true,
-      };
-    }
-
     try {
-      const res = await this.getUserAggregateWords(requestObject);
-      console.log("result", res.result);
-      this.wordsArray = await res.result;
+      await this.getLearnArraysFromServer();
+      console.log("type learn >>>", this.getLearnType);
+      const type = this.getLearnType;
+
+      if (type === LEARN_TYPE_NEW) this.wordsArray = this.getNewWordsArray;
+      else if (type === LEARN_TYPE_REPEAT) this.wordsArray = this.getRepeatWordsArray;
+      else this.wordsArray = this.getMixWordsArray;
 
       this.audio = new AudioControl();
-      this.isLoad = true;
-
+      this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
       console.log(error);
@@ -316,7 +298,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setLoading", "getUserAggregateWords"]),
+    ...mapActions(["setLoading", "getLearnArraysFromServer"]),
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
         this.audio.forcePlay(this.wordsArray[this.step].audio);
