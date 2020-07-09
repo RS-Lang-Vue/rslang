@@ -17,8 +17,13 @@ export default {
       const user = await this.dispatch("getUser");
       if (user === undefined) {
         return new UniResponse(false, errorList.unauthorized);
+      }      
+      let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?`;
+      if (page === 0) {
+        url += 'wordsPerPage=3600'
+      } else {
+        url += `wordsPerPage=${wordsPerPage}`;
       }
-      let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?wordsPerPage=3600}`;
       if (group !== undefined) url += `&group=${group}`;
       if (page !== undefined) url += `&page=${page}`;
       if ((onlyLearned || onlyNotLearned) && !(onlyLearned && onlyNotLearned)) {
