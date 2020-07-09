@@ -6,7 +6,6 @@ export default {
     async addAnswerResult(ctx, { wordId, isCorrectAnswer }) {
       let res = await this.dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
-        // показать ошибку пользователю res.error
         return res;
       }
       let userWord = res.result;
@@ -38,8 +37,8 @@ export default {
       if (!res.success) {
         return res;
       }
-      let userWord = res.result;
-      const isNewWord = userWord === undefined; 
+      const oldUerWord = res.result;
+      const isNewWord = oldUerWord === undefined; 
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;
