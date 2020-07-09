@@ -35,6 +35,7 @@ export default {
       gameSavannah: {
         round: [0, 0, 0, 0, 0, 0],
         level: 0,
+        newWords: true,
       },
       gameAuidioCall: {
         round: [0, 0, 0, 0, 0, 0],
@@ -100,7 +101,7 @@ export default {
   },
   mutations: {
     setUserSettings(state, userSettings) {
-      this.state.userSettings = userSettings;
+      state.userSettings = userSettings;
     },
     setGameSetting(state, { gameName, gameSettings }) {
       state.optional[gameName] = gameSettings;
