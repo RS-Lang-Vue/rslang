@@ -154,13 +154,9 @@ export default {
     },
   },
   methods: {
-    startLean(qualifier) {
-      if (qualifier === "new") {
-        // todo
-        this.$router.push("/learn");
-      }
-      if (qualifier === "repeat") this.$router.push("/learn");
-      if (qualifier === "all") this.$router.push("/learn");
+    startLean(type) {
+      this.$store.commit("updateLearnType", type);
+      this.$router.push("/learn");
     },
   },
 };

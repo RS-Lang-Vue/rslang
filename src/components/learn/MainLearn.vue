@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card class="mx-auto text-start mt-10" max-width="700">
+  <div v-if="isLoad">
+    <v-card class="mx-auto text-start mt-1" max-width="700">
       <v-card-title class="cyan darken-1">
         <div class="dots">
           <span v-for="n in 5" :key="n" class="dot"></span>
@@ -206,13 +206,15 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import AudioControl from "@/helpers/audio-control";
 import config from "@/config/config";
-import wordsArray from "@/components/learn/learnObjects/wordsArray";
+import defaultWordsArray from "@/components/learn/learnObjects/wordsArray";
 
 export default {
   data: () => ({
-    wordsArray,
+    isLoad: false,
+    wordsArray: defaultWordsArray,
     step: 0,
     audio: {},
     prefixImagePath: config.dataBaseUrl,
@@ -228,8 +230,9 @@ export default {
   }),
 
   computed: {
+    ...mapGetters(["getLearnType"]),
     currentWord() {
-      return wordsArray[this.step].word;
+      return this.wordsArray[this.step].word;
     },
     learnSettingsToggles() {
       return this.$store.state.userSettings.optional.learn.toggles;
@@ -258,8 +261,22 @@ export default {
     },
   },
 
-  mounted() {
+  async mounted() {
+    this.setLoading(true);
+    console.log("type learn >>>", this.getLearnType);
+    const res = await this.getUserAggregateWords({
+      group: undefined,
+      page: 0,
+      wordsPerPage: 20,
+      onlyLearned: false,
+      onlyNotLearned: true,
+    });
+    console.log("result", res.result);
+
+    this.wordsArray = await res.result;
     this.audio = new AudioControl();
+    this.isLoad = true;
+    this.setLoading(false);
     this.autoAudioPlayWord();
   },
 
@@ -271,20 +288,21 @@ export default {
   },
 
   methods: {
+    ...mapActions(["setLoading", "getUserAggregateWords"]),
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        this.audio.forcePlay(wordsArray[this.step].audio);
+        this.audio.forcePlay(this.wordsArray[this.step].audio);
       }
     },
     playAllAudio() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        setTimeout(() => this.audio.forcePlay(wordsArray[this.step].audio), 100);
+        setTimeout(() => this.audio.forcePlay(this.wordsArray[this.step].audio), 100);
 
         if (this.learnSettingsToggles.textMeaning.state) {
-          setTimeout(() => this.audio.play(wordsArray[this.step].audioMeaning), 500);
+          setTimeout(() => this.audio.play(this.wordsArray[this.step].audioMeaning), 500);
         }
         if (this.learnSettingsToggles.textExample.state) {
-          setTimeout(() => this.audio.play(wordsArray[this.step].audioExample), 2000);
+          setTimeout(() => this.audio.play(this.wordsArray[this.step].audioExample), 2000);
         }
       }
     },
@@ -398,8 +416,13 @@ export default {
     },
 
     nextStep() {
-      console.log("nextStep > this.step:", this.step, ", wordsArray.length:", wordsArray.length);
-      if (this.step === wordsArray.length - 1) this.runEndLearn();
+      console.log(
+        "nextStep > this.step:",
+        this.step,
+        ", this.wordsArray.length:",
+        this.wordsArray.length
+      );
+      if (this.step === this.wordsArray.length - 1) this.runEndLearn();
       else {
         this.clear();
         this.step += 1;

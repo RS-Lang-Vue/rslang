@@ -2,7 +2,6 @@ import settingsConstants from "@/config/settingsConstants";
 
 export default {
   state: {
-    // wordsPerDay: 20,
     optional: {
       learn: {
         wordsPerDay: settingsConstants.DEFAULT_WORDS_PER_DAY,
