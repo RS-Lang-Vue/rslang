@@ -22,41 +22,38 @@
 
 <script>
 export default {
-    state: {
-      words: [],
-    },
-    async mounted() {
-      console.log("mounted...");
-      const res = await this.$store.dispatch("getUserAggregateWords", {});
-      if (!res.success) {
-        alert(res.error);
-      } else {
-        this.words = res.result;
-      }
-      console.log("mounted", this.words);
-    },
-    data () {
-      console.log("data", this.words);
-      return {
-        expanded: [],
-        singleExpand: false,
-        headers: [
-          {
-            text: "Слово",
-            align: "start",
-            value: "word",
-          },
-          { text: "Произношение", sortable: false, value: "audio" },
-          { text: "Перевод", value: "wordTranslate" },
-          { text: "Транскрипция", value: "transcription" },
-          { text: "Количетсво повторений", value: "userWord?.optional?.repeatCount" },
-          { text: "Последнее повторение", value: "userWord?.optional?.lastDate" },
-          { text: "Следующее повторение", value: "userWord?.optional?.repeatDate" },
-        ],
-        words: this.words        
-      }
-    },
-  }
+  state: {
+    words: [],
+  },
+  async mounted() {
+    const res = await this.$store.dispatch("getLocalUserWords", {});
+    if (!res.success) {
+      alert(res.error);
+    } else {
+      this.words = res.result;
+    }
+  },
+  data() {
+    return {
+      expanded: [],
+      singleExpand: false,
+      headers: [
+        {
+          text: "Слово",
+          align: "start",
+          value: "word",
+        },
+        { text: "Произношение", sortable: false, value: "audio" },
+        { text: "Перевод", value: "wordTranslate" },
+        { text: "Транскрипция", value: "transcription" },
+        { text: "Количетсво повторений", value: "userWord?.optional?.repeatCount" },
+        { text: "Последнее повторение", value: "userWord?.optional?.lastDate" },
+        { text: "Следующее повторение", value: "userWord?.optional?.repeatDate" },
+      ],
+      words: this.words,
+    };
+  },
+};
 </script>
 
 <style></style>

@@ -47,6 +47,7 @@ export default {
             localStorage.setItem("tokenReceiptTime", tokenReceiptTime);
             commit("setUser", { token, userId, tokenReceiptTime });
             dispatch("downloadSettings");
+            dispatch("downloadUserAggregateWords");
             dispatch("setLoading", false);
             resolve(res);
           })
