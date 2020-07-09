@@ -215,6 +215,7 @@ export default {
   data: () => ({
     isLoad: false,
     wordsArray: this.getMixWordsArray,
+    // todo getCurrentArray
     step: 0,
     audio: {},
     prefixImagePath: config.dataBaseUrl,
