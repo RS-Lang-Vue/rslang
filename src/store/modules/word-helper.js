@@ -38,7 +38,7 @@ export default {
         return res;
       }
       const oldUerWord = res.result;
-      const isNewWord = oldUerWord === undefined; 
+      const isNewWord = oldUerWord === undefined;
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;

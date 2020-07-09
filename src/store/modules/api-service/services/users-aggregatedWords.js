@@ -17,10 +17,10 @@ export default {
       const user = await this.dispatch("getUser");
       if (user === undefined) {
         return new UniResponse(false, errorList.unauthorized);
-      }      
+      }
       let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?`;
       if (page !== 0) {
-        url += 'wordsPerPage=3600'
+        url += "wordsPerPage=3600";
       } else {
         url += `wordsPerPage=${wordsPerPage}`;
       }

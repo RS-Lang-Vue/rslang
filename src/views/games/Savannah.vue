@@ -55,7 +55,7 @@ export default {
         repeatDate: Date.now() + 10000,
         description: "hard",
       },
-    };    
+    };
     res = await this.$store.dispatch("setUserWordWithCheck", {
       userWord: learnedUserWord,
       wordId: learnedWordId,
@@ -79,13 +79,12 @@ export default {
     console.log("-- AggregatedWords (получение комбинированных слов)");
 
     console.log("--- Пытаемся получить первые 15 слов");
-    res = await this.$store.dispatch("getUserAggregateWords", {page: 0, wordsPerPage: 15});
+    res = await this.$store.dispatch("getUserAggregateWords", { page: 0, wordsPerPage: 15 });
     console.log("---- words", res);
-    
+
     console.log("--- Пытаемся получить все 3600 комбинированных слов");
     res = await this.$store.dispatch("getUserAggregateWords", {});
     console.log("---- words", res);
-    
 
     console.log("--- Пытаемся получить первые 30 изученных слов (но изучено вероятно меньше)");
     res = await this.$store.dispatch("getUserAggregateWords", {
