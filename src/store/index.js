@@ -11,6 +11,7 @@ import wordHelper from "./modules/word-helper";
 import englishPuzzle from "./modules/english-puzzle/english-puzzle";
 
 import savannah from "./modules/savannah/savannah";
+import learn from "./modules/learn/learn";
 
 Vue.use(Vuex);
 
@@ -24,5 +25,6 @@ export default new Vuex.Store({
     apiService,
     wordHelper,
     savannah,
+    learn,
   },
 });
