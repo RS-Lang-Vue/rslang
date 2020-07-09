@@ -1,24 +1,36 @@
-const learnTypeArray = ["all", "new", "repeat"];
+import mixArrays from "@/store/modules/utils/utilsForLearn";
+import defaultNewWordsArray from "./defaultObject";
+
+const LEARN_TYPE_ALL = "all";
+const LEARN_TYPE_NEW = "new";
+const LEARN_TYPE_REPEAT = "repeat";
 
 export default {
   state: {
-    learnType: 0, // 0-all, 1-new, 2-repeat
+    learnType: LEARN_TYPE_ALL,
+    newWordsArray: defaultNewWordsArray,
+    repeatWordsArray: {},
   },
   actions: {},
   mutations: {
     updateLearnType(state, type) {
-      let numberType = 0;
-      if (type === learnTypeArray[1]) numberType = 1;
-      if (type === learnTypeArray[2]) numberType = 2;
-      state.learnType = numberType;
+      let newType = LEARN_TYPE_ALL;
+      if (type === LEARN_TYPE_NEW) newType = LEARN_TYPE_NEW;
+      if (type === LEARN_TYPE_REPEAT) newType = LEARN_TYPE_REPEAT;
+      state.learnType = newType;
     },
-    // addSavannahStatistic(state, stat) {
-    //   state.statisticSavannah.push(stat);
-    // },
   },
   getters: {
+    getMixWordsArray(state) {
+      console.log(state);
+      const mixWordsArray = mixArrays([state.newWordsArray, state.repeatWordsArray]);
+      return mixWordsArray;
+    },
+    getCurrentArray() {
+      // todo
+    },
     getLearnType(state) {
-      return learnTypeArray[state.learnType];
+      return state.learnType;
     },
   },
 };

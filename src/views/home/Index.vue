@@ -3,7 +3,7 @@
     <v-container>
       <!-- Stack the columns on mobile by making one full-width and the other half-width -->
       <v-row>
-        <v-col cols="12" md="6" lg="4">
+        <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto amber lighten-5" max-width="500">
             <v-card-title class="headline">Задача на сегодня</v-card-title>
             <v-card-text class="text-left pb-1"
@@ -19,14 +19,18 @@
             >
             <v-card-actions>
               <v-btn text color="indigo accent-4" @click="startLean('new')">Изучить новые</v-btn>
-              <v-btn text color="indigo accent-4" @click="startLean('repeat')"
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean('repeat')"
+                :disabled="wordsPerDay === newWordsPerDay"
                 >Повторить слова</v-btn
               >
             </v-card-actions>
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="6" lg="4">
+        <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto yellow lighten-5" max-width="500">
             <v-card-title class="headline">Статистика</v-card-title>
 

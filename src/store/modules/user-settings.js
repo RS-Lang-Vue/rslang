@@ -140,6 +140,9 @@ export default {
     },
   },
   getters: {
+    getLearnSettings(state) {
+      return state.optional.learn;
+    },
     getSavannahSettings(state) {
       return state.optional.gameSavannah;
     },

@@ -209,12 +209,12 @@
 import { mapGetters, mapActions } from "vuex";
 import AudioControl from "@/helpers/audio-control";
 import config from "@/config/config";
-import defaultWordsArray from "@/components/learn/learnObjects/wordsArray";
+// import defaultWordsArray from "@/components/learn/learnObjects/wordsArray";
 
 export default {
   data: () => ({
     isLoad: false,
-    wordsArray: defaultWordsArray,
+    wordsArray: this.getMixWordsArray,
     step: 0,
     audio: {},
     prefixImagePath: config.dataBaseUrl,
@@ -230,7 +230,7 @@ export default {
   }),
 
   computed: {
-    ...mapGetters(["getLearnType"]),
+    ...mapGetters(["getLearnType", "getMixWordsArray", "getLearnSettings"]),
     currentWord() {
       return this.wordsArray[this.step].word;
     },
@@ -264,20 +264,47 @@ export default {
   async mounted() {
     this.setLoading(true);
     console.log("type learn >>>", this.getLearnType);
-    const res = await this.getUserAggregateWords({
+
+    const type = this.getLearnType;
+    // todo getAllWordsArray()
+    // todo getNewWordsArray()
+    // todo getRepeatWordsArray()
+
+    let requestObject = {
       group: undefined,
       page: 0,
       wordsPerPage: 20,
       onlyLearned: false,
       onlyNotLearned: true,
-    });
-    console.log("result", res.result);
+    };
 
-    this.wordsArray = await res.result;
-    this.audio = new AudioControl();
-    this.isLoad = true;
-    this.setLoading(false);
-    this.autoAudioPlayWord();
+    if (type === "repeat") {
+      const wordsPerPage = this.getLearnSettings.wordsPerDay - this.getLearnSettings.newWordsPerDay;
+      if (!wordsPerPage) throw new Error("Change Settings. Words to repeat = 0");
+      requestObject = {
+        group: undefined,
+        page: 0,
+        wordsPerPage,
+        onlyLearned: false,
+        onlyNotLearned: true,
+      };
+    }
+
+    try {
+      const res = await this.getUserAggregateWords(requestObject);
+      console.log("result", res.result);
+      this.wordsArray = await res.result;
+
+      this.audio = new AudioControl();
+      this.isLoad = true;
+
+      this.autoAudioPlayWord();
+    } catch (error) {
+      console.log(error);
+      this.$router.push("/home");
+    } finally {
+      this.setLoading(false);
+    }
   },
 
   watch: {
