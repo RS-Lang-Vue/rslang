@@ -12,7 +12,7 @@ export default {
       const isNewWord = userWord === undefined;
       if (isNewWord) {
         userWord = {
-          difficulty: "hard",
+          difficulty: "0",
           optional: {
             correctAnswer: 0,
             repeatCount: 0,
@@ -45,14 +45,13 @@ export default {
       }
       return res;
     },
-    async getLearnedWordsSortByRepeatDate(ctx, { count = undefined }) {
-      const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true });
+    async getLearnedWordsSortByRepeatDate(ctx, { count = undefined, difficulty = undefined }) {
+      const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true, difficulty });
       if (!res.success) {
-        // показать ошибку пользователю res.error
         return res;
       }
       let learnedWords = [...res.result].sort((a, b) => {
-        return a.userWord.optional.repeatDate - b.userWord.optional.repeatDate;
+        return a.userWord?.optional.repeatDate - b.userWord?.optional.repeatDate;
       });
       if (count !== undefined) {
         learnedWords = learnedWords.splice(0, count);

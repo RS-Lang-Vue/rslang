@@ -48,7 +48,7 @@ export default {
     const random = Math.floor(Math.random() * 1000);
     console.log("---- Установим случайное количество повторений repeatCount -", random);
     learnedUserWord = {
-      difficulty: "hard",
+      difficulty: "0",
       optional: {
         repeatCount: random,
         lastDate: Date.now(),
@@ -80,6 +80,16 @@ export default {
 
     console.log("--- Пытаемся получить первые 15 слов");
     res = await this.$store.dispatch("getUserAggregateWords", { page: 0, wordsPerPage: 15 });
+    console.log("---- words", res);
+
+    console.log("--- Получаем все изученные слова c dif 0");
+    res = await this.$store.dispatch("getUserAggregateWords", { difficulty: 0 });
+    learnedUserWord = res.result;
+    console.log("---- words", res);
+
+    console.log("--- Получаем все изученные слова c dif 1");
+    res = await this.$store.dispatch("getUserAggregateWords", { difficulty: 1 });
+    learnedUserWord = res.result;
     console.log("---- words", res);
 
     console.log("--- Пытаемся получить все 3600 комбинированных слов");
@@ -120,6 +130,13 @@ export default {
 
     console.log("--- Запрашиваем отсортированные по повторению изученные слова");
     res = await this.$store.dispatch("getLearnedWordsSortByRepeatDate", { count: 30 });
+    console.log("---- результат", res);
+
+    console.log("--- Запрашиваем отсортированные по повторению изученные слова (dif 0)");
+    res = await this.$store.dispatch("getLearnedWordsSortByRepeatDate", {
+      count: 30,
+      difficulty: 0,
+    });
     console.log("---- результат", res);
 
     console.log("!! Test ApiTest Words complite");
