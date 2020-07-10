@@ -42,7 +42,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 89vh;
-    position: fixed;
+  position: fixed;
 }
 .bg-image {
   width: 120vw;
