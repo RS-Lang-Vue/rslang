@@ -60,7 +60,7 @@ export default {
     await this.getSettings();
     await this.getData();
     this.setLoading(false);
-    /* this.moveBlock(); */
+    this.moveBlock();
   },
   methods: {
     ...mapActions([
