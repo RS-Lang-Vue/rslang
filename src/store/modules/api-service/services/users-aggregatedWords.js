@@ -12,18 +12,43 @@ export default {
         wordsPerPage = 3600,
         onlyLearned = false,
         onlyNotLearned = false,
+        difficulty = undefined,
       }
     ) {
+      let _onlyLearned = false;
+      let _onlyNotLearned = false;
+      if (onlyLearned && onlyNotLearned) {
+        _onlyLearned = false;
+        _onlyNotLearned = false;
+      }
+      if (difficulty !== undefined) {
+        _onlyLearned = true;
+      }
       const user = await this.dispatch("getUser");
       if (user === undefined) {
         return new UniResponse(false, errorList.unauthorized);
       }
-      let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?wordsPerPage=3600}`;
+      let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?`;
+      if (page !== 0) {
+        url += "wordsPerPage=3600";
+      } else {
+        url += `wordsPerPage=${wordsPerPage}`;
+      }
       if (group !== undefined) url += `&group=${group}`;
       if (page !== undefined) url += `&page=${page}`;
-      if ((onlyLearned || onlyNotLearned) && !(onlyLearned && onlyNotLearned)) {
-        url += onlyLearned ? `&filter={"userWord":{"$exists":true}}` : `&filter={"userWord":null}`;
+      console.log(_onlyLearned, _onlyNotLearned);
+      if ((_onlyLearned || _onlyNotLearned) && !(_onlyLearned && _onlyNotLearned)) {
+        if (_onlyLearned) {
+          if (difficulty !== undefined) {
+            url += `&filter={"$and":[{"userWord":{"$exists":true}},{"userWord.difficulty":"${difficulty}"}]}`;
+          } else {
+            url += `&filter={"userWord":{"$exists":true}}`;
+          }
+        } else {
+          url += `&filter={"userWord":null}`;
+        }
       }
+      console.log(url);
       const res = await fetch(url, {
         method: "GET",
         withCredentials: true,
