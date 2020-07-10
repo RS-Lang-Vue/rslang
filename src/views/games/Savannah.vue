@@ -1,5 +1,5 @@
 <template>
-  <div class="savannah-container">
+  <div class="savannah">
     <div class="bg-image"></div>
     <Main v-if="!startPage" :startPage="startPage" @changeStartPage="startPage = true" />
     <div v-else>
@@ -37,11 +37,12 @@ export default {
 </script>
 
 <style lang="scss">
-.savannah-container {
+.savannah {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 89vh;
+    position: fixed;
 }
 .bg-image {
   width: 120vw;

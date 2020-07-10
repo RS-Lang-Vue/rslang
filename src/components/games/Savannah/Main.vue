@@ -4,9 +4,10 @@
       <v-icon large color="#ffffff">mdi-close</v-icon>
     </v-btn>
     <div class="field" v-if="!loading">
-      <v-btn @click="moveBlock" class="source-word" color="transparent" elevation="0">{{
+      <v-btn  class="source-word" color="transparent" elevation="0">{{
         sourceData[countWords].word
       }}</v-btn>
+      <hr class="line">
     </div>
     <v-card v-if="!loading" color="transparent" elevation="0" class="content">
       <v-container>
@@ -19,6 +20,7 @@
         </v-row>
       </v-container>
     </v-card>
+    <div class="score">{{this.score}} из 20</div>
     <RoundStatistic
       :roundModalActive="roundModalActive"
       :statistic="stat"
@@ -40,6 +42,8 @@ export default {
   },
   data() {
     return {
+      score: 0,
+      ainmated: undefined,
       position: -10,
       loading: true,
       sourceData: [],
@@ -56,7 +60,7 @@ export default {
     await this.getSettings();
     await this.getData();
     this.setLoading(false);
-    requestAnimationFrame(this.move);
+    /* this.moveBlock(); */
   },
   methods: {
     ...mapActions([
@@ -92,9 +96,6 @@ export default {
           return Array.from(set).sort(randomWords);
         });
       } else {
-        /* console.log("Новые");
-        console.log("Раунд", this.settings.round[this.settings.level]);
-        console.log("Уровень", this.settings.level); */
         const res = await fetch(
           `https://afternoon-falls-25894.herokuapp.com/words?page=${
             this.settings.round[this.settings.level]
@@ -129,11 +130,12 @@ export default {
           : this.sourceData[this.countWords]._id,
         isCorrectAnswer: answer,
       });
-      await this.btnActivity();
+      this.destroy();
+      await  this.btnActivity();
       if (this.countWords !== 19) {
         this.countWords += 1;
         this.position = -10;
-        requestAnimationFrame(this.move);
+        this.moveBlock();
       } else {
         this.sendStatistic();
         if (this.newWords) {
@@ -167,13 +169,13 @@ export default {
     changeStatistic(x) {
       if (x === true) {
         this.stat.correct += 1;
+        this.score += 1;
       } else {
         this.stat.wrong += 1;
       }
     },
     sendStatistic() {
       const date = new Date().toLocaleString("ru").split(",")[0];
-
       this.stat.date = date;
       this.stat.id = this.getSavannahStatistic.length;
       this.addSavannahStatistic(this.stat);
@@ -202,17 +204,21 @@ export default {
       this.closeGame();
     },
     moveBlock() {
-      requestAnimationFrame(this.move);
+      this.ainmated = window.requestAnimationFrame(this.move);
     },
     move() {
       this.position += 0.1;
       document.querySelector(".source-word").style.top = `${this.position}%`;
-      if (this.position < 90) {
-        requestAnimationFrame(this.move);
+      if (this.position < 80) {
+        this.ainmated = window.requestAnimationFrame(this.move);
       } else {
         this.checkAnswer();
       }
     },
+    destroy() {
+      cancelAnimationFrame(this.ainmated)
+    }
+
   },
 };
 </script>
@@ -227,12 +233,18 @@ export default {
   width: 50%;
   height: 100%;
   top: 0;
+  .line {
+    position: absolute;
+    bottom: 20%;
+    width: 100%;
+    
+  }
+  
 }
 .source-word {
   color: #e5fd0a !important;
   position: relative;
   top: 0px;
-  /* transition: top 1s ; */
 }
 .close-btn {
   position: absolute !important;
@@ -257,17 +269,29 @@ export default {
 .example-btn.incorrect {
   opacity: 0.5;
 }
+.score {
+  position: absolute;
+  bottom: 50px;
+  right: 100px;
+  color: #ffffff;
+}
 @media screen and (max-width: 500px) {
-  .close-btn {
-    right: -10px;
+  .savannah-container {
+  justify-content: flex-start !important;
   }
   .example__container {
     text-align: right;
     flex-direction: column;
   }
+  .example__container {
+    padding-right: 30px;
+  }
   .example-btn {
     width: 120px;
     font-size: 10px !important;
+  }
+  .score {
+    right: 20px;
   }
 }
 </style>
