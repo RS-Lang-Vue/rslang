@@ -2,16 +2,17 @@
   <v-dialog v-model="dialogControl" max-width="290">
     <v-card align="center" justify="center">
       <v-switch
-        v-model="learned"
+        :value="learned"
         class="ma-0 pt-5"
         color="primary"
         label="Повторять изученные"
+        @change="changeLearned"
       ></v-switch>
       <v-divider inset></v-divider>
-      <v-card elevation="0" :disabled="learned">
+      <v-card elevation="0" :disabled="learned || loading">
         <v-card-title>Уровень</v-card-title>
         <v-slider
-          v-model="group"
+          :value="level"
           class="align-center ma-5 mb-0"
           color="primary"
           thumb-label="always"
@@ -19,12 +20,13 @@
           :max="getSettingsFP.levelCount"
           :min="0"
           hide-details
+          @end="updateLevel"
         >
           <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
         </v-slider>
         <v-card-title>Раунд</v-card-title>
         <v-slider
-          v-model="round"
+          :value="round"
           class="align-center ma-5 mb-0"
           color="primary"
           thumb-label="always"
@@ -32,6 +34,7 @@
           :max="getSettingsFP.roundsInLevelCount"
           :min="0"
           hide-details
+          @end="updateRound"
         >
           <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
         </v-slider>
@@ -74,26 +77,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getSettingsFP"]),
-    round: {
-      get() {
-        return this.getSettingsFP.round[this.getSettingsFP.level];
-      },
-      set(value) {
-        const options = { ...this.getSettingsFP };
-        options.round[options.level] = value;
-        this.setSettingsFP(options);
-        this.setIsUserChangedRoundFP(true);
-      },
+    ...mapGetters(["getSettingsFP", "loading"]),
+    round() {
+      return this.getSettingsFP.round[this.getSettingsFP.level];
     },
-    group: {
-      get() {
-        return this.getSettingsFP.level;
-      },
-      set(value) {
-        this.updateOptions("level", value);
-        this.setIsUserChangedRoundFP(true);
-      },
+    level() {
+      return this.getSettingsFP.level;
+    },
+    learned() {
+      return this.getSettingsFP.learned;
     },
     audio: {
       get() {
@@ -109,14 +101,6 @@ export default {
       },
       set(value) {
         this.updateOptions("complexity", value);
-      },
-    },
-    learned: {
-      get() {
-        return this.getSettingsFP.learned;
-      },
-      set(value) {
-        this.$emit("changeLearned", value);
       },
     },
     dialogControl: {
@@ -135,16 +119,21 @@ export default {
       options[option] = value;
       this.setSettingsFP(options);
     },
+    updateRound(value) {
+      const options = { ...this.getSettingsFP };
+      options.round[options.level] = value;
+      this.setSettingsFP(options);
+      this.setIsUserChangedRoundFP(true);
+    },
+    updateLevel(value) {
+      this.updateOptions("level", value);
+      this.setIsUserChangedRoundFP(true);
+    },
     closeSettings() {
       this.$emit("closeSettings");
     },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
+    changeLearned(value) {
+      this.$emit("changeLearned", value);
     },
   },
 };

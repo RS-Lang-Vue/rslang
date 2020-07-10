@@ -3,13 +3,13 @@ import UniResponse from "../../models/UniResponse";
 export default {
   state: {},
   actions: {
-    async addAnswerResult(ctx, { wordId, isCorrectAnswer }) {
-      let res = await this.dispatch("getUsersWordsById", { wordId });
+    async addAnswerResult({ dispatch }, { wordId, isCorrectAnswer }) {
+      let res = await dispatch("getUsersAggregateWordsById", wordId);
       if (!res.success) {
         return res;
       }
-      let userWord = res.result;
-      const isNewWord = userWord === undefined;
+      let { userWord } = res.result;
+      const isNewWord = !userWord;
       if (isNewWord) {
         userWord = {
           difficulty: "0",
@@ -45,8 +45,8 @@ export default {
       }
       return res;
     },
-    async getLearnedWordsSortByRepeatDate(ctx, { count = undefined, difficulty = undefined }) {
-      const res = await this.dispatch("getUserAggregateWords", { onlyLearned: true, difficulty });
+    async getLearnedWordsSortByRepeatDate({ dispatch }, { count, difficulty }) {
+      const res = await dispatch("getUserAggregateWords", { onlyLearned: true, difficulty });
       if (!res.success) {
         return res;
       }

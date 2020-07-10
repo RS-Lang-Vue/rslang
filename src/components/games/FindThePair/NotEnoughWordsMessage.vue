@@ -3,7 +3,7 @@
     <v-card justify="center">
       <v-card-title class="painting-title pt-0">Информация</v-card-title>
       <v-card-text>
-        Для режима повторения выучено недостаточно слов.
+        Для режима повторения не хватает изученных слов.
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

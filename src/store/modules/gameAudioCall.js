@@ -32,10 +32,8 @@ export default {
   },
   actions: {
     async fetchWords(store, payload = { group: 0, page: 0 }) {
-      console.log("API base URL: ", payload);
       const { group, page } = payload;
       const res = await axios.get(`${config.apiBaseUrl}words?group=${group}&page=${page}`);
-      console.log("response: ", res.data);
       store.commit("SET_WORDS", res.data);
     },
   },

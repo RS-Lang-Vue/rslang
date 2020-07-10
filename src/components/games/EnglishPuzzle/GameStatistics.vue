@@ -106,7 +106,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["fetchWordByIdEP", "setLoading"]),
+    ...mapActions(["fetchWordByIdEP", "setLoading", "setError"]),
     closeGameStatistics() {
       this.$emit("closeGameStatistics");
       this.isShowResultsRound = false;
@@ -135,22 +135,14 @@ export default {
               this.isShowResultsRound = true;
             })
             .catch(() => {
-              this.showAlert("error", "Error", "Word statistics not available");
+              this.setError("Word statistics not available");
               this.setLoading(false);
             });
         })
         .catch(() => {
-          this.showAlert("error", "Error", "Word statistics not available");
+          this.setError("Word statistics not available");
           this.setLoading(false);
         });
-    },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
     },
   },
 };

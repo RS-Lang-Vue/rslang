@@ -36,7 +36,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Words were not received from the server`);
+          throw new Error(`Слова не были получены с сервера`);
         }
         const data = await res.json();
         commit("updateWordsForRoundFP", data);
@@ -44,7 +44,6 @@ export default {
       } catch (err) {
         dispatch("setLoading", false);
         dispatch("setError", err.message);
-        throw err;
       }
     },
     async fetchWordByIdFP({ dispatch }, id) {
@@ -54,7 +53,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Word were not received from the server`);
+          throw new Error(`Слова не были получены с сервера`);
         }
         const data = await res.json();
         dispatch("setLoading", false);

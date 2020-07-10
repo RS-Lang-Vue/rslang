@@ -17,9 +17,7 @@
           width: 100%;
         "
         @click="handleClick(card)"
-      >
-        <span class="text-caption text-sm-body-1">{{ card.word }}</span>
-      </div>
+      ></div>
     </template>
     <template v-slot:back class="back" :class="{ invisible: deletedCard }">
       <v-img

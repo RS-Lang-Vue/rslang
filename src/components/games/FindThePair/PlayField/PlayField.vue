@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import Card from "@/components/games/FindThePair/PlayField/Card.vue";
 import AudioControl from "@/helpers/audio-control";
 
@@ -65,6 +65,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["isLoggedIn"]),
     flipAvailable() {
       return this.flippedСardsCount < 2;
     },
@@ -92,7 +93,9 @@ export default {
         setTimeout(() => {
           if (this.stack[0] === this.stack[1]) {
             this.guessedСards.push(id);
-            this.addAnswerResult({ wordId: id, isCorrectAnswer: true });
+            if (this.isLoggedIn) {
+              this.addAnswerResult({ wordId: id, isCorrectAnswer: true });
+            }
             if (this.isEndRound) this.finishGame();
           } else {
             this.isShirtCard = true;
@@ -138,14 +141,14 @@ export default {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-gap: 2px;
+  gap: 2px;
   height: 213px !important;
   background: transparent;
   @media (min-width: 375px) {
     height: 250px !important;
   }
   @media (min-width: 600px) {
-    grid-gap: 4px;
+    gap: 4px;
     height: 400px !important;
   }
   @media (min-width: 735px) {

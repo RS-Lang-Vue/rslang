@@ -1,3 +1,5 @@
+import errorList from "@/config/errors";
+
 export default {
   state: {
     wordsPerDay: 20,
@@ -56,46 +58,56 @@ export default {
     },
   },
   actions: {
-    async uploadSettings() {
-      const user = await this.dispatch("getUser");
-      const { wordsPerDay, optional } = this.state.userSettings;
-      fetch(`https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`, {
-        method: "PUT",
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ wordsPerDay, optional }),
-      });
+    async uploadSettings({ state, dispatch }) {
+      try {
+        const user = await dispatch("getUser");
+        if (!user) throw Error(errorList.unauthorized);
+        const { wordsPerDay, optional } = state;
+        const res = await fetch(
+          `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
+          {
+            method: "PUT",
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ wordsPerDay, optional }),
+          }
+        );
+        if (!res.ok) throw Error(`${res.status} (${res.statusText})`);
+      } catch (err) {
+        dispatch("setError", err.message);
+      }
     },
-    async downloadSettings({ commit }) {
-      const user = await this.dispatch("getUser");
-      const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
-        {
-          method: "GET",
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (res.ok) {
-        const userSettings = await res.json();
-        if (
-          userSettings.optional !== undefined &&
-          Object.keys(userSettings.optional).length !== 0
-        ) {
-          commit("setUserSettings", userSettings);
-        } else {
+    async downloadSettings({ dispatch, commit }) {
+      try {
+        const user = await dispatch("getUser");
+        if (!user) throw Error(errorList.unauthorized);
+        const res = await fetch(
+          `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/settings`,
+          {
+            method: "GET",
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+        if (res.ok) {
+          const { wordsPerDay, optional } = await res.json();
+          if (optional !== undefined && Object.keys(optional).length !== 0) {
+            commit("setUserSettings", { wordsPerDay, optional });
+          } else {
+            this.dispatch("uploadSettings");
+          }
+        } else if (res.status === 404) {
           this.dispatch("uploadSettings");
         }
-      } else if (res.status === 404) {
-        this.dispatch("uploadSettings");
+      } catch (err) {
+        dispatch("setError", err.message);
       }
     },
     setGameSetting({ commit }, { gameName, gameSettings }) {
@@ -104,8 +116,9 @@ export default {
     },
   },
   mutations: {
-    setUserSettings(state, userSettings) {
-      this.state.userSettings = userSettings;
+    setUserSettings(state, { wordsPerDay, optional }) {
+      state.wordsPerDay = wordsPerDay;
+      state.optional = optional;
     },
     setGameSetting(state, { gameName, gameSettings }) {
       state.optional[gameName] = gameSettings;

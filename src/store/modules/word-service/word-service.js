@@ -1,6 +1,6 @@
+import UniResponse from "@/models/UniResponse";
+import errorList from "@/config/errors";
 import utils from "../utils/utils";
-import UniResponse from "../../../models/UniResponse";
-import errorList from "../../../config/errors";
 
 export default {
   state: {
@@ -9,12 +9,12 @@ export default {
     PAGE_COUNT: 30,
   },
   actions: {
-    async getKeyWords() {
+    async getKeyWords({ dispatch }) {
       const { level } = this.state.game.gameSettings;
       const round = this.state.game.gameSettings.round[level];
       let keyWords = [];
-      const user = await this.dispatch("getUser");
-      if (user === undefined) {
+      const user = await dispatch("getUser");
+      if (!user) {
         if (round === this.state.game.PAGE_COUNT) {
           return new UniResponse(false, errorList.unauthorized);
         }
@@ -42,7 +42,7 @@ export default {
       }
       return new UniResponse(true, keyWords);
     },
-    async getRandomWords() {
+    async getRandomWords({ dispatch }) {
       const keyLevel = this.state.game.gameSettings.level;
       const keyRound = this.state.game.gameSettings.round[keyLevel];
       let level = 0;
@@ -52,8 +52,8 @@ export default {
         round = Math.floor(Math.random() * this.state.game.PAGE_COUNT);
       } while (round === keyRound && level === keyLevel);
       let randomWords = [];
-      const user = await this.dispatch("getUser");
-      if (user === undefined) {
+      const user = await dispatch("getUser");
+      if (!user) {
         const res = await this.dispatch("getWords", { group: level, page: round });
         randomWords = [...res.result];
         randomWords = utils.shuffle(randomWords);

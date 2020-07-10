@@ -8,6 +8,6 @@ export default class Card {
     this.audio = item.audio;
     this.wordTranslate = item.wordTranslate;
     this.cardImg = cardImg;
-    this.key = Date.now() + Math.random();
+    this.key = Math.random() + Math.random();
   }
 }

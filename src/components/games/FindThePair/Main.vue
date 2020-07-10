@@ -74,10 +74,6 @@
         >
           Сдаться
         </v-btn>
-        <v-btn color="primary" @click="startGame(false)" class="game-btn" :disabled="loading">
-          <span v-if="isInit">Старт</span>
-          <v-icon v-else>mdi-refresh</v-icon>
-        </v-btn>
         <v-btn
           v-if="isEndRound"
           color="primary"
@@ -93,6 +89,10 @@
           class="game-btn"
         >
           Продолжить
+        </v-btn>
+        <v-btn color="primary" @click="startGame(false)" class="game-btn" :disabled="loading">
+          <span v-if="isInit">Старт</span>
+          <v-icon v-else>mdi-refresh</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -122,7 +122,7 @@ export default {
   },
   data() {
     return {
-      GAME_TIME: [300, 240, 180],
+      GAME_TIME: [240, 180, 120],
       cardsArray: [],
       cardsText: [],
       isInit: true,
@@ -184,6 +184,7 @@ export default {
       "fetchImagesUnsplash",
       "getLearnedWordsSortByRepeatDate",
       "setLoading",
+      "setError",
     ]),
     ...mapMutations(["updateWordsForRoundFP"]),
     async startGame(setData) {
@@ -202,7 +203,7 @@ export default {
         this.setLoading(true);
         const words = await this.getLearnedWordsSortByRepeatDate({ count: 10 });
         if (!words.success) {
-          this.showAlert("error", "Error", words.error);
+          this.setError(words.error);
           this.updateOptions("learned", false);
         } else {
           this.updateWordsForRoundFP(words.result);
@@ -210,14 +211,10 @@ export default {
         }
         this.setLoading(false);
       } else {
-        this.fetchWordsForRoundFP(this.getSettingsFP)
-          .then(() => {
-            this.placeСards();
-            this.setIsUserChangedRoundFP(false);
-          })
-          .catch((err) => {
-            this.showAlert("error", "Error", err.message);
-          });
+        this.fetchWordsForRoundFP(this.getSettingsFP).then(() => {
+          this.placeСards();
+          this.setIsUserChangedRoundFP(false);
+        });
       }
       setTimeout(() => {
         this.setBgField();
@@ -335,7 +332,7 @@ export default {
       if (value) {
         this.setRepeatMode();
       } else {
-        this.updateOptions("learned", value);
+        this.updateOptions("learned", false);
         this.setRoundData();
         this.isInit = true;
       }
@@ -344,11 +341,17 @@ export default {
       this.setLoading(true);
       const words = await this.getLearnedWordsSortByRepeatDate({ count: 10 });
       if (!words.success) {
-        this.showAlert("error", "Error", words.error);
-        this.updateOptions("learned", false);
+        this.setError(words.error);
+        this.updateOptions("learned", true);
+        setTimeout(() => {
+          this.updateOptions("learned", false);
+        }, 0);
       } else if (words.result.length < 10) {
         this.isShowMessageNotEnoughWords = true;
-        this.updateOptions("learned", false);
+        this.updateOptions("learned", true);
+        setTimeout(() => {
+          this.updateOptions("learned", false);
+        }, 0);
       } else {
         this.updateOptions("learned", true);
         this.clearGameState();
@@ -360,14 +363,6 @@ export default {
         }, 100);
       }
       this.setLoading(false);
-    },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
     },
   },
 };

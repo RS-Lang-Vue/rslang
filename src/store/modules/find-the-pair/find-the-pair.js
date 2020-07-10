@@ -31,10 +31,12 @@ export default {
   actions: {
     setSettingsFP({ commit, dispatch }, options) {
       commit("updateSettingsFP", options);
-      dispatch("setUserSettingsEpRootState", options);
+      dispatch("setUserSettingsFpRootState", options);
     },
-    async downloadSettingsFP({ state, commit, dispatch, rootState }) {
-      await dispatch("downloadSettings");
+    async downloadSettingsFP({ state, getters, commit, dispatch, rootState }) {
+      if (getters.isLoggedIn) {
+        await dispatch("downloadSettings");
+      }
       const { optional } = rootState.userSettings;
       const optionalKeys = Object.keys(state.settingsFP).sort();
       let match = true;
@@ -45,11 +47,13 @@ export default {
         });
       if (match) commit("updateSettingsFP", optional.gameOwnGame);
     },
-    setUserSettingsEpRootState({ commit, dispatch, rootState }, options) {
+    setUserSettingsFpRootState({ commit, getters, dispatch, rootState }, options) {
       const { userSettings } = rootState;
       userSettings.optional.gameOwnGame = options;
       commit("setUserSettings", userSettings);
-      dispatch("uploadSettings");
+      if (getters.isLoggedIn) {
+        dispatch("uploadSettings");
+      }
     },
     setIsUserChangedRoundFP({ commit }, value) {
       commit("updateIsUserChangedRoundFP", value);
