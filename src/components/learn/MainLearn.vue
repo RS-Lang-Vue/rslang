@@ -27,7 +27,7 @@
                 <v-icon @click="audio.forcePlay(wordObject.audio)">mdi-volume-high</v-icon>
               </v-btn>
               <v-card-text>
-                <div class="card-text__word pb-2">
+                <div class="card-text__word pb-5">
                   <div class="card-text__word-container text-sm-h4 text-h5 mb-3">
                     <div class="card-text__word-element" v-html="currentErrorWordHtml"></div>
                     {{ currentWord }}
@@ -110,7 +110,7 @@
           @click="showAnswer"
           text
           color="indigo accent-4"
-          title="Показать правильные ответ"
+          title="Показать правильный ответ"
         >
           ответ
         </v-btn>
@@ -208,34 +208,35 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import config from "@/config/config";
-import { LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+// import { LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
 export default {
   data: () => ({
     isVisibleContent: false,
     wordsArray: {},
-    // todo getCurrentArray
     step: 0,
     audio: {},
-    prefixImagePath: config.dataBaseUrl,
-    nameRules: [(v) => !!v || "Введите слово"],
+    currentErrorWordHtml: "",
     inputValue: "",
     isCardStudied: false,
     isRightWord: false,
-    currentErrorWordHtml: "",
     isErrorWord: false,
     isIntutOpacity: false,
     isShowEvaluation: false,
     isShowEndLearnInfo: false,
+    prefixImagePath: config.dataBaseUrl,
+    nameRules: [(v) => !!v || "Введите слово"],
   }),
 
   computed: {
     ...mapGetters([
       "getLearnType",
+      "getCurrentLearnStateObject",
       "getNewWordsArray",
       "getRepeatWordsArray",
       "getMixWordsArray",
+      "getCurrentArray",
       "getLearnSettings",
     ]),
     currentWord() {
@@ -267,20 +268,18 @@ export default {
       return text;
     },
   },
+  watch: {
+    step: function steps() {
+      this.autoAudioPlayWord();
+      this.clear();
+    },
+  },
 
   async mounted() {
     this.setLoading(true);
     try {
-      await this.getLearnArraysFromServer();
-      console.log("type learn >>>", this.getLearnType);
-      const type = this.getLearnType;
-
-      if (type === LEARN_TYPE_NEW) this.wordsArray = this.getNewWordsArray;
-      else if (type === LEARN_TYPE_REPEAT) this.wordsArray = this.getRepeatWordsArray;
-      else this.wordsArray = this.getMixWordsArray;
-
-      this.audio = new AudioControl();
       this.isVisibleContent = true;
+      await this.prepareStart();
       this.autoAudioPlayWord();
     } catch (error) {
       console.log(error);
@@ -290,15 +289,18 @@ export default {
     }
   },
 
-  watch: {
-    step: function steps() {
-      this.autoAudioPlayWord();
-      this.clear();
-    },
-  },
-
   methods: {
     ...mapActions(["setLoading", "getLearnArraysFromServer"]),
+    async prepareStart() {
+      console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
+
+      if (!this.getCurrentLearnStateObject.isArraysLoaded) {
+        await this.getLearnArraysFromServer();
+      }
+      this.wordsArray = this.getCurrentArray;
+      this.audio = new AudioControl();
+    },
+
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
         this.audio.forcePlay(this.wordsArray[this.step].audio);
@@ -368,18 +370,19 @@ export default {
     showAnswer() {
       this.inputValue = this.currentWord;
       this.handleAnswerWord();
+      this.isCardStudied = true;
     },
 
     handleRightWord() {
       this.isCardStudied = true;
       this.handleAnswerWord();
-      this.setEvaluation();
+      setTimeout(this.setEvaluationcapital, 2000);
       // todo set raiting word
       setTimeout(this.nextStep, 12000);
     },
 
     checkWord() {
-      console.log("inputValue >>> ", this.inputValue);
+      // console.log("inputValue >>> ", this.inputValue);
       const isNotEmpty = !!this.inputValue;
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
@@ -473,6 +476,10 @@ export default {
 
 .theme--light.v-input.word-right input {
   color: green;
+}
+
+v-input.word-right input {
+  max-height: 36px;
 }
 
 .text-field {
