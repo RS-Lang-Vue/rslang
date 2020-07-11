@@ -23,31 +23,37 @@ export default {
       const repeatWordsPerDay = wordsPerDay - newWordsPerDay;
       console.log("wordsPerDay:", wordsPerDay, "newWordsPerDay: ", newWordsPerDay);
 
-      const resNewWords = await dispatch("getUserAggregateWords", {
-        page: 0,
-        wordsPerPage: newWordsPerDay,
-        onlyNotLearned: true,
-      });
-      console.log("resNewWords >>>", resNewWords);
-
-      if (repeatWordsPerDay) {
-        const resRepeatWords = await dispatch("getUserAggregateWords", {
+      try {
+        const resNewWords = await dispatch("getUserAggregateWords", {
+          // difficulty: 0 //0 - common words
           page: 0,
-          wordsPerPage: repeatWordsPerDay,
-          onlyLearned: true,
+          wordsPerPage: newWordsPerDay,
+          onlyNotLearned: true,
         });
-        console.log("resRepeatWords >>>", resRepeatWords);
-
+        console.log("resNewWords >>>", resNewWords);
         if (resNewWords.success) commit("updateNewWordsArray", resNewWords.result);
-        if (resRepeatWords.success) commit("updateRepeatWordsArray", resRepeatWords.result);
-        if (resNewWords.success && resRepeatWords.success) {
-          const mixWordsArray = mixArrays([state.newWordsArray, state.repeatWordsArray]);
-          commit("updateMixWordsArray", mixWordsArray);
-          state.currentLearnStateObject.isArraysLoaded = true;
+        else throw new Error("Error loading newWordsArray");
+
+        if (repeatWordsPerDay) {
+          const resRepeatWords = await dispatch("getUserAggregateWords", {
+            // difficulty: 0 //0 - common words
+            page: 0,
+            wordsPerPage: repeatWordsPerDay,
+            onlyLearned: true,
+          });
+          console.log("resRepeatWords >>>", resRepeatWords);
+          if (resRepeatWords.success) commit("updateRepeatWordsArray", resRepeatWords.result);
+          else throw new Error("Error loading repeatWordsArray");
         }
+        const mixWordsArray = mixArrays([state.newWordsArray, state.repeatWordsArray]);
+        commit("updateMixWordsArray", mixWordsArray);
+        state.currentLearnStateObject.isArraysLoaded = true;
+      } catch (error) {
+        console.error(error.message);
       }
     },
   },
+
   mutations: {
     updateLearnType(state, type) {
       let newType = LEARN_TYPE_ALL;
@@ -67,17 +73,18 @@ export default {
   },
   getters: {
     getNewWordsArray(state) {
-      return state.newWordsArray;
+      // return state.newWordsArray;
+      return state.mixWordsArray.filter((wordsObject) => !wordsObject.userWord);
     },
     getRepeatWordsArray(state) {
-      return state.repeatWordsArray;
+      return state.mixWordsArray.filter((wordsObject) => wordsObject.userWord);
     },
     getMixWordsArray(state) {
       return state.mixWordsArray;
     },
-    getCurrentArray(state) {
-      if (state.learnType === LEARN_TYPE_NEW) return state.newWordsArray;
-      if (state.learnType === LEARN_TYPE_REPEAT) return state.repeatWordsArray;
+    getCurrentArray(state, getters) {
+      if (state.learnType === LEARN_TYPE_NEW) return getters.getNewWordsArray;
+      if (state.learnType === LEARN_TYPE_REPEAT) return getters.getRepeatWordsArray;
       return state.mixWordsArray;
     },
     getLearnType(state) {

@@ -166,7 +166,7 @@ export default {
       return this.$store.state.userSettings.optional.learn.newWordsPerDay;
     },
   },
-  async mounted() {
+  async creared() {
     this.$store.dispatch("setLoading", true);
     try {
       await this.$store.dispatch("downloadSettings");

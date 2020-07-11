@@ -278,8 +278,8 @@ export default {
   async mounted() {
     this.setLoading(true);
     try {
-      this.isVisibleContent = true;
       await this.prepareStart();
+      this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
       console.log(error);
