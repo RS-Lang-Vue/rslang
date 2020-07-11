@@ -129,7 +129,14 @@ export default {
     console.log("---- результат", res);
 
     console.log("--- Запрашиваем отсортированные по повторению изученные слова");
-    res = await this.$store.dispatch("getLearnedWordsSortByRepeatDate", { count: 30 });
+    res = await this.$store.dispatch("getLearnedWordsSortByRepeatDate", { count: 50 });
+
+    console.log("CHECKKK");
+    res = await this.$store.dispatch("getUserAggregateWords", {
+      page: 0,
+      wordsPerPage: 50,
+      onlyLearned: true,
+    });
     console.log("---- результат", res);
 
     console.log("--- Запрашиваем отсортированные по повторению изученные слова (dif 0)");
