@@ -62,6 +62,9 @@ export default {
     this.setLoading(false);
     this.moveBlock();
   },
+  destroyed() {
+    this.destroy();
+  },
   methods: {
     ...mapActions([
       "downloadSettings",
@@ -211,6 +214,7 @@ export default {
       this.setLoading(true);
       await this.getData();
       this.setLoading(false);
+      this.moveBlock();
     },
     atStart() {
       this.closeGame();
@@ -236,8 +240,14 @@ export default {
 
 <style lang="scss">
 .savannah-container {
+  position: fixed;
   display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 .field {
   position: absolute;
@@ -258,7 +268,7 @@ export default {
 .close-btn {
   position: absolute !important;
   right: 5px;
-  top: 10px;
+  top: 80px;
   :hover {
     cursor: pointer;
   }
@@ -291,9 +301,6 @@ export default {
   .example__container {
     text-align: right;
     flex-direction: column;
-  }
-  .example__container {
-    padding-right: 30px;
   }
   .example-btn {
     width: 120px;

@@ -2,7 +2,7 @@
   <div class="savannah">
     <div class="bg-image"></div>
     <Main v-if="!startPage" :startPage="startPage" @changeStartPage="startPage = true" />
-    <div v-else>
+    <div class="intro__wrapper" v-else>
       <v-card color="transparent" class="intro" elevation="0">
         <v-card-title class="intro__title">Savannah</v-card-title>
         <v-card-text class="intro__decription"
@@ -51,6 +51,17 @@ export default {
   top: 0;
   left: 0;
   background: url("../../../src/assets/images/savannah/savannah-bg.jpg");
+}
+.intro__wrapper {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 .intro {
   width: 100vw;

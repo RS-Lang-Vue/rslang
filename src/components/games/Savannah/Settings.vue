@@ -23,6 +23,6 @@ export default {
   display: flex;
   justify-content: center;
   width: 100vw;
-  bottom: 40px;
+  bottom: 70px;
 }
 </style>
