@@ -36,7 +36,6 @@ export default {
       }
       if (group !== undefined) url += `&group=${group}`;
       if (page !== undefined) url += `&page=${page}`;
-      console.log(_onlyLearned, _onlyNotLearned);
       if ((_onlyLearned || _onlyNotLearned) && !(_onlyLearned && _onlyNotLearned)) {
         if (_onlyLearned) {
           if (difficulty !== undefined) {
@@ -48,7 +47,6 @@ export default {
           url += `&filter={"userWord":null}`;
         }
       }
-      console.log(url);
       const res = await fetch(url, {
         method: "GET",
         withCredentials: true,
