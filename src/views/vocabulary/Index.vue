@@ -17,7 +17,6 @@
 
       <v-tab v-for="i in tabs" :key="i" :href="`#tab-${i}`">
         {{ tabNames[i] }}
-        <v-icon v-if="icons">mdi-phone</v-icon>
       </v-tab>
 
       <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
@@ -69,24 +68,40 @@ export default {
     words: [],
   }),
   async mounted() {
-    await this.getWords();
+    await this.getWords(this.tab.split("-")[1]);
+    console.log(this.words);
   },
   computed: {
     cuirrentDifficultyCopy() {
       return this.cuirrentDifficulty + 1;
     },
   },
+  watch: {
+    tab(val) {
+      this.getWords(val.split("-")[1]);
+    },
+  },
   methods: {
-    async getWords() {
+    async getWords(tab) {
+      console.log(tab);
       const res = await this.$store.dispatch("getUserAggregateWords", {
         page: 0,
         wordsPerPage: 20,
-        difficulty: 0,
+        difficulty: parseInt(tab, 10),
       });
+      console.log(res);
       if (!res.success) {
-        alert(res.error);
+        this.showAlert("error", "Ошибка!", res.error);
       }
       this.words = res.result;
+    },
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
     },
   },
 };
