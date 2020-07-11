@@ -117,7 +117,7 @@ export default {
         this.e1 = 1;
         this.isNewWordsDownload = true;
       } catch (error) {
-        console.log(error);
+        /* console.log(error); */
       } finally {
         this.$store.commit("SET_IS_AUDIO_CALL_PAGE_LOADING", false);
         this.reset();
@@ -184,7 +184,7 @@ export default {
         }
         // console.log(this.userAnswer);
       } catch (error) {
-        console.log(error);
+        /* console.log(error); */
       } finally {
         this.isDisabled = true;
       }

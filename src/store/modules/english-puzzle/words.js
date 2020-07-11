@@ -44,7 +44,6 @@ export default {
       } catch (err) {
         dispatch("setLoading", false);
         dispatch("setError", err.message);
-        throw err;
       }
     },
     async fetchWordByIdEP({ dispatch }, id) {

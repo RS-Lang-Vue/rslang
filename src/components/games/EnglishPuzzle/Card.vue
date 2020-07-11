@@ -176,9 +176,9 @@ export default {
   }
 }
 .card-error {
-  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px white, 0 5px 0 #ff5252;
+  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 0px 5px white, 0 5px 0 #ff5252;
 }
 .card-success {
-  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px white, 0 5px 0 #4caf50;
+  box-shadow: inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 0px 5px white, 0 5px 0 #4caf50;
 }
 </style>

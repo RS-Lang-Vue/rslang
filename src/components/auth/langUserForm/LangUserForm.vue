@@ -8,13 +8,15 @@
       type="password"
       v-model="password"
       :rules="passwordRules"
-      label="Password"
+      label="Пароль"
       required
     />
-
-    <v-btn class="user-form__submit-button" type="submit" color="primary" :loading="loading">{{
-      submitButtonText
-    }}</v-btn>
+    <v-card-actions>
+      <v-btn class="user-form__submit-button" type="submit" color="primary" :loading="loading">{{
+        submitButtonText
+      }}</v-btn>
+    </v-card-actions>
+    <v-spacer></v-spacer>
     <footer class="user-form__footer">
       <slot />
     </footer>
