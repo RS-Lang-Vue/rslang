@@ -1,237 +1,51 @@
 <template>
   <div>
-    <div v-if="loading">
-      <v-data-table
-        item-key="name"
-        class="elevation-1"
-        loading
-        loading-text="Загружается... Пожалуйста, подождите."
-      ></v-data-table>
-    </div>
-    <div v-else>
-      <v-tabs
-        v-model="tab"
-        background-color="blue lighten-4 accent-4"
-        class="elevation-2"
-        dark
-        :centered="true"
-        :grow="true"
-        :vertical="false"
-        :right="false"
-        :prev-icon="undefined"
-        :next-icon="undefined"
-        :icons-and-text="icons"
-      >
-        <v-tab v-for="i in tabs" :key="i" :href="`#tab-${i}`">
-          {{ tabNames[i] }}
-        </v-tab>
+    <v-tabs
+      v-model="tab"
+      background-color="deep-purple accent-4"
+      class="elevation-2"
+      dark
+      :centered="true"
+      :grow="true"
+      :vertical="false"
+      :right="false"
+      :prev-icon="undefined"
+      :next-icon="undefined"
+      :icons-and-text="icons"
+    >
+      <v-tabs-slider></v-tabs-slider>
 
-        <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
-          <v-data-table :headers="headers" :items="words" hide-default-footer class="elevation-1">
-            <template v-slot:item="row">
-              <tr>
-                <td>{{ row.item.word }}</td>
-                <td>
-                  <v-btn icon small @click="audio.play(row.item.audio)">
-                    <v-icon dark>mdi-volume-high</v-icon>
-                  </v-btn>
-                  {{ row.item.transcription }}
-                </td>
-                <td>{{ row.item.wordTranslate }}</td>
-                <td>{{ row.item.repeatCount }}</td>
-                <td>{{ row.item.lastDate }}</td>
-                <td>{{ row.item.repeatDate }}</td>
-                <td>
-                  <v-btn icon small @click="showFullInfo(row.item)">
-                    <v-icon dark>mdi-book-open-variant</v-icon>
-                  </v-btn>
-                </td>
-                <td v-if="i === 3">
-                  <v-btn icon small @click="showFullInfo(row.item)">
-                    <v-icon dark>mdi-book-open-variant</v-icon>
-                  </v-btn>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-        </v-tab-item>
-      </v-tabs>
-      <div class="text-center">
-        <v-pagination v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
-      </div>
-    </div>
-    <div class="text-center">
-      <v-dialog v-model="fullInfo" max-width="744">
-        <v-card class="mx-auto" max-width="744">
-          <v-card-title>
-            {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
-            {{ fullInfoCard.wordTranslate }}
-            <v-btn icon small @click="audio.play(row.item.audio)">
-              <v-icon dark>mdi-volume-high</v-icon>
-            </v-btn>
-          </v-card-title>
+      <v-tab v-for="i in tabs" :key="i" :href="`#tab-${i}`">
+        Tab {{ i }}
+        <v-icon v-if="icons">mdi-phone</v-icon>
+      </v-tab>
 
-          <v-card-subtitle>
-            <span v-html="fullInfoCard.textMeaning"></span> <br />
-            {{ fullInfoCard.textMeaningTranslate }}
-          </v-card-subtitle>
-
-          <v-img :src="fullInfoCard.image"></v-img>
-          
-
-          <v-expand-transition>
-            <div>
-              <v-divider></v-divider>
-
-              <v-card-text>
-                <span v-html="fullInfoCard.textExample"></span> <br />
-                {{ fullInfoCard.textExampleTranslate }}
-              </v-card-text>
-            </div>
-          </v-expand-transition>
-
-          <v-card-actions>
-            <v-btn @click="hideFullInfo()" text>HIDE</v-btn>
-          </v-card-actions>
+      <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
+        <v-card flat tile>
+          <v-card-text>{{ text }}</v-card-text>
         </v-card>
-      </v-dialog>
-    </div>
+      </v-tab-item>
+    </v-tabs>
+    Vocabulary page
+    {{ cuirrentDifficulty }}
+    {{ cuirrentDifficultyCopy }}
+    <input v-model="cuirrentDifficulty" />
   </div>
 </template>
 
 <script>
-import AudioControl from "@/helpers/audio-control";
-import config from "@/config/config"
-
 export default {
   data: () => ({
-    page: 1,
-    pageCount: 1,
-    tabNames: ["Изучаемые слова", "Сложные слова", "Удалённые слова"],
-    headers: [
-      {
-        text: "Слово",
-        align: "start",
-        sortable: false,
-        value: "word",
-      },
-      {
-        text: "Произношение",
-        align: "start",
-        sortable: false,
-        value: "transcription",
-      },
-      {
-        text: "Перевод",
-        align: "start",
-        sortable: false,
-        value: "wordTranslate",
-      },
-      {
-        text: "Количество повторений",
-        align: "start",
-        sortable: false,
-        value: "repeatCount",
-      },
-      {
-        text: "Дата последнего повторения",
-        align: "start",
-        sortable: false,
-        value: `lastDate`,
-      },
-      {
-        text: "Дата планируемого повторения",
-        align: "start",
-        sortable: false,
-        value: `repeatDate`,
-      },
-    ],
-    tab: "tab-0",
+    tab: null,
+    text:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     icons: false,
-    tabs: [0, 1, 2],
+    tabs: 3,
     cuirrentDifficulty: 0,
-    words: [],
-    loading: true,
-    WORDS_PER_PAGE: 20,
-    audio: {},
-    fullInfo: false,
-    fullInfoCard: {
-      word: "слово",
-      transcription: "[транскрипция]",
-      wordTranslate: "перевод",
-      repeatCount: "0",
-      lastDate: "-",
-      repeatDate: "-",
-      image: "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-      textExample: "example",
-      textExampleTranslate: "пример",
-      textMeaning: "meaning",
-      textMeaningTranslate: "определение",
-    },
   }),
-  async mounted() {
-    await this.getWords(this.tab.split("-")[1]);
-    this.audio = new AudioControl();
-  },
   computed: {
     cuirrentDifficultyCopy() {
       return this.cuirrentDifficulty + 1;
-    },
-  },
-  watch: {
-    tab(val) {
-      this.loading = true;
-      this.getWords(val.split("-")[1]);
-    },
-    page() {
-      this.loading = true;
-      this.getWords(this.tab.split("-")[1]);
-    },
-  },
-  methods: {
-    async getWords(tab) {
-      const res = await this.$store.dispatch("getUserAggregateWords", {
-        difficulty: parseInt(tab, 10),
-        page: this.page - 1,
-        wordsPerPage: this.WORDS_PER_PAGE,
-      });
-      if (!res.success) {
-        this.showAlert("error", "Ошибка!", res.error);
-      }
-      this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
-
-      this.words = res.result.map((w) => {
-        return {
-          word: w.word,
-          audio: w.audio,
-          transcription: w.transcription,
-          wordTranslate: w.wordTranslate,
-          repeatCount: w.userWord.optional.repeatCount,
-          lastDate: new Date(w.userWord.optional.lastDate).toLocaleString("ru-Ru"),
-          repeatDate: new Date(w.userWord.optional.repeatDate).toLocaleString("ru-Ru"),
-          image: `${config.dataBaseUrl}${w.image}`,
-          textExample: w.textExample,
-          textExampleTranslate: w.textExampleTranslate,
-          textMeaning: w.textMeaning,
-          textMeaningTranslate: w.textMeaningTranslate,
-        };
-      });
-      this.loading = false;
-    },
-    showFullInfo(word) {
-      this.fullInfoCard = word;
-      this.fullInfo = true;
-    },
-    hideFullInfo() {
-      this.fullInfo = false;
-    },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
     },
   },
 };
