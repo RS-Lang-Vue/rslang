@@ -73,16 +73,26 @@
       <EndGameInfo :isShowEndGameInfo="isEndGame" v-on:closeEndGameInfo="closeEndGameInfo" />
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn v-if="isHelpButtonAccessibility" color="primary" @click="showSkipPhrasePuzzle">
+        <v-btn
+          v-if="isHelpButtonAccessibility"
+          color="primary"
+          class="game-btn"
+          @click="showSkipPhrasePuzzle"
+        >
           Не знаю
         </v-btn>
-        <v-btn v-if="isCheckButtonAccessibility" color="primary" @click="checkResult">
+        <v-btn
+          v-if="isCheckButtonAccessibility"
+          color="primary"
+          class="game-btn"
+          @click="checkResult"
+        >
           Проверить
         </v-btn>
-        <v-btn v-if="isPhraseCollected" color="primary" @click="continueGame">
+        <v-btn v-if="isPhraseCollected" color="primary" class="game-btn" @click="continueGame">
           Продолжить
         </v-btn>
-        <v-btn v-if="isEndRound" color="primary" @click="openRoundStatistics">
+        <v-btn v-if="isEndRound" color="primary" class="game-btn" @click="openRoundStatistics">
           Результат
         </v-btn>
       </v-card-actions>
@@ -143,6 +153,7 @@ export default {
       "getResultsCardsEP",
       "getIsUserChangedRoundEP",
       "getStatisticsEP",
+      "isLoggedIn",
     ]),
     isAllСardsInResults() {
       return this.getResultsCardsEP.length === this.getPhrase().length;
@@ -184,13 +195,15 @@ export default {
       "setIsUserChangedRoundEP",
       "setStatisticsEP",
       "downloadSettingsEP",
+      "addAnswerResult",
       "setLoading",
+      "setError",
     ]),
     async updateSettingsFromServer() {
       await this.downloadSettingsEP();
       if (this.getSettingsEP.roundsInLevelCount === 0) {
         this.fetchRoundsPerLevelCountEP(0).catch((err) => {
-          this.showAlert("error", "Error", err.message);
+          this.setError(err.message);
         });
       }
     },
@@ -200,18 +213,14 @@ export default {
       this.arrayOfCardsOfCompletedRounds = [];
       this.currentPhraseNumber = 0;
       this.clearGameState();
-      this.fetchWordsForRoundEP(this.getSettingsEP)
-        .then(() => {
-          setTimeout(() => {
-            this.setLoading(true);
-            this.startNewPhrasePuzzle();
-            this.setRoundPainting();
-            this.setIsUserChangedRoundEP(false);
-          }, 0);
-        })
-        .catch((err) => {
-          this.showAlert("error", "Error", err.message);
-        });
+      this.fetchWordsForRoundEP(this.getSettingsEP).then(() => {
+        setTimeout(() => {
+          this.setLoading(true);
+          this.startNewPhrasePuzzle();
+          this.setRoundPainting();
+          this.setIsUserChangedRoundEP(false);
+        }, 0);
+      });
       setTimeout(() => {
         this.isVisible = true;
         this.setLoading(false);
@@ -236,7 +245,7 @@ export default {
       this.audio.stop();
       this.AUDIO_URL = "";
     },
-    goToNextRound() {
+    async goToNextRound() {
       const options = { ...this.getSettingsEP };
       if (options.round[options.level] === options.roundsInLevelCount) {
         if (options.level === options.levelCount) {
@@ -245,12 +254,12 @@ export default {
         }
         options.level += 1;
         this.fetchRoundsPerLevelCountEP(options.level).catch((err) => {
-          this.showAlert("error", "Error", err.message);
+          this.setError(err.message);
         });
       } else {
         options.round[options.level] += 1;
       }
-      this.setSettingsEP(options);
+      await this.setSettingsEP(options);
       this.startNewRound();
       return true;
     },
@@ -293,7 +302,9 @@ export default {
       if (statisticsArray) this.setStatisticsEP(JSON.parse(statisticsArray));
     },
     showSkipPhrasePuzzle() {
-      this.roundResults.skip = this.getWordsForRoundEP[this.currentPhraseNumber];
+      const word = this.getWordsForRoundEP[this.currentPhraseNumber];
+      this.roundResults.skip = word;
+      this.sendWordStatisticsToTheServer(word.id, false);
       const skip = [...this.getResultsCardsEP, ...this.getSourceCardsEP];
       skip.forEach((el) => {
         const item = el;
@@ -355,7 +366,9 @@ export default {
       if (error) {
         this.isErrors = true;
       } else {
-        this.roundResults.success = this.getWordsForRoundEP[this.currentPhraseNumber];
+        const word = this.getWordsForRoundEP[this.currentPhraseNumber];
+        this.roundResults.succes = word;
+        this.sendWordStatisticsToTheServer(word.id, true);
         this.isPhraseCollected = true;
         this.audio.play(this.AUDIO_URL);
       }
@@ -392,13 +405,10 @@ export default {
       this.isEndGame = false;
       this.startNewRound();
     },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
+    sendWordStatisticsToTheServer(id, isCorrect) {
+      if (this.isLoggedIn) {
+        this.addAnswerResult({ wordId: id, isCorrectAnswer: isCorrect });
+      }
     },
   },
 };

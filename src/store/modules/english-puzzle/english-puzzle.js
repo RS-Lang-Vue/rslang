@@ -19,7 +19,7 @@ export default {
         speakAuto: true,
       },
     },
-    isUserChangedRound: false,
+    isUserChangedRoundEP: false,
     sourceCards: [],
     resultsCards: [],
   },
@@ -28,7 +28,7 @@ export default {
       state.settingsEP = options;
     },
     updateIsUserChangedRoundEP(state, value) {
-      state.isUserChangedRound = value;
+      state.isUserChangedRoundEP = value;
     },
     updateSourceCardsEP(state, value) {
       state.sourceCards = value;
@@ -45,16 +45,27 @@ export default {
       commit("updateSettingsEP", options);
       dispatch("setUserSettingsEpRootState", options);
     },
-    async downloadSettingsEP({ commit, dispatch, rootState }) {
-      await dispatch("downloadSettings");
+    async downloadSettingsEP({ state, commit, getters, dispatch, rootState }) {
+      if (getters.isLoggedIn) {
+        await dispatch("downloadSettings");
+      }
       const { optional } = rootState.userSettings;
-      commit("updateSettingsEP", optional.gamePuzzle);
+      const optionalKeys = Object.keys(state.settingsEP).sort();
+      let match = true;
+      Object.keys(optional.gamePuzzle)
+        .sort()
+        .forEach((item, index) => {
+          if (item !== optionalKeys[index]) match = false;
+        });
+      if (match) commit("updateSettingsEP", optional.gamePuzzle);
     },
-    setUserSettingsEpRootState({ commit, dispatch, rootState }, options) {
+    setUserSettingsEpRootState({ commit, dispatch, getters, rootState }, options) {
       const { userSettings } = rootState;
       userSettings.optional.gamePuzzle = options;
       commit("setUserSettings", userSettings);
-      dispatch("uploadSettings");
+      if (getters.isLoggedIn) {
+        dispatch("uploadSettings");
+      }
     },
     setIsUserChangedRoundEP({ commit }, value) {
       commit("updateIsUserChangedRoundEP", value);
@@ -84,7 +95,7 @@ export default {
       return state.settingsEP;
     },
     getIsUserChangedRoundEP(state) {
-      return state.isUserChangedRound;
+      return state.isUserChangedRoundEP;
     },
     getSourceCardsEP(state) {
       return state.sourceCards;

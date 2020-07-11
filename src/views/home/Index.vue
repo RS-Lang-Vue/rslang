@@ -100,11 +100,11 @@ const cards = [
     additionalButton: { title: "Инфо", link: "" },
   },
   {
-    cardTitle: "Своя игра",
+    cardTitle: "Find The Pair",
     cardSubtitle: "Мини игра",
     cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/our-game" },
+      "Игра развивает память и помогает изучать слова. Изучение построено на сопоставлении слова и картинки.",
+    mainButton: { title: "Играть", link: "/games/start-find-the-pair" },
     additionalButton: { title: "Инфо", link: "" },
   },
 ];

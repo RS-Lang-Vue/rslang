@@ -4,8 +4,7 @@
       <v-list>
         <v-list-item link>
           <v-list-item-content>
-            <v-list-item-title class="title">User Name</v-list-item-title>
-            <v-list-item-subtitle>login@email.com</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ email }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -37,9 +36,9 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app collapse-on-scroll color="indigo" dark>
+    <v-app-bar app color="indigo" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>RS Lang{{ title }}</v-toolbar-title>
+      <v-toolbar-title class="text-body-2 text-sm-h6">RS Lang{{ title }}</v-toolbar-title>
     </v-app-bar>
   </div>
 </template>
@@ -66,7 +65,11 @@ const drawerGroups = [
     { link: "/games/savannah", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
     { link: "/games/audio-call", icon: "mdi-nintendo-game-boy", title: 'Игра "Аудиовызов"' },
     { link: "/games/sprint", icon: "mdi-nintendo-game-boy", title: 'Игра "Спринт"' },
-    { link: "/games/our-game", icon: "mdi-nintendo-game-boy", title: 'Игра "Своя игра"' },
+    {
+      link: "/games/start-find-the-pair",
+      icon: "mdi-nintendo-game-boy",
+      title: 'Игра "Find The Pair"',
+    },
   ],
 ];
 
@@ -74,6 +77,7 @@ export default {
   data: () => ({
     drawer: null,
     drawerGroups,
+    email: localStorage.getItem("email") || "",
   }),
   computed: {
     title() {
@@ -83,7 +87,6 @@ export default {
   methods: {
     handleLogout() {
       this.unsetUser();
-      this.$router.push("/auth/login");
     },
     ...mapMutations(["unsetUser"]),
   },

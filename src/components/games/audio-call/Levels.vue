@@ -52,7 +52,7 @@ export default {
         this.$store.commit("SET_AUDIO_CALL_CURRENT_LEVEL", level.id);
         await this.fetchWords({ group: level.id, page: 0 });
       } catch (error) {
-        console.log(error);
+        /* console.log(error); */
       } finally {
         this.$store.commit("SET_IS_AUDIO_CALL_STARTED", true);
         this.$store.commit("SET_IS_AUDIO_CALL_PAGE_LOADING", false);

@@ -2,7 +2,7 @@
   <v-list class="completed-cards pa-0">
     <v-list-item
       class="completed-card pa-0 ep-card-height"
-      v-for="(card, i) of phrase"
+      v-for="(card, i) of arrayOfWords"
       :key="i"
       :style="({ width: card.width, overflow: card.isLastСard ? 'hidden' : ''})"
     >
@@ -36,6 +36,9 @@ export default {
     ...mapGetters(["getSettingsEP"]),
     isCardBackground() {
       return this.getSettingsEP.hints.showBackground;
+    },
+    arrayOfWords() {
+      return [...this.phrase].sort((a, b) => a.id - b.id);
     },
   },
 };
