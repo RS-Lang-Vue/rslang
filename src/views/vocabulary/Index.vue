@@ -22,49 +22,16 @@
         :next-icon="undefined"
         :icons-and-text="icons"
       >
-        <v-tabs-slider></v-tabs-slider>
-
         <v-tab v-for="i in tabs" :key="i" :href="`#tab-${i}`">
           {{ tabNames[i] }}
         </v-tab>
 
         <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
-          <v-simple-table>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-center">Слово</th>
-                  <th class="text-center">Транскрипция</th>
-                  <th class="text-center">Перевод</th>
-                  <th class="text-center">Повторялось</th>
-                  <th class="text-center">Дата последнего повторения</th>
-                  <th class="text-center">Дата планируемого повторения</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in words" :key="item.name">
-                  <td>{{ item.word }}</td>
-                  <td>{{ item.transcription }}</td>
-                  <td>{{ item.wordTranslate }}</td>
-                  <td>{{ item.userWord.optional.repeatCount }}</td>
-                  <td>
-                    {{ new Date(item.userWord.optional.lastDate).toLocaleString("ru-Ru") }}
-                  </td>
-                  <td>
-                    {{ new Date(item.userWord.optional.repeatDate).toLocaleString("ru-Ru") }}
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
+          <v-data-table :headers="headers" :items="words" :items-per-page="20" class="elevation-1">
+          </v-data-table>
         </v-tab-item>
       </v-tabs>
     </div>
-
-    Vocabulary page
-    {{ cuirrentDifficulty }}
-    {{ cuirrentDifficultyCopy }}
-    <input v-model="cuirrentDifficulty" />
   </div>
 </template>
 
@@ -72,6 +39,44 @@
 export default {
   data: () => ({
     tabNames: ["Изучаемые слова", "Сложные слова", "Удалённые слова"],
+    headers: [
+      {
+        text: "Слово",
+        align: "start",
+        sortable: false,
+        value: "word",
+      },
+      {
+        text: "Транскрипция",
+        align: "start",
+        sortable: false,
+        value: "transcription",
+      },
+      {
+        text: "Перевод",
+        align: "start",
+        sortable: false,
+        value: "wordTranslate",
+      },
+      {
+        text: "Количество повторений",
+        align: "start",
+        sortable: false,
+        value: "repeatCount",
+      },
+      {
+        text: "Дата последнего повторения",
+        align: "start",
+        sortable: false,
+        value: `lastDate`,
+      },
+      {
+        text: "Дата планируемого повторения",
+        align: "start",
+        sortable: false,
+        value: `repeatDate`,
+      },
+    ],
     tab: "tab-0",
     icons: false,
     tabs: [0, 1, 2],
@@ -98,15 +103,22 @@ export default {
     async getWords(tab) {
       console.log(tab);
       const res = await this.$store.dispatch("getUserAggregateWords", {
-        page: 0,
-        wordsPerPage: 20,
         difficulty: parseInt(tab, 10),
       });
       console.log(res);
       if (!res.success) {
         this.showAlert("error", "Ошибка!", res.error);
       }
-      this.words = res.result;
+      this.words = res.result.map((w) => {
+        return {
+          word: w.word,
+          transcription: w.transcription,
+          wordTranslate: w.wordTranslate,
+          repeatCount: w.userWord.optional.repeatCount,
+          lastDate: new Date(w.userWord.optional.lastDate).toLocaleString("ru-Ru"),
+          repeatDate: new Date(w.userWord.optional.repeatDate).toLocaleString("ru-Ru"),
+        };
+      });
       this.loading = false;
     },
     showAlert(type, title, text) {
