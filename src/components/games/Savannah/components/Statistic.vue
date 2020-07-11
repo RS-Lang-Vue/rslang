@@ -26,7 +26,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in getSavannahStatistic" :key="item.id">
+            <tr v-for="item in statistic" :key="item.id">
               <td>{{ item.date }}</td>
               <td>{{ item.correct }}</td>
               <td>{{ item.wrong }}</td>
@@ -40,15 +40,15 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
   data() {
     return {
+      statistic: localStorage.getItem("SavannahStatistic")
+        ? JSON.parse(localStorage.getItem("SavannahStatistic"))
+        : [],
       statisticVisible: false,
     };
   },
-  computed: mapGetters(["getSavannahStatistic"]),
 };
 </script>
 

@@ -4,10 +4,10 @@
       <v-icon large color="#ffffff">mdi-close</v-icon>
     </v-btn>
     <div class="field" v-if="!loading">
-      <v-btn  class="source-word" color="transparent" elevation="0">{{
+      <v-btn class="source-word" color="transparent" elevation="0">{{
         sourceData[countWords].word
       }}</v-btn>
-      <hr class="line">
+      <hr class="line" />
     </div>
     <v-card v-if="!loading" color="transparent" elevation="0" class="content">
       <v-container>
@@ -20,7 +20,7 @@
         </v-row>
       </v-container>
     </v-card>
-    <div class="score">{{this.score}} из 20</div>
+    <div class="score">{{ this.score }} из 20</div>
     <RoundStatistic
       :roundModalActive="roundModalActive"
       :statistic="stat"
@@ -131,7 +131,7 @@ export default {
         isCorrectAnswer: answer,
       });
       this.destroy();
-      await  this.btnActivity();
+      await this.btnActivity();
       if (this.countWords !== 19) {
         this.countWords += 1;
         this.position = -10;
@@ -142,6 +142,7 @@ export default {
           this.saveGameSettings();
         }
         this.roundModalActive = true;
+        this.score = 0;
       }
     },
     async btnActivity() {
@@ -152,11 +153,13 @@ export default {
         } else {
           el.classList.add("incorrect");
         }
+        el.setAttribute("disabled", "true");
       });
       const wait = async () => {
         const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         await delay(800);
         buttons.forEach((el) => {
+          el.removeAttribute("disabled");
           el.classList.remove("correct");
           el.classList.remove("incorrect");
         });
@@ -177,7 +180,16 @@ export default {
     sendStatistic() {
       const date = new Date().toLocaleString("ru").split(",")[0];
       this.stat.date = date;
-      this.stat.id = this.getSavannahStatistic.length;
+      /*       this.stat.id = this.getSavannahStatistic.length; */
+      if (localStorage.getItem("SavannahStatistic")) {
+        const localStat = JSON.parse(localStorage.getItem("SavannahStatistic"));
+        this.stat.id = localStat.length;
+        localStat.push(this.stat);
+        localStorage.setItem("SavannahStatistic", JSON.stringify(localStat));
+      } else {
+        this.stat.id = 0;
+        localStorage.setItem("SavannahStatistic", JSON.stringify([this.stat]));
+      }
       this.addSavannahStatistic(this.stat);
     },
     saveGameSettings() {
@@ -216,9 +228,8 @@ export default {
       }
     },
     destroy() {
-      cancelAnimationFrame(this.ainmated)
-    }
-
+      cancelAnimationFrame(this.ainmated);
+    },
   },
 };
 </script>
@@ -237,9 +248,7 @@ export default {
     position: absolute;
     bottom: 20%;
     width: 100%;
-    
   }
-  
 }
 .source-word {
   color: #e5fd0a !important;
@@ -277,7 +286,7 @@ export default {
 }
 @media screen and (max-width: 500px) {
   .savannah-container {
-  justify-content: flex-start !important;
+    justify-content: flex-start !important;
   }
   .example__container {
     text-align: right;

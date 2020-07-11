@@ -1,11 +1,7 @@
 <template>
   <v-dialog class="roundStatistic" v-model="roundModalActive" persistent max-width="100vw">
     <v-card>
-      <v-toolbar dark color="primary">
-        <v-btn icon dark @click="$emit('closeModal')">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar>
+      <v-toolbar dark color="primary"> </v-toolbar>
       <v-simple-table>
         <template v-slot:default>
           <thead>
