@@ -16,7 +16,7 @@
       <v-tabs-slider></v-tabs-slider>
 
       <v-tab v-for="i in tabs" :key="i" :href="`#tab-${i}`">
-        Tab {{ i }}
+        {{ tabNames[i] }}
         <v-icon v-if="icons">mdi-phone</v-icon>
       </v-tab>
 
@@ -36,11 +36,12 @@
 <script>
 export default {
   data: () => ({
+    tabNames: ["Изучаемые слова", "Сложные слова", "Удалённые слова"],
     tab: null,
     text:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     icons: false,
-    tabs: 3,
+    tabs: [0, 1, 2],
     cuirrentDifficulty: 0,
   }),
   computed: {
