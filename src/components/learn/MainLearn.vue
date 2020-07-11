@@ -1,14 +1,16 @@
 <template>
   <div v-if="isVisibleContent">
     <v-card class="mx-auto text-start mt-1" max-width="700">
-      <v-card-title class="cyan darken-1">
+      <v-card-title :class="[isCardStudied ? 'grey' : 'cyan darken-1']">
         <div class="dots">
           <span v-for="n in 5" :key="n" class="dot"></span>
         </div>
-        <span class="white--text">новое слово</span>
-
+        <span class="white--text body-1">новое слово</span>
         <v-spacer></v-spacer>
-
+        <div v-if="isCardStudied">
+          <span class="teal--text text--accent-1 h6">карточка изучена</span>
+        </div>
+        <v-spacer></v-spacer>
         <v-btn
           v-if="learnSettingsToggles.deleteButton.state"
           dark
@@ -29,8 +31,9 @@
               <v-card-text>
                 <div class="card-text__word pb-5">
                   <div class="card-text__word-container text-sm-h4 text-h5 mb-3">
-                    <div class="card-text__word-element" v-html="currentErrorWordHtml"></div>
+                    <div class="card-text__word-element" v-html="currentWordHtml"></div>
                     {{ currentWord }}
+                    <!-- :value="isCardStudied ? currentWord : ''" -->
                     <v-text-field
                       v-model.lazy="inputValue"
                       @keyup.enter="checkWord"
@@ -43,6 +46,7 @@
                       :rules="nameRules"
                       required
                       autofocus
+                      :disabled="isCardStudied"
                     ></v-text-field>
                   </div>
                 </div>
@@ -111,6 +115,7 @@
           text
           color="indigo accent-4"
           title="Показать правильный ответ"
+          :disabled="isCardStudied"
         >
           ответ
         </v-btn>
@@ -120,16 +125,22 @@
         </v-btn>
       </v-card-actions>
 
-      <v-card-actions>
-        <v-btn :disabled="step === 0" text @click="step--">
-          Back
-        </v-btn>
+      <v-card-actions class="pb-0">
         <v-spacer></v-spacer>
+        <v-btn color="blue darken-2" icon :disabled="step === 0" @click="step--">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
         <div class="counter ml-4 mr-4">{{ step + 1 }} / {{ wordsArray.length }}</div>
-        <v-spacer></v-spacer>
-        <v-btn :disabled="step === wordsArray.length - 1" color="primary" depressed @click="step++">
-          Next
+        <v-btn
+          color="blue darken-2"
+          icon
+          :disabled="step === wordsArray.length - 1"
+          depressed
+          @click="step++"
+        >
+          <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
+        <v-spacer></v-spacer>
       </v-card-actions>
 
       <v-progress-linear
@@ -208,7 +219,6 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import config from "@/config/config";
-// import { LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
 export default {
@@ -217,9 +227,9 @@ export default {
     wordsArray: {},
     step: 0,
     audio: {},
-    currentErrorWordHtml: "",
-    inputValue: "",
-    isCardStudied: false,
+    currentWordHtml: "",
+    intut: "",
+
     isRightWord: false,
     isErrorWord: false,
     isIntutOpacity: false,
@@ -238,9 +248,32 @@ export default {
       "getMixWordsArray",
       "getCurrentArray",
       "getLearnSettings",
+      "getCurrentCardStudied",
     ]),
+    inputValue: {
+      get() {
+        return this.isCardStudied ? this.currentWord : this.intut;
+      },
+      set(value) {
+        this.intut = value;
+      },
+    },
+    currentWordObject() {
+      return this.getCurrentArray[this.step];
+    },
+    isCardStudied: {
+      get() {
+        // return !!this.$store.state.learn.mixWordsArray[this.step].isCardStudied;
+        const isStudied = !!this.currentWordObject.isCardStudied;
+        return isStudied;
+      },
+      set(value) {
+        // this.$store.commit("updateCurrentCardStudied", { value, step: this.step });
+        this.currentWordObject.isCardStudied = value;
+      },
+    },
     currentWord() {
-      return this.wordsArray[this.step].word;
+      return this.currentWordObject.word;
     },
     learnSettingsToggles() {
       return this.$store.state.userSettings.optional.learn.toggles;
@@ -252,7 +285,7 @@ export default {
       return this.isCardStudied && this.isTranslateState;
     },
     textMeaning() {
-      let text = this.wordsArray[this.step].textMeaning;
+      let text = this.currentWordObject.textMeaning;
       const regex = /<i>\w+<\/i>/;
       if (!this.isCardStudied) {
         text = text.replace(regex, " ... ");
@@ -260,7 +293,7 @@ export default {
       return text;
     },
     textExample() {
-      let text = this.wordsArray[this.step].textExample;
+      let text = this.currentWordObject.textExample;
       const regex = /<b>\w+<\/b>/;
       if (!this.isCardStudied) {
         text = text.replace(regex, " ... ");
@@ -272,6 +305,7 @@ export default {
     step: function steps() {
       this.autoAudioPlayWord();
       this.clear();
+      // if (this.isCardStudied) this.inputValue = this.currentWord;
     },
   },
 
@@ -290,7 +324,8 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setLoading", "getLearnArraysFromServer"]),
+    ...mapActions(["setLoading", "getLearnArraysFromServer", "updateMixWordsArrayObjectByStep"]),
+
     async prepareStart() {
       console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
 
@@ -303,24 +338,20 @@ export default {
 
     autoAudioPlayWord() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        this.audio.forcePlay(this.wordsArray[this.step].audio);
+        this.audio.forcePlay(this.currentWordObject.audio);
       }
     },
     playAllAudio() {
       if (this.learnSettingsToggles.autoPronunciation.state) {
-        setTimeout(() => this.audio.forcePlay(this.wordsArray[this.step].audio), 100);
+        setTimeout(() => this.audio.forcePlay(this.currentWordObject.audio), 100);
 
         if (this.learnSettingsToggles.textMeaning.state) {
-          setTimeout(() => this.audio.play(this.wordsArray[this.step].audioMeaning), 500);
+          setTimeout(() => this.audio.play(this.currentWordObject.audioMeaning), 500);
         }
         if (this.learnSettingsToggles.textExample.state) {
-          setTimeout(() => this.audio.play(this.wordsArray[this.step].audioExample), 2000);
+          setTimeout(() => this.audio.play(this.currentWordObject.audioExample), 2000);
         }
       }
-    },
-
-    displayWordRight() {
-      this.isRightWord = true;
     },
 
     setInputFieldOpacity() {
@@ -333,7 +364,23 @@ export default {
       this.isShowEvaluation = true;
     },
 
+    displayWordRightInInput() {
+      this.inputValue = this.currentWord;
+      this.playAllAudio();
+      this.isRightWord = true;
+    },
+
+    showAnswer() {
+      this.currentWordHtml = this.currentWord;
+      this.inputValue = "";
+      this.isIntutOpacity = true;
+      setTimeout(() => {
+        this.isIntutOpacity = false;
+      }, 5000);
+    },
+
     handleErrorWord(inputWord) {
+      this.playAllAudio();
       this.isErrorWord = true;
       const charsArrayCurrentWord = this.currentWord.split("");
       const charsArrayInputWord = inputWord.split("");
@@ -356,29 +403,22 @@ export default {
         return newArray;
       }, []);
 
+      this.currentWordHtml = tagArray.join("");
+      // !error
       this.inputValue = "";
-      this.currentErrorWordHtml = tagArray.join("");
       this.isIntutOpacity = true;
+      // this.displayWordInInput();
+
       return countError;
     },
 
-    handleAnswerWord() {
-      this.playAllAudio();
-      this.displayWordRight();
-    },
-
-    showAnswer() {
-      this.inputValue = this.currentWord;
-      this.handleAnswerWord();
-      this.isCardStudied = true;
-    },
-
     handleRightWord() {
+      this.playAllAudio();
       this.isCardStudied = true;
-      this.handleAnswerWord();
-      setTimeout(this.setEvaluationcapital, 2000);
+      this.displayWordRightInInput();
+
+      setTimeout(this.setEvaluation, 2000);
       // todo set raiting word
-      setTimeout(this.nextStep, 12000);
     },
 
     checkWord() {
@@ -387,9 +427,9 @@ export default {
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
         if (inputWord === this.currentWord) {
-          this.handleRightWord();
+          if (!this.isCardStudied) this.handleRightWord();
+          this.nextStep();
         } else {
-          this.playAllAudio();
           const countError = this.handleErrorWord(inputWord);
           console.log("countError >>> ", countError);
           // todo set focus on input
@@ -400,9 +440,9 @@ export default {
 
     clear() {
       this.inputValue = "";
-      this.isCardStudied = false;
+      // this.isCardStudied = false;
       this.isRightWord = false;
-      this.currentErrorWordHtml = "";
+      this.currentWordHtml = "";
       this.isIntutOpacity = false;
       this.isShowEvaluation = false;
     },
@@ -437,6 +477,10 @@ export default {
       );
       if (this.step === this.wordsArray.length - 1) this.runEndLearn();
       else {
+        this.updateMixWordsArrayObjectByStep({
+          step: this.step,
+          currentObject: this.currentWordObject,
+        });
         this.clear();
         this.step += 1;
       }

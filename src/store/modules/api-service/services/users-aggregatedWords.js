@@ -47,7 +47,6 @@ export default {
           url += `&filter={"userWord":null}`;
         }
       }
-      console.log(url);
       const res = await fetch(url, {
         method: "GET",
         withCredentials: true,

@@ -52,6 +52,11 @@ export default {
         console.error(error.message);
       }
     },
+    updateMixWordsArrayObjectByStep({ state }, payload) {
+      const { step, currentObject } = payload;
+      // todo: send the word object to sever
+      state.mixWordsArray[step] = currentObject;
+    },
   },
 
   mutations: {
@@ -69,6 +74,13 @@ export default {
     },
     updateMixWordsArray(state, mixWordsArray) {
       state.mixWordsArray = mixWordsArray;
+    },
+    // updatecurrentWordObject(state, payload){
+    //    //
+    // },
+    updateCurrentCardStudied(state, payload) {
+      const { value, step } = payload;
+      state.mixWordsArray[step].isCardStudied = value;
     },
   },
   getters: {
