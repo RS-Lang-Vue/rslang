@@ -6,28 +6,47 @@
         <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto amber lighten-5" max-width="500">
             <v-card-title class="headline">Задача на сегодня</v-card-title>
-            <v-card-text class="text-left pb-1"
-              >Изучить {{ wordsPerDay }} карточек, в том числе
-              {{ newWordsPerDay }} новых</v-card-text
-            >
+            <v-card-text class="text-left pb-1">
+              <span v-if="getIsNewWordsLearned && getIsRepeatWordsLearned">
+                Вы достигли цели. Пройдено карточк - {{ wordsPerDay }}</span
+              >
+              <span v-else>
+                Изучить {{ wordsPerDay }} карточек, в том числе {{ newWordsPerDay }} новых
+              </span>
+            </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" @click="startLean(LEARN_TYPE_ALL)"
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean(LEARN_TYPE_ALL)"
+                :disabled="getIsNewWordsLearned && getIsRepeatWordsLearned"
                 >Выполнить</v-btn
               >
             </v-card-actions>
 
-            <v-card-text class="text-left pb-1"
-              >Сегодня вы изучили 0 карточек. Для достижения цели завершите 20 карточек</v-card-text
-            >
+            <v-card-text class="text-left pb-1">
+              <p>
+                Сегодня вы изучили {{ getCountLearnedNewCard }} новых слов.
+                <span v-if="getIsNewWordsLearned">Новые слова все изучены</span>
+              </p>
+              <p>
+                Повторили {{ getCountLearnedRepeatCard }} карточек.
+                <span v-if="getIsRepeatWordsLearned">Для повторения больше нет</span>
+              </p>
+            </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" @click="startLean(LEARN_TYPE_NEW)"
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean(LEARN_TYPE_NEW)"
+                :disabled="getIsNewWordsLearned"
                 >Изучить новые</v-btn
               >
               <v-btn
                 text
                 color="indigo accent-4"
                 @click="startLean(LEARN_TYPE_REPEAT)"
-                :disabled="wordsPerDay === newWordsPerDay"
+                :disabled="wordsPerDay === newWordsPerDay || getIsRepeatWordsLearned"
                 >Повторить слова</v-btn
               >
             </v-card-actions>
@@ -76,6 +95,7 @@
 
 <script>
 import { LEARN_TYPE_ALL, LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+import { mapGetters } from "vuex";
 
 const cards = [
   {
@@ -159,6 +179,15 @@ export default {
     LEARN_TYPE_REPEAT,
   }),
   computed: {
+    ...mapGetters([
+      // "getRepeatWordsArray",
+      // "getNewWordsArray",
+      "getCountLearnedNewCard",
+      "getCountLearnedRepeatCard",
+      "getIsNewWordsLearned",
+      "getIsRepeatWordsLearned",
+    ]),
+
     wordsPerDay() {
       return this.$store.state.userSettings.optional.learn.wordsPerDay;
     },
@@ -166,7 +195,7 @@ export default {
       return this.$store.state.userSettings.optional.learn.newWordsPerDay;
     },
   },
-  async creared() {
+  async created() {
     this.$store.dispatch("setLoading", true);
     try {
       await this.$store.dispatch("downloadSettings");
@@ -176,6 +205,7 @@ export default {
       this.$store.dispatch("setLoading", false);
     }
   },
+
   methods: {
     startLean(type) {
       this.$store.commit("updateLearnType", type);

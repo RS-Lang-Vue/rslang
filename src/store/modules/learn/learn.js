@@ -8,7 +8,7 @@ export default {
       isInProgressLearn: false,
       isTaskCompleted: false,
       isArraysLoaded: false,
-      step: 0,
+      // step: 0,
     },
     learnType: LEARN_TYPE_ALL,
 
@@ -25,7 +25,7 @@ export default {
 
       try {
         const resNewWords = await dispatch("getUserAggregateWords", {
-          // difficulty: 0 //0 - common words
+          // difficulty: 0 // 0 - common words
           page: 0,
           wordsPerPage: newWordsPerDay,
           onlyNotLearned: true,
@@ -36,7 +36,7 @@ export default {
 
         if (repeatWordsPerDay) {
           const resRepeatWords = await dispatch("getUserAggregateWords", {
-            // difficulty: 0 //0 - common words
+            // difficulty: 0 // 0 - common words
             page: 0,
             wordsPerPage: repeatWordsPerDay,
             onlyLearned: true,
@@ -52,11 +52,11 @@ export default {
         console.error(error.message);
       }
     },
-    updateMixWordsArrayObjectByStep({ state }, payload) {
-      const { step, currentObject } = payload;
-      // todo: send the word object to sever
-      state.mixWordsArray[step] = currentObject;
-    },
+    // todo: send the word object to sever
+    // updateMixWordsArrayObjectByStep({ state }, payload) {
+    //   const { step, currentObject } = payload;
+    //   state.mixWordsArray.splice(step, 1, currentObject);
+    // },
   },
 
   mutations: {
@@ -75,22 +75,39 @@ export default {
     updateMixWordsArray(state, mixWordsArray) {
       state.mixWordsArray = mixWordsArray;
     },
-    // updatecurrentWordObject(state, payload){
-    //    //
-    // },
-    updateCurrentCardStudied(state, payload) {
-      const { value, step } = payload;
-      state.mixWordsArray[step].isCardStudied = value;
-    },
   },
   getters: {
+    getIsArraysLoaded(state) {
+      return state.currentLearnStateObject.isArraysLoaded;
+    },
     getNewWordsArray(state) {
-      // return state.newWordsArray;
       return state.mixWordsArray.filter((wordsObject) => !wordsObject.userWord);
     },
     getRepeatWordsArray(state) {
       return state.mixWordsArray.filter((wordsObject) => wordsObject.userWord);
     },
+
+    getCountLearnedNewCard(state, getters) {
+      if (getters.getIsArraysLoaded) {
+        return getters.getNewWordsArray.reduce((accumulator, wordsObject) => {
+          let count = accumulator;
+          if (wordsObject.isCardStudied) count += 1;
+          return count;
+        }, 0);
+      }
+      return 0;
+    },
+    getCountLearnedRepeatCard(state, getters) {
+      if (getters.getIsArraysLoaded) {
+        return getters.getRepeatWordsArray.reduce((accumulator, wordsObject) => {
+          let count = accumulator;
+          if (wordsObject.isCardStudied) count += 1;
+          return count;
+        }, 0);
+      }
+      return 0;
+    },
+
     getMixWordsArray(state) {
       return state.mixWordsArray;
     },
@@ -104,6 +121,24 @@ export default {
     },
     getCurrentLearnStateObject(state) {
       return state.currentLearnStateObject;
+    },
+    getLearnTypeIsNew(state) {
+      return state.learnType === LEARN_TYPE_NEW;
+    },
+    getLearnTypeIsRepeat(state) {
+      return state.learnType === LEARN_TYPE_REPEAT;
+    },
+    getIsNewWordsLearned(state, getters) {
+      if (getters.getIsArraysLoaded) {
+        return getters.getCountLearnedNewCard === getters.getNewWordsArray.length;
+      }
+      return false;
+    },
+    getIsRepeatWordsLearned(state, getters) {
+      if (getters.getIsArraysLoaded) {
+        return getters.getCountLearnedRepeatCard === getters.getRepeatWordsArray.length;
+      }
+      return false;
     },
   },
 };

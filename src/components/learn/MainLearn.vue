@@ -8,9 +8,9 @@
         <span class="white--text body-1">новое слово</span>
         <v-spacer></v-spacer>
         <div v-if="isCardStudied">
-          <span class="teal--text text--accent-1 h6">карточка изучена</span>
+          <span class="teal--text text--accent-1 body-1 mr-3">карточка изучена</span>
         </div>
-        <v-spacer></v-spacer>
+        <!-- <v-spacer></v-spacer> -->
         <v-btn
           v-if="learnSettingsToggles.deleteButton.state"
           dark
@@ -33,7 +33,6 @@
                   <div class="card-text__word-container text-sm-h4 text-h5 mb-3">
                     <div class="card-text__word-element" v-html="currentWordHtml"></div>
                     {{ currentWord }}
-                    <!-- :value="isCardStudied ? currentWord : ''" -->
                     <v-text-field
                       v-model.lazy="inputValue"
                       @keyup.enter="checkWord"
@@ -159,26 +158,26 @@
           <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
           <div class="d-flex justify-center flex-wrap text-center">
             <div class="d-flex flex-column">
-              <v-icon large color="teal darken-4">mdi-repeat</v-icon>
-              <v-btn class="ma-1" text color="teal accent-4">
+              <v-btn @click.stop="setEvaluation" class="ma-1" text color="teal accent-4">
+                <v-icon large color="teal darken-4">mdi-repeat</v-icon>
                 Снова
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
-              <v-btn class="ma-1" text color="deep-purple accent-4">
+              <v-btn @click.stop="setEvaluation" class="ma-1" text color="deep-purple accent-4">
+                <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
                 Трудно
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
-              <v-btn class="ma-1" text color="green accent-4">
+              <v-btn @click.stop="setEvaluation" class="ma-1" text color="green accent-4">
+                <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
                 Хорошо
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
-              <v-btn class="ma-1" text color="light-blue accent-4">
+              <v-btn @click.stop="setEvaluation" class="ma-1" text color="light-blue accent-4">
+                <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
                 Легко
               </v-btn>
             </div>
@@ -194,13 +193,22 @@
         </v-card-title>
 
         <v-card-text class="mt-5">
-          <p>Дневная норма выполнена.</p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-            dolor in
-          </p>
+          <div v-if="getLearnTypeIsNew" class="final-message final-message__new">
+            <p>Все запланированные новые слова изучены</p>
+            <p>Пройдено карточек - {{ getCountLearnedNewCard }}</p>
+          </div>
+          <div v-else-if="getLearnTypeIsRepeat" class="final-message final-message__new">
+            <p>Повтор слов выполнен</p>
+            <p>Пройдено карточек - {{ getCountLearnedRepeatCard }}</p>
+          </div>
+          <div v-else class="final-message final-message__all">
+            <p>На сегодня все.</p>
+            <p>
+              Задача выполнена. Изучено
+              {{ getCountLearnedNewCard + getCountLearnedRepeatCard }} карточек. Можно поиграть в
+              игры.
+            </p>
+          </div>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -229,7 +237,6 @@ export default {
     audio: {},
     currentWordHtml: "",
     intut: "",
-
     isRightWord: false,
     isErrorWord: false,
     isIntutOpacity: false,
@@ -241,14 +248,15 @@ export default {
 
   computed: {
     ...mapGetters([
-      "getLearnType",
+      "getCurrentCardStudied",
       "getCurrentLearnStateObject",
-      "getNewWordsArray",
-      "getRepeatWordsArray",
-      "getMixWordsArray",
+      "getLearnType",
       "getCurrentArray",
       "getLearnSettings",
-      "getCurrentCardStudied",
+      "getLearnTypeIsNew",
+      "getLearnTypeIsRepeat",
+      "getCountLearnedNewCard",
+      "getCountLearnedRepeatCard",
     ]),
     inputValue: {
       get() {
@@ -263,13 +271,11 @@ export default {
     },
     isCardStudied: {
       get() {
-        // return !!this.$store.state.learn.mixWordsArray[this.step].isCardStudied;
         const isStudied = !!this.currentWordObject.isCardStudied;
         return isStudied;
       },
       set(value) {
-        // this.$store.commit("updateCurrentCardStudied", { value, step: this.step });
-        this.currentWordObject.isCardStudied = value;
+        this.$set(this.currentWordObject, "isCardStudied", value);
       },
     },
     currentWord() {
@@ -305,7 +311,6 @@ export default {
     step: function steps() {
       this.autoAudioPlayWord();
       this.clear();
-      // if (this.isCardStudied) this.inputValue = this.currentWord;
     },
   },
 
@@ -313,6 +318,8 @@ export default {
     this.setLoading(true);
     try {
       await this.prepareStart();
+      const fastStep = this.getFastIndexOfIsNotLearnedWordObject();
+      if (fastStep) this.step = fastStep;
       this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
@@ -360,10 +367,6 @@ export default {
       }
     },
 
-    setEvaluation() {
-      this.isShowEvaluation = true;
-    },
-
     displayWordRightInInput() {
       this.inputValue = this.currentWord;
       this.playAllAudio();
@@ -404,31 +407,33 @@ export default {
       }, []);
 
       this.currentWordHtml = tagArray.join("");
-      // !error
       this.inputValue = "";
       this.isIntutOpacity = true;
-      // this.displayWordInInput();
-
       return countError;
+    },
+
+    setEvaluation() {
+      // todo set raiting word
+      this.nextStep();
     },
 
     handleRightWord() {
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRightInInput();
-
-      setTimeout(this.setEvaluation, 2000);
+      setTimeout(() => {
+        this.isShowEvaluation = true;
+      }, 2000);
       // todo set raiting word
     },
 
     checkWord() {
-      // console.log("inputValue >>> ", this.inputValue);
       const isNotEmpty = !!this.inputValue;
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
         if (inputWord === this.currentWord) {
           if (!this.isCardStudied) this.handleRightWord();
-          this.nextStep();
+          else this.nextStep();
         } else {
           const countError = this.handleErrorWord(inputWord);
           console.log("countError >>> ", countError);
@@ -440,7 +445,6 @@ export default {
 
     clear() {
       this.inputValue = "";
-      // this.isCardStudied = false;
       this.isRightWord = false;
       this.currentWordHtml = "";
       this.isIntutOpacity = false;
@@ -450,7 +454,6 @@ export default {
     showEndLearnInfo() {
       // todo show end's learn info modal window
       console.log("runing showEndLearnInfo");
-
       this.isShowEndLearnInfo = true;
     },
 
@@ -468,19 +471,20 @@ export default {
       this.$router.push("/home");
     },
 
-    nextStep() {
-      console.log(
-        "nextStep > this.step:",
-        this.step,
-        ", this.wordsArray.length:",
-        this.wordsArray.length
+    getFastIndexOfIsNotLearnedWordObject() {
+      const indexNotStudiedCart = this.wordsArray.findIndex(
+        (wordsObject) => !wordsObject.isCardStudied
       );
-      if (this.step === this.wordsArray.length - 1) this.runEndLearn();
-      else {
-        this.updateMixWordsArrayObjectByStep({
-          step: this.step,
-          currentObject: this.currentWordObject,
-        });
+      if (indexNotStudiedCart === -1) return false;
+      return indexNotStudiedCart;
+    },
+
+    nextStep() {
+      if (this.step === this.wordsArray.length - 1) {
+        const indexNotStudiedCart = this.getFastIndexOfIsNotLearnedWordObject();
+        if (!indexNotStudiedCart) this.runEndLearn();
+        else this.step = indexNotStudiedCart;
+      } else {
         this.clear();
         this.step += 1;
       }
