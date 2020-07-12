@@ -1,26 +1,26 @@
 import request from "@/requests/request";
-import config from "../../config/config";
+import checkToken from "@/helpers/check-token";
 
 export default {
   state: {
     _user: {
+      email: localStorage.getItem("email") || "",
       token: localStorage.getItem("token") || "",
-      userId: localStorage.getItem("userId") || "",
+      refreshToken: localStorage.getItem("refreshToken") || "",
+      userId: localStorage.getItem("userId") || null,
       tokenReceiptTime: localStorage.getItem("tokenReceiptTime") || "",
     },
   },
   actions: {
-    async getUser({ commit }) {
-      if (this.state.user._user.userId === "") return undefined;
-      const deltaTime = Date.now() - this.state.user._user.tokenReceiptTime;
-      if (deltaTime > config.tokenLifetime) {
-        commit("unsetUser");
-      } else if (deltaTime > config.tokenLifetime / 2) {
-        await this.dispatch("refreshToken");
+    getUser({ state, getters, dispatch }) {
+      if (!getters.isLoggedIn) return false;
+      if (checkToken.isTokenOutdated()) {
+        dispatch("unsetUser");
+        return false;
       }
-      return this.state.user._user;
+      return state._user;
     },
-    createUser(ctx, user) {
+    createUser(_, user) {
       return new Promise((resolve, reject) => {
         request({
           method: "POST",
@@ -32,7 +32,6 @@ export default {
       });
     },
     loginUser({ commit, dispatch }, user) {
-      dispatch("setLoading", true);
       return new Promise((resolve, reject) => {
         request({
           method: "POST",
@@ -40,38 +39,45 @@ export default {
           data: user,
         })
           .then((res) => {
-            const { token, userId } = res.data;
+            const { email } = JSON.parse(res.config.data);
+            const { token, refreshToken, userId } = res.data;
             const tokenReceiptTime = Date.now();
+            localStorage.setItem("email", email);
             localStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", refreshToken);
             localStorage.setItem("userId", userId);
             localStorage.setItem("tokenReceiptTime", tokenReceiptTime);
-            commit("setUser", { token, userId, tokenReceiptTime });
+            commit("setUser", { email, token, refreshToken, userId, tokenReceiptTime });
             dispatch("downloadSettings");
-            dispatch("setLoading", false);
             resolve(res);
           })
           .catch((err) => {
-            dispatch("setLoading", false);
             reject(err);
           });
       });
     },
-    async refreshToken() {
-      const user = this.state.user._user;
+    async refreshToken({ commit, dispatch }) {
+      const user = await dispatch("getUser");
       const res = await fetch(
         `https://afternoon-falls-25894.herokuapp.com/users/${user.userId}/tokens`,
         {
           method: "GET",
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user.refreshToken}`,
             Accept: "application/json",
           },
         }
       );
-      const tokens = await res.json();
-      this.state.user._user.token = tokens.refreshToken;
-      this.state.user._user.tokenReceiptTime = Date.now();
+      const { token, refreshToken } = await res.json();
+      const tokenReceiptTime = Date.now();
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("tokenReceiptTime", tokenReceiptTime);
+      user.token = token;
+      user.refreshToken = refreshToken;
+      user.tokenReceiptTime = tokenReceiptTime;
+      commit("setUser", user);
     },
   },
   mutations: {
@@ -79,19 +85,21 @@ export default {
       state._user = user;
     },
     unsetUser(state) {
+      localStorage.removeItem("email");
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       localStorage.removeItem("userId");
       localStorage.removeItem("tokenReceiptTime");
+      state._user.email = "";
       state._user.token = "";
-      state._user.userId = "";
+      state._user.refreshToken = "";
+      state._user.userId = null;
       state._user.tokenReceiptTime = "";
     },
   },
   getters: {
-    isLoggedIn: (state) => {
-      if (state._user.userId === "") return false;
-      const deltaTime = Date.now() - state._user.tokenReceiptTime;
-      return deltaTime < config.tokenLifetime;
+    isLoggedIn(state) {
+      return !!state._user.userId;
     },
   },
 };

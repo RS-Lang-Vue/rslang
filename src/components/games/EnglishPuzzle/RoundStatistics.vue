@@ -63,12 +63,20 @@
       <v-divider inset></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="closeRoundStatistics" v-if="isGameStatisticsOpen">
-          Закрыть
-        </v-btn>
+        <v-btn
+          color="primary"
+          class="game-btn"
+          text
+          @click="closeRoundStatistics"
+          v-if="isGameStatisticsOpen"
+        >
+          Закрыть</v-btn
+        >
         <template v-else>
-          <v-btn color="primary" text @click="continueGame">Продолжить</v-btn>
-          <v-btn color="primary" text @click="openGameStatistics">Статистика</v-btn>
+          <v-btn color="primary" class="game-btn" text @click="continueGame">Продолжить</v-btn>
+          <v-btn color="primary" class="game-btn" text @click="openGameStatistics"
+            >Статистика</v-btn
+          >
         </template>
       </v-card-actions>
     </v-card>
@@ -150,5 +158,13 @@ export default {
 }
 .wrap {
   white-space: initial;
+}
+.game-btn {
+  @media (max-width: 600px) {
+    font-size: 0.75rem !important;
+    height: 28px !important;
+    min-width: 50px !important;
+    padding: 0 12.4444444444px !important;
+  }
 }
 </style>

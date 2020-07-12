@@ -3,9 +3,10 @@ import SpeakIt from "@/views/games/SpeakIt.vue";
 import StartEnglishPuzzle from "@/views/games/EnglishPuzzle/Start.vue";
 import EnglishPuzzle from "@/views/games/EnglishPuzzle/EnglishPuzzle.vue";
 import Savannah from "@/views/games/Savannah.vue";
+import StartFindThePair from "@/views/games/FindThePair/Start.vue";
+import FindThePair from "@/views/games/FindThePair/FindThePair.vue";
 import AudioCall from "@/views/games/AudioCall.vue";
 import Sprint from "@/views/games/Sprint.vue";
-import OurGame from "@/views/games/OurGame.vue";
 
 export default [
   {
@@ -43,8 +44,13 @@ export default [
     meta: { title: 'Игра "Спринт"' },
   },
   {
-    path: "our-game",
-    component: OurGame,
-    meta: { title: 'Игра "Своя игра"' },
+    path: "start-find-the-pair",
+    component: StartFindThePair,
+    meta: { title: 'Игра "Find The Pair"' },
+  },
+  {
+    path: "find-the-pair",
+    component: FindThePair,
+    meta: { title: 'Игра "Find The Pair"' },
   },
 ];

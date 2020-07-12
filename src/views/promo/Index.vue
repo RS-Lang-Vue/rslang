@@ -7,9 +7,7 @@
           <p class="promo__title">
             представляет собой оптимальный интеллектуальный способ изучения слов английского языка
           </p>
-          <v-btn class="promo__button" large color="primary" @click="$router.push('/auth/login')"
-            >Войти</v-btn
-          >
+          <v-btn class="promo__button" large color="primary" @click="checkLogin">Войти</v-btn>
           <v-btn
             class="promo__button"
             text
@@ -23,6 +21,25 @@
     </v-container>
   </v-main>
 </template>
+
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+  computed: {
+    ...mapGetters(["isLoggedIn"]),
+  },
+  methods: {
+    checkLogin() {
+      if (this.isLoggedIn) {
+        this.$router.push("/home");
+      } else {
+        this.$router.push("/auth/login");
+      }
+    },
+  },
+};
+</script>
 
 <style scoped>
 .promo__header {

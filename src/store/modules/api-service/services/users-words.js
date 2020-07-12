@@ -1,12 +1,12 @@
-import UniResponse from "../../../../models/UniResponse";
-import errorList from "../../../../config/errors";
+import UniResponse from "@/models/UniResponse";
+import errorList from "@/config/errors";
 
 export default {
   state: {},
   actions: {
-    async getUsersWords() {
-      const user = await this.dispatch("getUser");
-      if (user === undefined) {
+    async getUsersWords({ dispatch }) {
+      const user = await dispatch("getUser");
+      if (!user) {
         return new UniResponse(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words`;
@@ -27,9 +27,9 @@ export default {
           return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
       }
     },
-    async getUsersWordsById(ctx, { wordId }) {
-      const user = await this.dispatch("getUser");
-      if (user === undefined) {
+    async getUsersWordsById({ dispatch }, { wordId }) {
+      const user = await dispatch("getUser");
+      if (!user) {
         return new UniResponse(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words/${wordId}`;
@@ -53,13 +53,13 @@ export default {
           return new UniResponse(false, `${errorList.unknow}. ${res.status} : ${res.statusText}`);
       }
     },
-    async setUserWords(ctx, { isNewWord, userWord, wordId }) {
+    async setUserWords({ dispatch }, { isNewWord, userWord, wordId }) {
       const userWordSend = {
         difficulty: userWord.difficulty,
         optional: userWord.optional,
       };
-      const user = await this.dispatch("getUser");
-      if (user === undefined) {
+      const user = await dispatch("getUser");
+      if (!user) {
         return new Response(false, errorList.unauthorized);
       }
       const url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/words/${wordId}`;

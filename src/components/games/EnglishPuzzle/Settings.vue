@@ -3,7 +3,7 @@
     <v-card align="center" justify="center">
       <v-card-title>Уровень</v-card-title>
       <v-slider
-        v-model="group"
+        :value="group"
         class="align-center ma-5 mb-0"
         color="primary"
         thumb-label="always"
@@ -11,19 +11,22 @@
         :max="getSettingsEP.levelCount"
         :min="0"
         hide-details
+        @end="updateLevel"
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
       <v-card-title>Раунд</v-card-title>
       <v-slider
-        v-model="round"
+        :value="round"
         class="align-center ma-5 mb-0"
         color="primary"
         thumb-label="always"
+        validate-on-blur
         :thumb-size="24"
         :max="getSettingsEP.roundsInLevelCount"
         :min="0"
         hide-details
+        @end="updateRound"
       >
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
@@ -62,24 +65,11 @@ export default {
   },
   computed: {
     ...mapGetters(["getSettingsEP"]),
-    round: {
-      get() {
-        return this.getSettingsEP.round[this.getSettingsEP.level];
-      },
-      set(value) {
-        const options = { ...this.getSettingsEP };
-        options.round[options.level] = value;
-        this.setSettingsEP(options);
-        this.setIsUserChangedRoundEP(true);
-      },
+    round() {
+      return this.getSettingsEP.round[this.getSettingsEP.level];
     },
-    group: {
-      get() {
-        return this.getSettingsEP.level;
-      },
-      set(value) {
-        this.updateProgressOptionLevel(value);
-      },
+    group() {
+      return this.getSettingsEP.level;
     },
     translation: {
       get() {
@@ -123,13 +113,18 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["setSettingsEP", "fetchRoundsPerLevelCountEP", "setIsUserChangedRoundEP"]),
+    ...mapActions([
+      "setSettingsEP",
+      "fetchRoundsPerLevelCountEP",
+      "setIsUserChangedRoundEP",
+      "setError",
+    ]),
     updateHintSettingsEP(option) {
       const options = { ...this.getSettingsEP };
       options.hints[option] = !options.hints[option];
       this.setSettingsEP(options);
     },
-    updateProgressOptionLevel(value) {
+    updateLevel(value) {
       this.fetchRoundsPerLevelCountEP(value)
         .then(() => {
           const options = { ...this.getSettingsEP };
@@ -138,19 +133,17 @@ export default {
           this.setIsUserChangedRoundEP(true);
         })
         .catch((err) => {
-          this.showAlert("error", "Error", err.message);
+          this.setError(err.message);
         });
+    },
+    updateRound(value) {
+      const options = { ...this.getSettingsEP };
+      options.round[options.level] = value;
+      this.setSettingsEP(options);
+      this.setIsUserChangedRoundEP(true);
     },
     closeSettings() {
       this.$emit("closeSettings");
-    },
-    showAlert(type, title, text) {
-      this.$notify({
-        group: "main",
-        type,
-        title,
-        text,
-      });
     },
   },
 };

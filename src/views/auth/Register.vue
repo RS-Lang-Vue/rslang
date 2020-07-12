@@ -1,15 +1,17 @@
 <template>
-  <div class="register">
+  <v-card max-width="500" min-width="290" class="register">
     <lang-user-form
       class="register__form"
       @submit="handleFormSubmit"
-      title="Create account"
-      submitButtonText="Sign Up"
+      title="Создайте аккаунт"
+      submitButtonText="Создать"
       :loading="isFormLoading"
     >
-      <p>Already have an account? <router-link to="/auth/login">Log In</router-link></p>
+      <p class="text-body-2 text-sm-body-1" style="text-align: left;">
+        Уже зарегистрированы? <router-link to="/auth/login">Войти</router-link>
+      </p>
     </lang-user-form>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -53,14 +55,6 @@ export default {
 
 <style scoped>
 .register {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.register__form {
-  width: 30%;
+  margin: 0 auto;
 }
 </style>
