@@ -37,6 +37,7 @@ export default {
       gameSavannah: {
         round: [0, 0, 0, 0, 0, 0],
         level: 0,
+        newWords: true,
       },
       gameAuidioCall: {
         round: [0, 0, 0, 0, 0, 0],
