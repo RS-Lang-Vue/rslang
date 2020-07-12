@@ -10,7 +10,6 @@
         <div v-if="isCardStudied">
           <span class="teal--text text--accent-1 body-1 mr-3">карточка изучена</span>
         </div>
-        <!-- <v-spacer></v-spacer> -->
         <v-btn
           v-if="learnSettingsToggles.deleteButton.state"
           dark
@@ -45,6 +44,7 @@
                       :rules="nameRules"
                       required
                       autofocus
+                      autocomplete="off"
                       :disabled="isCardStudied"
                     ></v-text-field>
                   </div>
@@ -334,8 +334,7 @@ export default {
     ...mapActions(["setLoading", "getLearnArraysFromServer", "updateMixWordsArrayObjectByStep"]),
 
     async prepareStart() {
-      console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
-
+      // console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
       if (!this.getCurrentLearnStateObject.isArraysLoaded) {
         await this.getLearnArraysFromServer();
       }
@@ -453,12 +452,11 @@ export default {
 
     showEndLearnInfo() {
       // todo show end's learn info modal window
-      console.log("runing showEndLearnInfo");
       this.isShowEndLearnInfo = true;
     },
 
     runEndLearn() {
-      console.log("runEndLearn");
+      // console.log("runEndLearn");
       this.isShowEvaluation = false;
       // todo save statistic & etc.
       // todo update statictics and goals
