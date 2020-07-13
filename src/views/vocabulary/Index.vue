@@ -28,6 +28,21 @@
 
         <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
           <v-data-table :headers="headers" :items="words" hide-default-footer class="elevation-1">
+            <template v-slot:item="row">
+              <tr>
+                <td>{{ row.item.word }}</td>
+                <td>
+                  <v-btn icon small @click="audio.play(row.item.audio)">
+                    <v-icon dark>mdi-volume-high</v-icon>
+                  </v-btn>
+                  {{ row.item.transcription }}
+                </td>
+                <td>{{ row.item.wordTranslate }}</td>
+                <td>{{ row.item.repeatCount }}</td>
+                <td>{{ row.item.lastDate }}</td>
+                <td>{{ row.item.repeatDate }}</td>
+              </tr>
+            </template>
           </v-data-table>
         </v-tab-item>
       </v-tabs>
@@ -39,6 +54,8 @@
 </template>
 
 <script>
+import AudioControl from "@/helpers/audio-control";
+
 export default {
   data: () => ({
     page: 1,
@@ -52,7 +69,7 @@ export default {
         value: "word",
       },
       {
-        text: "Транскрипция",
+        text: "Произношение",
         align: "start",
         sortable: false,
         value: "transcription",
@@ -89,9 +106,11 @@ export default {
     words: [],
     loading: true,
     WORDS_PER_PAGE: 20,
+    audio: {},
   }),
   async mounted() {
     await this.getWords(this.tab.split("-")[1]);
+    this.audio = new AudioControl();
   },
   computed: {
     cuirrentDifficultyCopy() {
@@ -103,8 +122,15 @@ export default {
       this.loading = true;
       this.getWords(val.split("-")[1]);
     },
+    page() {
+      this.loading = true;
+      this.getWords(this.tab.split("-")[1]);
+    },
   },
   methods: {
+    onSpeakClick(audio) {
+      console.log(audio);
+    },
     async getWords(tab) {
       const res = await this.$store.dispatch("getUserAggregateWords", {
         difficulty: parseInt(tab, 10),
@@ -118,6 +144,7 @@ export default {
       this.words = res.result.map((w) => {
         return {
           word: w.word,
+          audio: w.audio,
           transcription: w.transcription,
           wordTranslate: w.wordTranslate,
           repeatCount: w.userWord.optional.repeatCount,
