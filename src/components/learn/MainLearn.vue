@@ -332,7 +332,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setLoading", "getLearnArraysFromServer", "updateMixWordsArrayObjectByStep"]),
+    ...mapActions([
+      "setLoading",
+      "getLearnArraysFromServer",
+      "updateMixWordsArrayObjectByStep",
+      "addAnswerResult",
+    ]),
 
     async prepareStart() {
       // console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
@@ -421,10 +426,15 @@ export default {
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRightInInput();
-      setTimeout(() => {
-        this.isShowEvaluation = true;
-      }, 2000);
-      // todo set raiting word
+      if (this.learnSettingsToggles.userEvaluation.state) {
+        setTimeout(() => {
+          this.isShowEvaluation = true;
+        }, 1000);
+      } else {
+        // todo send to server
+        // todo this.addAnswerResult { wordId, isCorrectAnswer, userEvaluation, attemptСount }
+        this.nextStep();
+      }
     },
 
     checkWord() {
@@ -487,6 +497,7 @@ export default {
         this.step += 1;
       }
     },
+
     deleteWord() {
       console.log("deleteWord");
     },
