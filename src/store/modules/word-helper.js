@@ -25,6 +25,8 @@ export default {
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
       userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
+      if (userWord.difficulty === "hard") userWord.difficulty = "0";
+      if (userWord.optional.correctAnswer === undefined) userWord.optional.correctAnswer = 0;
       if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
