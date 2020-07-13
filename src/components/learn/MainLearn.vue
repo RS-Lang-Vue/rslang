@@ -159,25 +159,45 @@
           <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
           <div class="d-flex justify-center flex-wrap text-center">
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="teal accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_AGAIN)"
+                class="ma-1"
+                text
+                color="teal accent-4"
+              >
                 <v-icon large color="teal darken-4">mdi-repeat</v-icon>
                 Снова
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="deep-purple accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_HARD)"
+                class="ma-1"
+                text
+                color="deep-purple accent-4"
+              >
                 <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
                 Трудно
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="green accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_GOOD)"
+                class="ma-1"
+                text
+                color="green accent-4"
+              >
                 <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
                 Хорошо
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="light-blue accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_EASY)"
+                class="ma-1"
+                text
+                color="light-blue accent-4"
+              >
                 <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
                 Легко
               </v-btn>
@@ -228,10 +248,20 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import config from "@/config/config";
+import {
+  EVALUATION_AGAIN,
+  EVALUATION_HARD,
+  EVALUATION_GOOD,
+  EVALUATION_EASY,
+} from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
 export default {
   data: () => ({
+    EVALUATION_AGAIN,
+    EVALUATION_HARD,
+    EVALUATION_GOOD,
+    EVALUATION_EASY,
     isVisibleContent: false,
     wordsArray: {},
     step: 0,
@@ -417,8 +447,17 @@ export default {
       return countError;
     },
 
-    setEvaluation() {
-      // todo set raiting word
+    setEvaluation(message) {
+      if (message === EVALUATION_AGAIN) {
+        this.isCardStudied = false;
+      } else {
+        // const resultOptionObject = { wordId, isCorrectAnswer, userEvaluation, attemptСount };
+        if (message === EVALUATION_HARD) console.log("message: ", message);
+        if (message === EVALUATION_GOOD) console.log("message: ", message);
+        if (message === EVALUATION_EASY) console.log("message: ", message);
+        // this.addAnswerResult(resultOptionObject);
+        // todo set raiting word
+      }
       this.nextStep();
     },
 
