@@ -5,7 +5,7 @@
         item-key="name"
         class="elevation-1"
         loading
-        loading-text="Loading... Please wait"
+        loading-text="Загружается... Пожалуйста, подождите."
       ></v-data-table>
     </div>
     <div v-else>
@@ -27,10 +27,13 @@
         </v-tab>
 
         <v-tab-item v-for="i in tabs" :key="i" :value="'tab-' + i">
-          <v-data-table :headers="headers" :items="words" :items-per-page="20" class="elevation-1">
+          <v-data-table :headers="headers" :items="words" hide-default-footer class="elevation-1">
           </v-data-table>
         </v-tab-item>
       </v-tabs>
+    </div>
+    <div class="text-center">
+      <v-pagination v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
     </div>
   </div>
 </template>
@@ -38,6 +41,8 @@
 <script>
 export default {
   data: () => ({
+    page: 1,
+    pageCount: 1,
     tabNames: ["Изучаемые слова", "Сложные слова", "Удалённые слова"],
     headers: [
       {
@@ -83,10 +88,10 @@ export default {
     cuirrentDifficulty: 0,
     words: [],
     loading: true,
+    WORDS_PER_PAGE: 20,
   }),
   async mounted() {
     await this.getWords(this.tab.split("-")[1]);
-    console.log(this.words);
   },
   computed: {
     cuirrentDifficultyCopy() {
@@ -101,14 +106,15 @@ export default {
   },
   methods: {
     async getWords(tab) {
-      console.log(tab);
       const res = await this.$store.dispatch("getUserAggregateWords", {
         difficulty: parseInt(tab, 10),
+        page: this.page - 1,
+        wordsPerPage: this.WORDS_PER_PAGE,
       });
-      console.log(res);
       if (!res.success) {
         this.showAlert("error", "Ошибка!", res.error);
       }
+      this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
       this.words = res.result.map((w) => {
         return {
           word: w.word,
