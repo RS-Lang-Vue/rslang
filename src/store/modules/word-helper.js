@@ -1,31 +1,30 @@
-import UniResponse from "../../models/UniResponse";
+import UniResponse from "@/models/UniResponse";
+import UserWord from "@/helpers/user-word/user-word";
+import calcRepeatDate from "@/helpers/user-word/calc-repeat-date";
 
 export default {
   state: {},
   actions: {
-    async addAnswerResult({ dispatch }, { wordId, isCorrectAnswer }) {
+    async addAnswerResult(
+      { dispatch },
+      { wordId, isCorrectAnswer, description, attemptСount = 1 }
+    ) {
       let res = await dispatch("getUsersAggregateWordsById", wordId);
       if (!res.success) {
         return res;
       }
       let { userWord } = res.result;
       const isNewWord = !userWord;
-      if (isNewWord) {
-        userWord = {
-          difficulty: "0",
-          optional: {
-            correctAnswer: 0,
-            repeatCount: 0,
-            lastDate: 0,
-            repeatDate: 0,
-            description: "hard",
-          },
-        };
-      }
+      if (isNewWord) userWord = new UserWord();
       userWord.optional.repeatCount += 1;
       userWord.optional.lastDate = Date.now();
-      userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
+      if (description) userWord.optional.description = description;
       if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
+      userWord.optional.repeatDate = calcRepeatDate(
+        userWord.optional.description,
+        isCorrectAnswer,
+        attemptСount
+      );
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;
