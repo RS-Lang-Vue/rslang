@@ -30,6 +30,9 @@ export default {
 
   .score {
     display: flex;
+    position: relative;
+    top: 0;
+    right: 0;
     align-items: center;
     justify-content: center;
     font-size: 40px;

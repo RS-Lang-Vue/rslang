@@ -1,5 +1,5 @@
 <template>
-  <v-dialog class="roundStatistic" v-model="roundModalActive" persistent max-width="100vw">
+  <v-dialog class="roundStatistic" v-model="roundModalActive" persistent>
     <v-card>
       <v-toolbar dark color="primary">
         <v-btn icon dark @click="$emit('closeModal')">
@@ -63,6 +63,9 @@ export default {
 </script>
 
 <style scoped>
+.roundStatistic {
+  width: 500px;
+}
 .stupid,
 .germany,
 .warrior,
@@ -70,6 +73,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 .comment__text {
   display: flex;

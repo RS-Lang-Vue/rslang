@@ -13,7 +13,7 @@
       :statistic="statistic"
       @closeModal="closeModal()"
     />
-    <div class="content" v-if="!loading">
+    <v-card class="content" v-if="!loading">
       <Header v-if="!startGame" />
       <v-card :elevation="0" class="card rounded-t-xl transparent">
         <v-card :elevation="20" class="game" v-if="startGame">
@@ -53,8 +53,7 @@
       <v-btn width="200px" @click="checkAnswer()" large color="blue" class="next-btn hide"
         ><v-icon class="next-btn__icon" dark large>mdi-keyboard-space</v-icon>Дальше</v-btn
       >
-    </div>
-    <div class="loader" v-else>Загрузка данных</div>
+    </v-card>
   </div>
 </template>
 
@@ -76,7 +75,7 @@ export default {
       countWords: 0,
       timer: 0,
       score: 0,
-      streak: { count: 0, seriesCorrectAnswer: 0 },
+      streak: { count: 4, seriesCorrectAnswer: 4 },
       buttonActivity: false,
       interval: "",
       words: localStorage.getItem("SprintSettings")
@@ -100,34 +99,15 @@ export default {
     RoundStatistic,
   },
   async mounted() {
-    function getRandom() {
-      return Math.round(Math.random() * 19);
-    }
-    const learnedWords = await this.getLearnedWordsSortByRepeatDate({});
-    if (this.words && learnedWords.success && learnedWords.result.length > 19) {
-      this.sourceData = learnedWords.result.slice(0, 20);
-      this.exampleData = learnedWords.result.map((el) => {
-        return Math.random() > 0.5
-          ? el.wordTranslate
-          : learnedWords.result[getRandom()].wordTranslate;
-      });
-      this.loading = false;
-    } else {
-      const res = await fetch(
-        `https://afternoon-falls-25894.herokuapp.com/words?page=${this.round}&group=${this.level}`
-      );
-      const data = await res.json();
-      this.sourceData = data;
-      this.exampleData = data.map((el) => {
-        return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
-      });
-      this.loading = false;
-    }
+    this.setLoading(true);
+    this.getData();
+    this.setLoading(false);
   },
   methods: {
-    ...mapActions(["getLearnedWordsSortByRepeatDate", "addAnswerResult"]),
+    ...mapActions(["getLearnedWordsSortByRepeatDate", "addAnswerResult", "setLoading"]),
     changeWord(x) {
       this.words = x;
+      this.timerBtnVisibility(true);
       this.getData();
     },
     changeRound(x) {
@@ -144,7 +124,7 @@ export default {
       function getRandom() {
         return Math.round(Math.random() * 19);
       }
-      const learnedWords = await this.getLearnedWordsSortByRepeatDate({ count: undefined });
+      const learnedWords = await this.getLearnedWordsSortByRepeatDate({});
       if (this.words && learnedWords.success && learnedWords.result.length > 19) {
         this.sourceData = learnedWords.result.slice(0, 20);
         this.exampleData = learnedWords.result.map((el) => {
@@ -162,20 +142,20 @@ export default {
         this.exampleData = data.map((el) => {
           return Math.random() > 0.5 ? el.wordTranslate : data[getRandom()].wordTranslate;
         });
-        clearInterval(this.interval);
-        this.startGame = false;
-        this.countWords = 0;
-        this.score = 0;
-        this.streak = { count: 0, seriesCorrectAnswer: 0 };
-        this.loading = false;
       }
+      clearInterval(this.interval);
+      this.startGame = false;
+      this.countWords = 0;
+      this.score = 0;
+      this.streak = { count: 4, seriesCorrectAnswer: 4 };
+      this.loading = false;
     },
     gameStarted() {
       this.timer = 0;
       this.timerBtnVisibility(true);
       this.startGame = true;
       this.interval = setInterval(() => {
-        this.timer += 20;
+        this.timer += 5;
         if (this.timer === 100) {
           clearInterval(this.interval);
           this.timerBtnVisibility(false);
@@ -194,43 +174,43 @@ export default {
       }
     },
     checkAnswer(x) {
-      if (x === true) {
-        if (
-          document.querySelector(".word-translate").textContent.trim() ===
-          this.sourceData[this.countWords].wordTranslate
-        ) {
+      const answerId = this.words
+        ? this.sourceData[this.countWords]._id
+        : this.sourceData[this.countWords].id;
+      const answer =
+        document.querySelector(".word-translate").textContent.trim() ===
+        this.sourceData[this.countWords].wordTranslate;
+      if (x) {
+        if (answer) {
           this.streakCount();
           this.score += 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: answerId,
             isCorrectAnswer: true,
           });
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: answerId,
             isCorrectAnswer: false,
           });
         }
-      } else if (x === false) {
-        if (
-          document.querySelector(".word-translate").textContent.trim() !==
-          this.sourceData[this.countWords].wordTranslate
-        ) {
+      } else if (!x) {
+        if (!answer) {
           this.streakCount();
           this.score += 10 + 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: answerId,
             isCorrectAnswer: true,
           });
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: answerId,
             isCorrectAnswer: false,
           });
         }
@@ -238,7 +218,7 @@ export default {
         this.streak = { count: 0, seriesCorrectAnswer: 0 };
         this.changeStatistic(false);
         this.addAnswerResult({
-          wordId: this.sourceData[this.countWords]._id,
+          wordId: answerId,
           isCorrectAnswer: false,
         });
       }
@@ -303,9 +283,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 89vh;
-  position: relative;
+  height: 100%;
   background: linear-gradient(#00000099, #00000099),
     center/ cover url("../../../assets/images/sprint/fon.png");
 }
@@ -315,6 +297,7 @@ export default {
   justify-content: center;
   align-items: center;
   opacity: 0;
+  background: none;
 }
 .content.visible {
   opacity: 1;

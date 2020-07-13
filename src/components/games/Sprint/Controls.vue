@@ -139,7 +139,7 @@ export default {
   display: flex;
   justify-content: space-around;
   position: absolute;
-  top: -55px;
+  top: 75px;
   right: 30px;
   z-index: 10;
 
