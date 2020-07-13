@@ -203,14 +203,14 @@ export default {
           this.score += 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: this.sourceData[this.countWords].id,
             isCorrectAnswer: true,
           });
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: this.sourceData[this.countWords].id,
             isCorrectAnswer: false,
           });
         }
@@ -223,14 +223,14 @@ export default {
           this.score += 10 + 10 * (this.streak.count + 1);
           this.changeStatistic(true);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: this.sourceData[this.countWords].id,
             isCorrectAnswer: true,
           });
         } else {
           this.streak = { count: 0, seriesCorrectAnswer: 0 };
           this.changeStatistic(false);
           this.addAnswerResult({
-            wordId: this.sourceData[this.countWords]._id,
+            wordId: this.sourceData[this.countWords].id,
             isCorrectAnswer: false,
           });
         }
@@ -238,7 +238,7 @@ export default {
         this.streak = { count: 0, seriesCorrectAnswer: 0 };
         this.changeStatistic(false);
         this.addAnswerResult({
-          wordId: this.sourceData[this.countWords]._id,
+          wordId: this.sourceData[this.countWords].id,
           isCorrectAnswer: false,
         });
       }
