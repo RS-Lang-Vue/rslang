@@ -267,9 +267,9 @@ export default {
     step: 0,
     audio: {},
     currentWordHtml: "",
+    currentAttemptCount: 0,
     intut: "",
     isRightWord: false,
-    isErrorWord: false,
     isIntutOpacity: false,
     isShowEvaluation: false,
     isShowEndLearnInfo: false,
@@ -279,7 +279,6 @@ export default {
 
   computed: {
     ...mapGetters([
-      "getCurrentCardStudied",
       "getCurrentLearnStateObject",
       "getLearnType",
       "getCurrentArray",
@@ -302,13 +301,39 @@ export default {
     },
     isCardStudied: {
       get() {
-        const isStudied = !!this.currentWordObject.isCardStudied;
-        return isStudied;
+        return !!this.currentWordObject.isCardStudied;
       },
       set(value) {
         this.$set(this.currentWordObject, "isCardStudied", value);
       },
     },
+    hasWordCorrectAnswer: {
+      get() {
+        return !!this.currentWordObject.hasWordCorrectAnswer;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "hasWordCorrectAnswer", value);
+      },
+    },
+    attemptСount: {
+      get() {
+        if (typeof this.currentWordObject.attemptСount !== "undefined")
+          return this.currentWordObject.attemptСount;
+        return 0;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "attemptСount", value);
+      },
+    },
+    wasHint: {
+      get() {
+        return !!this.currentWordObject.wasHint;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "wasHint", value);
+      },
+    },
+
     currentWord() {
       return this.currentWordObject.word;
     },
@@ -412,6 +437,7 @@ export default {
       this.currentWordHtml = this.currentWord;
       this.inputValue = "";
       this.isIntutOpacity = true;
+      this.wasHint = true;
       setTimeout(() => {
         this.isIntutOpacity = false;
       }, 5000);
@@ -419,7 +445,7 @@ export default {
 
     handleErrorWord(inputWord) {
       this.playAllAudio();
-      this.isErrorWord = true;
+      this.hasWordCorrectAnswer = false;
       const charsArrayCurrentWord = this.currentWord.split("");
       const charsArrayInputWord = inputWord.split("");
       let countError = 0;
@@ -451,11 +477,16 @@ export default {
       if (message === EVALUATION_AGAIN) {
         this.isCardStudied = false;
       } else {
-        // const resultOptionObject = { wordId, isCorrectAnswer, userEvaluation, attemptСount };
-        if (message === EVALUATION_HARD) console.log("message: ", message);
-        if (message === EVALUATION_GOOD) console.log("message: ", message);
-        if (message === EVALUATION_EASY) console.log("message: ", message);
-        // this.addAnswerResult(resultOptionObject);
+        const resultOptionObject = {
+          wordId: this.currentWordObject._id,
+          isCorrectAnswer: this.hasWordCorrectAnswer,
+          userEvaluation: EVALUATION_HARD,
+          attemptСount: this.attemptСount,
+        };
+        if (message === EVALUATION_GOOD) resultOptionObject.userEvaluation = EVALUATION_GOOD;
+        if (message === EVALUATION_EASY) resultOptionObject.userEvaluation = EVALUATION_EASY;
+        console.log("resultOptionObject >>> ", resultOptionObject);
+        this.addAnswerResult(resultOptionObject);
         // todo set raiting word
       }
       this.nextStep();
@@ -465,28 +496,38 @@ export default {
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRightInInput();
+      if (this.attemptСount === 1 && !this.wasHint) this.hasWordCorrectAnswer = true;
       if (this.learnSettingsToggles.userEvaluation.state) {
         setTimeout(() => {
           this.isShowEvaluation = true;
         }, 1000);
       } else {
-        // todo send to server
-        // todo this.addAnswerResult { wordId, isCorrectAnswer, userEvaluation, attemptСount }
-        this.nextStep();
+        const resultOptionObject = {
+          wordId: this.currentWordObject._id,
+          isCorrectAnswer: this.hasWordCorrectAnswer,
+          attemptСount: this.attemptСount,
+        };
+        console.log("resultOptionObject >>> ", resultOptionObject);
+        this.addAnswerResult(resultOptionObject);
+        setTimeout(() => {
+          this.nextStep();
+        }, 1500);
       }
     },
 
     checkWord() {
-      const isNotEmpty = !!this.inputValue;
-      if (isNotEmpty) {
-        const inputWord = this.inputValue.trim();
-        if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
-          if (!this.isCardStudied) this.handleRightWord();
-          else this.nextStep();
-        } else {
-          this.handleErrorWord(inputWord); // handleErrorWord(inputWord) return countCharError;
-          // todo set focus on input
-          // todo set raiting word
+      if (this.isCardStudied) this.nextStep();
+      else {
+        const isNotEmpty = !!this.inputValue;
+        if (isNotEmpty) {
+          this.attemptСount += 1;
+          console.log("attemptСount", this.attemptСount);
+          const inputWord = this.inputValue.trim();
+          if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
+            this.handleRightWord();
+          } else {
+            this.handleErrorWord(inputWord); // handleErrorWord(inputWord) return countCharError;
+          }
         }
       }
     },
@@ -495,8 +536,10 @@ export default {
       this.inputValue = "";
       this.isRightWord = false;
       this.currentWordHtml = "";
+      this.currentAttemptCount = 0;
       this.isIntutOpacity = false;
       this.isShowEvaluation = false;
+      this.audio.stop();
     },
 
     showEndLearnInfo() {

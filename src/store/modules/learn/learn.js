@@ -11,7 +11,6 @@ export default {
       // step: 0,
     },
     learnType: LEARN_TYPE_ALL,
-
     newWordsArray: defaultNewWordsArray,
     repeatWordsArray: [],
     mixWordsArray: [],
