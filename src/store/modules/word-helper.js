@@ -18,7 +18,7 @@ export default {
             repeatCount: 0,
             lastDate: 0,
             repeatDate: 0,
-            description: "hard",
+            description: "0",
           },
         };
       }
