@@ -101,8 +101,6 @@ export default {
       this.changeState();
     },
     uploadSettingsToBack() {
-      console.log("uploadSettingsToBack");
-
       this.$store.dispatch("uploadSettings");
     },
   },

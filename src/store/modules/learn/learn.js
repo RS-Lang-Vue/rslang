@@ -21,7 +21,7 @@ export default {
       const { wordsPerDay } = rootState.userSettings.optional.learn;
       const { newWordsPerDay } = rootState.userSettings.optional.learn;
       const repeatWordsPerDay = wordsPerDay - newWordsPerDay;
-      console.log("wordsPerDay:", wordsPerDay, "newWordsPerDay: ", newWordsPerDay);
+      // console.log("wordsPerDay:", wordsPerDay, "newWordsPerDay: ", newWordsPerDay);
 
       try {
         const resNewWords = await dispatch("getUserAggregateWords", {
@@ -30,7 +30,7 @@ export default {
           wordsPerPage: newWordsPerDay,
           onlyNotLearned: true,
         });
-        console.log("resNewWords >>>", resNewWords);
+        // console.log("resNewWords >>>", resNewWords);
         if (resNewWords.success) commit("updateNewWordsArray", resNewWords.result);
         else throw new Error("Error loading newWordsArray");
 
@@ -41,7 +41,7 @@ export default {
             wordsPerPage: repeatWordsPerDay,
             onlyLearned: true,
           });
-          console.log("resRepeatWords >>>", resRepeatWords);
+          // console.log("resRepeatWords >>>", resRepeatWords);
           if (resRepeatWords.success) commit("updateRepeatWordsArray", resRepeatWords.result);
           else throw new Error("Error loading repeatWordsArray");
         }
@@ -49,7 +49,8 @@ export default {
         commit("updateMixWordsArray", mixWordsArray);
         state.currentLearnStateObject.isArraysLoaded = true;
       } catch (error) {
-        console.error(error.message);
+        throw new Error("Error:  get Learn Arrays From Server");
+        // console.error(error.message);
       }
     },
     // todo: send the word object to sever

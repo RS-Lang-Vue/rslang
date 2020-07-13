@@ -200,7 +200,7 @@ export default {
     try {
       await this.$store.dispatch("downloadSettings");
     } catch (error) {
-      console.log("Error download settings", error);
+      // console.log("Error download settings", error);
     } finally {
       this.$store.dispatch("setLoading", false);
     }

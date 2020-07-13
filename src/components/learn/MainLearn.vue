@@ -15,6 +15,7 @@
           dark
           icon
           title="Удалить слово из изучаемых"
+          @click="deleteWord"
         >
           <v-icon>mdi-delete-outline</v-icon>
         </v-btn>
@@ -323,7 +324,7 @@ export default {
       this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       this.$router.push("/home");
     } finally {
       this.setLoading(false);
@@ -430,12 +431,11 @@ export default {
       const isNotEmpty = !!this.inputValue;
       if (isNotEmpty) {
         const inputWord = this.inputValue.trim();
-        if (inputWord === this.currentWord) {
+        if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
           if (!this.isCardStudied) this.handleRightWord();
           else this.nextStep();
         } else {
-          const countError = this.handleErrorWord(inputWord);
-          console.log("countError >>> ", countError);
+          this.handleErrorWord(inputWord); // handleErrorWord(inputWord) return countCharError;
           // todo set focus on input
           // todo set raiting word
         }
@@ -486,6 +486,9 @@ export default {
         this.clear();
         this.step += 1;
       }
+    },
+    deleteWord() {
+      console.log("deleteWord");
     },
   },
 };
