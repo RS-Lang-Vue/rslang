@@ -10,8 +10,8 @@ export default class AudioControl {
 
   init() {
     this.setHandlerLoaded();
-    this.setHandlersPause();
-    this.setHandlersEnd();
+    this.setHandlerPause();
+    this.setHandlerEnd();
   }
 
   setHandlerLoaded() {
@@ -22,14 +22,14 @@ export default class AudioControl {
     this.player.addEventListener("loadeddata", loadded);
   }
 
-  setHandlersPause() {
+  setHandlerPause() {
     const end = () => {
       this.isAudioActive = false;
     };
     this.player.addEventListener("pause", end);
   }
 
-  setHandlersEnd() {
+  setHandlerEnd() {
     const end = () => {
       if (this.tracks.length === 0) {
         this.isAudioActive = false;
@@ -56,17 +56,17 @@ export default class AudioControl {
     }
   }
 
+  forcePlay(url) {
+    this.stop();
+    this.play(url);
+  }
+
   stop() {
     if (this.isPlaying()) {
       this.player.pause();
       this.player.currentTime = 0;
     }
     this.tracks = [];
-  }
-
-  forcePlay(url) {
-    this.stop();
-    this.play(url);
   }
 
   isPlaying() {
