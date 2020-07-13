@@ -185,6 +185,9 @@ export default {
     this.startNewRound();
     this.updateStatisticsEPFromLocaleStorage();
   },
+  destroyed() {
+    this.clearGameState();
+  },
   methods: {
     ...mapActions([
       "fetchWordsForRoundEP",
@@ -315,7 +318,7 @@ export default {
       this.setResultsCardsEP(skip);
       this.setSourceCardsEP([]);
       this.isPhraseCollected = true;
-      this.audio.play(this.AUDIO_URL);
+      this.audio.forcePlay(this.AUDIO_URL);
     },
     getPhrase() {
       const phrase = this.getWordsForRoundEP[this.currentPhraseNumber].textExample;

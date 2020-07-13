@@ -1,39 +1,26 @@
-import UniResponse from "../../models/UniResponse";
+import UniResponse from "@/models/UniResponse";
+import updateUserWord from "@/helpers/user-word/update-user-word";
 
 export default {
   state: {},
   actions: {
-    async addAnswerResult({ dispatch }, { wordId, isCorrectAnswer }) {
+    async addAnswerResult({ dispatch }, changes) {
+      const { wordId } = changes;
       let res = await dispatch("getUsersAggregateWordsById", wordId);
       if (!res.success) {
         return res;
       }
       let { userWord } = res.result;
       const isNewWord = !userWord;
-      if (isNewWord) {
-        userWord = {
-          difficulty: "0",
-          optional: {
-            correctAnswer: 0,
-            repeatCount: 0,
-            lastDate: 0,
-            repeatDate: 0,
-            description: "hard",
-          },
-        };
-      }
-      userWord.optional.repeatCount += 1;
-      userWord.optional.lastDate = Date.now();
-      userWord.optional.repeatDate = Date.now() + (isCorrectAnswer ? 50000 : 10000);
-      if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
+      userWord = updateUserWord(userWord, changes);
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;
       }
       return res;
     },
-    async setUserWordWithCheck(ctx, { userWord, wordId }) {
-      let res = await this.dispatch("getUsersWordsById", { wordId });
+    async setUserWordWithCheck({ dispatch }, { userWord, wordId }) {
+      let res = await dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
         return res;
       }

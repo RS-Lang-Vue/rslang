@@ -31,17 +31,17 @@
         <template v-slot:thumb-label="{ value }">{{ value + 1 }}</template>
       </v-slider>
       <v-card-title>Подсказки</v-card-title>
-      <v-switch v-model="translation" class="ma-2" color="primary" label="Перевод"></v-switch>
+      <v-switch v-model="translation" class="ma-2 ml-5" color="primary" label="Перевод"></v-switch>
       <v-switch
         v-model="picture"
-        class="ma-2 hint-picture"
+        class="ma-2 ml-5 hint-picture"
         color="primary"
         label="Фоновый рисунок"
       ></v-switch>
-      <v-switch v-model="audio" class="ma-2" color="primary" label="Произношение"></v-switch>
+      <v-switch v-model="audio" class="ma-2 ml-5" color="primary" label="Произношение"></v-switch>
       <v-switch
         v-model="audioAuto"
-        class="ma-2"
+        class="ma-2 ml-5"
         color="primary"
         label="Автопроизношение"
       ></v-switch>
