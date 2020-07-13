@@ -1,11 +1,17 @@
 <template>
   <div>
-    Learn page
+    <MainLearn />
   </div>
 </template>
 
 <script>
-export default {};
+import MainLearn from "@/components/learn/MainLearn.vue";
+
+export default {
+  components: {
+    MainLearn,
+  },
+};
 </script>
 
 <style></style>

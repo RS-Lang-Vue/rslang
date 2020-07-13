@@ -13,6 +13,7 @@ import englishPuzzle from "./modules/english-puzzle/english-puzzle";
 import findThePair from "./modules/find-the-pair/find-the-pair";
 
 import savannah from "./modules/savannah/savannah";
+import learn from "./modules/learn/learn";
 
 Vue.use(Vuex);
 
@@ -27,6 +28,7 @@ export default new Vuex.Store({
     apiService,
     wordHelper,
     savannah,
+    learn,
     findThePair,
   },
 });

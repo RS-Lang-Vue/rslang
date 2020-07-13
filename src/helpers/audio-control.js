@@ -41,11 +41,16 @@ export default class AudioControl {
   }
 
   play(url) {
+    let correctUrl = "";
     if (/^files/i.test(url)) {
-      this.tracks.push(`${config.dataBaseUrl}${url}`);
+      correctUrl = `${config.dataBaseUrl}${url}`;
     } else {
-      this.tracks.push(`data:audio/mpeg;base64,${url}`);
+      correctUrl = `data:audio/mpeg;base64,${url}`;
     }
+    if (this.tracks.length === 0 || correctUrl !== this.tracks[this.tracks.length - 1]) {
+      this.tracks.push(correctUrl);
+    }
+
     if (!this.isPlaying()) {
       this.player.src = this.tracks.shift();
     }
@@ -57,6 +62,11 @@ export default class AudioControl {
       this.player.currentTime = 0;
     }
     this.tracks = [];
+  }
+
+  forcePlay(url) {
+    this.stop();
+    this.play(url);
   }
 
   isPlaying() {
