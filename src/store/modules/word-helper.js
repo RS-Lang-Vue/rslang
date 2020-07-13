@@ -1,38 +1,26 @@
 import UniResponse from "@/models/UniResponse";
-import UserWord from "@/helpers/user-word/user-word";
-import calcRepeatDate from "@/helpers/user-word/calc-repeat-date";
+import updateUserWord from "@/helpers/user-word/update-user-word";
 
 export default {
   state: {},
   actions: {
-    async addAnswerResult(
-      { dispatch },
-      { wordId, isCorrectAnswer, description, attemptСount = 1 }
-    ) {
+    async addAnswerResult({ dispatch }, changes) {
+      const { wordId } = changes;
       let res = await dispatch("getUsersAggregateWordsById", wordId);
       if (!res.success) {
         return res;
       }
       let { userWord } = res.result;
       const isNewWord = !userWord;
-      if (isNewWord) userWord = new UserWord();
-      userWord.optional.repeatCount += 1;
-      userWord.optional.lastDate = Date.now();
-      if (description) userWord.optional.description = description;
-      if (isCorrectAnswer) userWord.optional.correctAnswer += 1;
-      userWord.optional.repeatDate = calcRepeatDate(
-        userWord.optional.description,
-        isCorrectAnswer,
-        attemptСount
-      );
+      userWord = updateUserWord(userWord, changes);
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;
       }
       return res;
     },
-    async setUserWordWithCheck(ctx, { userWord, wordId }) {
-      let res = await this.dispatch("getUsersWordsById", { wordId });
+    async setUserWordWithCheck({ dispatch }, { userWord, wordId }) {
+      let res = await dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
         return res;
       }

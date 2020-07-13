@@ -6,7 +6,7 @@ export default class UserWord {
       repeatCount: 0,
       lastDate: 0,
       repeatDate: 0,
-      description: "0",
+      status: 0,
     };
   }
 }
