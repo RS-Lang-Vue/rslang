@@ -199,7 +199,6 @@ export default {
         this.showAlert("error", "Ошибка!", res.error);
       }
       this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
-
       this.words = res.result.map((w) => {
         return {
           word: w.word,
