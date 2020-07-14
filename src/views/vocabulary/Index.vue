@@ -11,7 +11,7 @@
     <div v-else>
       <v-tabs
         v-model="tab"
-        background-color="deep-purple accent-4"
+        background-color="blue lighten-4 accent-4"
         class="elevation-2"
         dark
         :centered="true"
@@ -41,20 +41,67 @@
                 <td>{{ row.item.repeatCount }}</td>
                 <td>{{ row.item.lastDate }}</td>
                 <td>{{ row.item.repeatDate }}</td>
+                <td>
+                  <v-btn icon small @click="showFullInfo(row.item)">
+                    <v-icon dark>mdi-book-open-variant</v-icon>
+                  </v-btn>
+                </td>
+                <td v-if="i === 3">
+                  <v-btn icon small @click="showFullInfo(row.item)">
+                    <v-icon dark>mdi-book-open-variant</v-icon>
+                  </v-btn>
+                </td>
               </tr>
             </template>
           </v-data-table>
         </v-tab-item>
       </v-tabs>
+      <div class="text-center">
+        <v-pagination v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
+      </div>
     </div>
     <div class="text-center">
-      <v-pagination v-model="page" :length="pageCount" :total-visible="7"></v-pagination>
+      <v-dialog v-model="fullInfo" max-width="744">
+        <v-card class="mx-auto" max-width="744">
+          <v-card-title>
+            {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
+            {{ fullInfoCard.wordTranslate }}
+            <v-btn icon small @click="audio.play(row.item.audio)">
+              <v-icon dark>mdi-volume-high</v-icon>
+            </v-btn>
+          </v-card-title>
+
+          <v-card-subtitle>
+            <span v-html="fullInfoCard.textMeaning"></span> <br />
+            {{ fullInfoCard.textMeaningTranslate }}
+          </v-card-subtitle>
+
+          <v-img :src="fullInfoCard.image"></v-img>
+          
+
+          <v-expand-transition>
+            <div>
+              <v-divider></v-divider>
+
+              <v-card-text>
+                <span v-html="fullInfoCard.textExample"></span> <br />
+                {{ fullInfoCard.textExampleTranslate }}
+              </v-card-text>
+            </div>
+          </v-expand-transition>
+
+          <v-card-actions>
+            <v-btn @click="hideFullInfo()" text>HIDE</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import AudioControl from "@/helpers/audio-control";
+import config from "@/config/config"
 
 export default {
   data: () => ({
@@ -107,6 +154,20 @@ export default {
     loading: true,
     WORDS_PER_PAGE: 20,
     audio: {},
+    fullInfo: false,
+    fullInfoCard: {
+      word: "слово",
+      transcription: "[транскрипция]",
+      wordTranslate: "перевод",
+      repeatCount: "0",
+      lastDate: "-",
+      repeatDate: "-",
+      image: "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+      textExample: "example",
+      textExampleTranslate: "пример",
+      textMeaning: "meaning",
+      textMeaningTranslate: "определение",
+    },
   }),
   async mounted() {
     await this.getWords(this.tab.split("-")[1]);
@@ -128,9 +189,6 @@ export default {
     },
   },
   methods: {
-    onSpeakClick(audio) {
-      console.log(audio);
-    },
     async getWords(tab) {
       const res = await this.$store.dispatch("getUserAggregateWords", {
         difficulty: parseInt(tab, 10),
@@ -141,6 +199,7 @@ export default {
         this.showAlert("error", "Ошибка!", res.error);
       }
       this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
+
       this.words = res.result.map((w) => {
         return {
           word: w.word,
@@ -150,9 +209,21 @@ export default {
           repeatCount: w.userWord.optional.repeatCount,
           lastDate: new Date(w.userWord.optional.lastDate).toLocaleString("ru-Ru"),
           repeatDate: new Date(w.userWord.optional.repeatDate).toLocaleString("ru-Ru"),
+          image: `${config.dataBaseUrl}${w.image}`,
+          textExample: w.textExample,
+          textExampleTranslate: w.textExampleTranslate,
+          textMeaning: w.textMeaning,
+          textMeaningTranslate: w.textMeaningTranslate,
         };
       });
       this.loading = false;
+    },
+    showFullInfo(word) {
+      this.fullInfoCard = word;
+      this.fullInfo = true;
+    },
+    hideFullInfo() {
+      this.fullInfo = false;
     },
     showAlert(type, title, text) {
       this.$notify({
