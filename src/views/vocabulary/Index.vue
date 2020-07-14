@@ -47,8 +47,8 @@
                     <v-icon dark>mdi-book-open-variant</v-icon>
                   </v-btn>
                 </td>
-                <td v-if="i === 3">
-                  <v-btn icon small @click="showFullInfo(row.item)">
+                <td v-if="i === 2">
+                  <v-btn icon small @click="sendToLearn(row.item)">
                     <v-icon dark>mdi-book-open-variant</v-icon>
                   </v-btn>
                 </td>
@@ -62,8 +62,8 @@
       </div>
     </div>
     <div class="text-center">
-      <v-dialog v-model="fullInfo" max-width="744">
-        <v-card class="mx-auto" max-width="744">
+      <v-dialog v-model="fullInfo" max-width="500">
+        <v-card class="mx-auto" max-width="500">
           <v-card-title>
             {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
             {{ fullInfoCard.wordTranslate }}
@@ -77,7 +77,11 @@
             {{ fullInfoCard.textMeaningTranslate }}
           </v-card-subtitle>
 
-          <v-img :src="fullInfoCard.image"></v-img>
+          <v-img
+            :src="fullInfoCard.image"
+            max-height="281"
+            lazy-src="../../assets/images/placeholder.png"
+          ></v-img>
 
           <v-expand-transition>
             <div>
@@ -205,7 +209,13 @@ export default {
         this.showAlert("error", "Ошибка!", res.error);
       }
       this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
-
+      // res.result[0].userWord.difficulty = "2";
+      // console.log(res.result[0]);
+      // this.$store.dispatch("setUserWords", {
+      //   isNewWord: false,
+      //   userWord: res.result[0].userWord,
+      //   wordId: res.result[0]._id,
+      // });
       this.words = res.result.map((w) => {
         const status = this.getStatusText(w.userWord.optional.status);
         return {
@@ -222,9 +232,21 @@ export default {
           textExampleTranslate: w.textExampleTranslate,
           textMeaning: w.textMeaning,
           textMeaningTranslate: w.textMeaningTranslate,
+          _word: w,
         };
       });
       this.loading = false;
+    },
+    sendToLearn(word) {
+      console.log(word);
+      const newWord = word._word;
+      newWord.userWord.difficulty = "0";
+      this.$store.dispatch("setUserWords", {
+        isNewWord: false,
+        userWord: newWord.userWord,
+        wordId: newWord._id,
+      });
+      this.getWords(this.tab);
     },
     getStatusText(status) {
       switch (status) {
