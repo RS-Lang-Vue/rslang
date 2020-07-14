@@ -2,7 +2,6 @@
   <div v-if="isVisibleContent">
     <v-card class="mx-auto text-start mt-1" max-width="700">
       <v-card-title :class="[isCardStudied ? 'grey' : 'cyan darken-1']">
-        <!-- // TODO -->
         <div class="dots">
           <span
             v-for="n in 5"
@@ -221,20 +220,31 @@
 
         <v-card-text class="mt-5">
           <div v-if="getLearnTypeIsNew" class="final-message final-message__new">
-            <p>Все запланированные новые слова изучены</p>
+            <h5>Все запланированные новые слова изучены</h5>
             <p>Пройдено карточек - {{ getCountLearnedNewCard }}</p>
           </div>
           <div v-else-if="getLearnTypeIsRepeat" class="final-message final-message__new">
-            <p>Повтор слов выполнен</p>
+            <h5>Повтор слов выполнен</h5>
             <p>Пройдено карточек - {{ getCountLearnedRepeatCard }}</p>
           </div>
           <div v-else class="final-message final-message__all">
-            <p>На сегодня все.</p>
-            <p>
-              Задача выполнена. Изучено
-              {{ getCountLearnedNewCard + getCountLearnedRepeatCard }} карточек. Можно поиграть в
-              игры.
-            </p>
+            <!-- // todo показывать только по изучению всех слов -->
+            <p class="text-h6">Задача выполнена. На сегодня все.</p>
+            <v-list subheader>
+              <v-list-item
+                >Пройдено карточек -
+                {{ getCountLearnedNewCard + getCountLearnedRepeatCard }}</v-list-item
+              >
+              <v-list-item
+                >Процент правильных ответов - {{ percentageOfCrrectAnswers }}%</v-list-item
+              >
+              <v-list-item>Изученно новых слов - {{ getCountLearnedNewCard }}</v-list-item>
+              <v-list-item
+                >Самая длинная серия правильных ответов -
+                {{ getCurrentLearnStateObject.bestCorrectAnswersSeries }}</v-list-item
+              >
+            </v-list>
+            <p>Можно поиграть в игры.</p>
           </div>
         </v-card-text>
 
@@ -296,6 +306,7 @@ export default {
       "getLearnTypeIsRepeat",
       "getCountLearnedNewCard",
       "getCountLearnedRepeatCard",
+      "getCountAttemptsAllCards",
     ]),
     inputValue: {
       get() {
@@ -339,6 +350,14 @@ export default {
       },
     },
 
+    percentageOfCrrectAnswers() {
+      return Math.round(
+        ((this.getCountLearnedNewCard + this.getCountLearnedRepeatCard) /
+          this.getCountAttemptsAllCards) *
+          100
+      );
+    },
+
     wasHint: {
       get() {
         return !!this.currentWordObject.wasHint;
@@ -354,7 +373,7 @@ export default {
 
     numberStatusCurrentWord() {
       if (!this.currentWordObject.userWord) return 0;
-      // ! check for old notes
+      // check for old notes
       if (!this.currentWordObject.userWord.optional.status) return 1;
       return this.currentWordObject.userWord.optional.status;
     },
@@ -409,12 +428,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "setLoading",
-      "getLearnArraysFromServer",
-      "updateMixWordsArrayObjectByStep",
-      "addAnswerResult",
-    ]),
+    ...mapActions(["setLoading", "getLearnArraysFromServer", "addAnswerResult"]),
 
     async prepareStart() {
       // console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
@@ -460,6 +474,7 @@ export default {
       this.inputValue = "";
       this.isIntutOpacity = true;
       this.wasHint = true;
+      this.getCurrentLearnStateObject.currentCorrectAnswersSeries = 0;
       setTimeout(() => {
         this.isIntutOpacity = false;
       }, 5000);
@@ -468,6 +483,7 @@ export default {
     handleErrorWord(inputWord) {
       this.playAllAudio();
       this.hasWordCorrectAnswer = false;
+      this.getCurrentLearnStateObject.currentCorrectAnswersSeries = 0;
       const charsArrayCurrentWord = this.currentWord.split("");
       const charsArrayInputWord = inputWord.split("");
       let countError = 0;
@@ -508,18 +524,27 @@ export default {
         };
         if (message === EVALUATION_GOOD) resultOptionObject.userEvaluation = EVALUATION_GOOD;
         if (message === EVALUATION_EASY) resultOptionObject.userEvaluation = EVALUATION_EASY;
-        console.log("resultOptionObject >>> ", resultOptionObject);
         this.addAnswerResult(resultOptionObject);
-        // todo set raiting word
       }
       this.nextStep();
+    },
+
+    addToCorrectAnswersSeries() {
+      const state = this.getCurrentLearnStateObject;
+      state.currentCorrectAnswersSeries += 1;
+      if (state.currentCorrectAnswersSeries > state.bestCorrectAnswersSeries)
+        state.bestCorrectAnswersSeries = state.currentCorrectAnswersSeries;
+      console.log("after > this.getCurrentLearnStateObject ===", this.getCurrentLearnStateObject);
     },
 
     handleRightWord() {
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRightInInput();
-      if (this.attemptСount === 1 && !this.wasHint) this.hasWordCorrectAnswer = true;
+      if (this.attemptСount === 1 && !this.wasHint) {
+        this.hasWordCorrectAnswer = true;
+        this.addToCorrectAnswersSeries();
+      }
       if (this.learnSettingsToggles.userEvaluation.state) {
         setTimeout(() => {
           this.isShowEvaluation = true;
@@ -530,7 +555,6 @@ export default {
           isCorrectAnswer: this.hasWordCorrectAnswer,
           attemptСount: this.attemptСount,
         };
-        console.log("resultOptionObject >>> ", resultOptionObject);
         this.addAnswerResult(resultOptionObject);
         setTimeout(() => {
           this.nextStep();
@@ -545,7 +569,6 @@ export default {
         if (isNotEmpty) {
           this.isCheck = true;
           this.attemptСount += 1;
-          console.log("attemptСount", this.attemptСount);
           const inputWord = this.inputValue.trim();
           if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
             this.handleRightWord();

@@ -5,10 +5,9 @@ import defaultNewWordsArray from "./defaultObject";
 export default {
   state: {
     currentLearnStateObject: {
-      isInProgressLearn: false,
-      isTaskCompleted: false,
       isArraysLoaded: false,
-      // step: 0,
+      bestCorrectAnswersSeries: 0,
+      currentCorrectAnswersSeries: 0,
     },
     learnType: LEARN_TYPE_ALL,
     newWordsArray: defaultNewWordsArray,
@@ -102,6 +101,17 @@ export default {
         return getters.getRepeatWordsArray.reduce((accumulator, wordsObject) => {
           let count = accumulator;
           if (wordsObject.isCardStudied) count += 1;
+          return count;
+        }, 0);
+      }
+      return 0;
+    },
+
+    getCountAttemptsAllCards(state, getters) {
+      if (getters.getIsArraysLoaded) {
+        return getters.getMixWordsArray.reduce((accumulator, wordsObject) => {
+          let count = accumulator;
+          if (wordsObject.attemptСount) count += wordsObject.attemptСount;
           return count;
         }, 0);
       }
