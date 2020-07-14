@@ -155,11 +155,8 @@
       ></v-progress-linear>
     </v-card>
 
-    <v-bottom-sheet v-model="isShowEvaluation">
+    <v-bottom-sheet v-model="isShowEvaluation" persistent>
       <v-sheet class="text-center" height="300px">
-        <v-btn class="mt-4" text color="red" @click="isShowEvaluation = !isShowEvaluation"
-          >close</v-btn
-        >
         <div class="py-3">
           <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
           <div class="d-flex justify-center flex-wrap text-center">
@@ -420,7 +417,6 @@ export default {
       this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
-      // console.log(error);
       this.$router.push("/home");
     } finally {
       this.setLoading(false);
@@ -431,7 +427,6 @@ export default {
     ...mapActions(["setLoading", "getLearnArraysFromServer", "addAnswerResult"]),
 
     async prepareStart() {
-      // console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
       if (!this.getCurrentLearnStateObject.isArraysLoaded) {
         await this.getLearnArraysFromServer();
       }
@@ -534,7 +529,6 @@ export default {
       state.currentCorrectAnswersSeries += 1;
       if (state.currentCorrectAnswersSeries > state.bestCorrectAnswersSeries)
         state.bestCorrectAnswersSeries = state.currentCorrectAnswersSeries;
-      console.log("after > this.getCurrentLearnStateObject ===", this.getCurrentLearnStateObject);
     },
 
     handleRightWord() {
@@ -595,7 +589,6 @@ export default {
     },
 
     runEndLearn() {
-      // console.log("runEndLearn");
       this.isShowEvaluation = false;
       // todo save statistic & etc.
       // todo update statictics and goals
