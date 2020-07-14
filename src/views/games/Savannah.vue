@@ -36,7 +36,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss">
 .savannah {
   display: flex;
