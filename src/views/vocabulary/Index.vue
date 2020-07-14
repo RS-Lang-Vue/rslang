@@ -38,6 +38,7 @@
                   {{ row.item.transcription }}
                 </td>
                 <td>{{ row.item.wordTranslate }}</td>
+                <td>{{ row.item.status }}</td>
                 <td>{{ row.item.repeatCount }}</td>
                 <td>{{ row.item.lastDate }}</td>
                 <td>{{ row.item.repeatDate }}</td>
@@ -66,7 +67,7 @@
           <v-card-title>
             {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
             {{ fullInfoCard.wordTranslate }}
-            <v-btn icon small @click="audio.play(row.item.audio)">
+            <v-btn icon small @click="audio.play(fullInfoCard.audio)">
               <v-icon dark>mdi-volume-high</v-icon>
             </v-btn>
           </v-card-title>
@@ -77,7 +78,6 @@
           </v-card-subtitle>
 
           <v-img :src="fullInfoCard.image"></v-img>
-          
 
           <v-expand-transition>
             <div>
@@ -101,7 +101,7 @@
 
 <script>
 import AudioControl from "@/helpers/audio-control";
-import config from "@/config/config"
+import config from "@/config/config";
 
 export default {
   data: () => ({
@@ -126,6 +126,12 @@ export default {
         align: "start",
         sortable: false,
         value: "wordTranslate",
+      },
+      {
+        text: "Статус",
+        align: "start",
+        sortable: false,
+        value: "status",
       },
       {
         text: "Количество повторений",
@@ -201,11 +207,13 @@ export default {
       this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
 
       this.words = res.result.map((w) => {
+        const status = this.getStatusText(w.userWord.optional.status);
         return {
           word: w.word,
           audio: w.audio,
           transcription: w.transcription,
           wordTranslate: w.wordTranslate,
+          status,
           repeatCount: w.userWord.optional.repeatCount,
           lastDate: new Date(w.userWord.optional.lastDate).toLocaleString("ru-Ru"),
           repeatDate: new Date(w.userWord.optional.repeatDate).toLocaleString("ru-Ru"),
@@ -217,6 +225,21 @@ export default {
         };
       });
       this.loading = false;
+    },
+    getStatusText(status) {
+      switch (status) {
+        case "1":
+          return "изучение";
+        case "2":
+          return "повторение";
+        case "3":
+          return "напоминание";
+        case "4":
+          return "изучено";
+        default:
+        case "0":
+          return "новое";
+      }
     },
     showFullInfo(word) {
       this.fullInfoCard = word;
