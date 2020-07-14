@@ -2,10 +2,16 @@
   <div v-if="isVisibleContent">
     <v-card class="mx-auto text-start mt-1" max-width="700">
       <v-card-title :class="[isCardStudied ? 'grey' : 'cyan darken-1']">
+        <!-- // TODO -->
         <div class="dots">
-          <span v-for="n in 5" :key="n" class="dot"></span>
+          <span
+            v-for="n in 5"
+            :key="n"
+            class="dot"
+            :class="{ dot_accent: n - 1 <= numberStatusCurrentWord }"
+          ></span>
         </div>
-        <span class="white--text body-1">новое слово</span>
+        <span class="white--text body-1">{{ statusNameArray[numberStatusCurrentWord] }}</span>
         <v-spacer></v-spacer>
         <div v-if="isCardStudied">
           <span class="teal--text text--accent-1 body-1 mr-3">карточка изучена</span>
@@ -120,7 +126,7 @@
           ответ
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn text @click.stop="checkWord" color="indigo accent-4">
+        <v-btn text @click.stop="checkWord" :disabled="isCheck" color="indigo accent-4">
           Далее
         </v-btn>
       </v-card-actions>
@@ -253,6 +259,7 @@ import {
   EVALUATION_HARD,
   EVALUATION_GOOD,
   EVALUATION_EASY,
+  statusNameArray,
 } from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
@@ -262,6 +269,7 @@ export default {
     EVALUATION_HARD,
     EVALUATION_GOOD,
     EVALUATION_EASY,
+    statusNameArray,
     isVisibleContent: false,
     wordsArray: {},
     step: 0,
@@ -273,6 +281,7 @@ export default {
     isIntutOpacity: false,
     isShowEvaluation: false,
     isShowEndLearnInfo: false,
+    isCheck: false,
     prefixImagePath: config.dataBaseUrl,
     nameRules: [(v) => !!v || "Введите слово"],
   }),
@@ -296,9 +305,11 @@ export default {
         this.intut = value;
       },
     },
+
     currentWordObject() {
       return this.getCurrentArray[this.step];
     },
+
     isCardStudied: {
       get() {
         return !!this.currentWordObject.isCardStudied;
@@ -307,6 +318,7 @@ export default {
         this.$set(this.currentWordObject, "isCardStudied", value);
       },
     },
+
     hasWordCorrectAnswer: {
       get() {
         return !!this.currentWordObject.hasWordCorrectAnswer;
@@ -315,6 +327,7 @@ export default {
         this.$set(this.currentWordObject, "hasWordCorrectAnswer", value);
       },
     },
+
     attemptСount: {
       get() {
         if (typeof this.currentWordObject.attemptСount !== "undefined")
@@ -325,6 +338,7 @@ export default {
         this.$set(this.currentWordObject, "attemptСount", value);
       },
     },
+
     wasHint: {
       get() {
         return !!this.currentWordObject.wasHint;
@@ -337,6 +351,14 @@ export default {
     currentWord() {
       return this.currentWordObject.word;
     },
+
+    numberStatusCurrentWord() {
+      if (!this.currentWordObject.userWord) return 0;
+      // ! check for old notes
+      if (!this.currentWordObject.userWord.optional.status) return 1;
+      return this.currentWordObject.userWord.optional.status;
+    },
+
     learnSettingsToggles() {
       return this.$store.state.userSettings.optional.learn.toggles;
     },
@@ -470,6 +492,7 @@ export default {
       this.currentWordHtml = tagArray.join("");
       this.inputValue = "";
       this.isIntutOpacity = true;
+      this.isCheck = false;
       return countError;
     },
 
@@ -511,7 +534,7 @@ export default {
         this.addAnswerResult(resultOptionObject);
         setTimeout(() => {
           this.nextStep();
-        }, 1500);
+        }, 10000);
       }
     },
 
@@ -520,13 +543,14 @@ export default {
       else {
         const isNotEmpty = !!this.inputValue;
         if (isNotEmpty) {
+          this.isCheck = true;
           this.attemptСount += 1;
           console.log("attemptСount", this.attemptСount);
           const inputWord = this.inputValue.trim();
           if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
             this.handleRightWord();
           } else {
-            this.handleErrorWord(inputWord); // handleErrorWord(inputWord) return countCharError;
+            this.handleErrorWord(inputWord);
           }
         }
       }
@@ -570,6 +594,7 @@ export default {
     },
 
     nextStep() {
+      this.isCheck = false;
       if (this.step === this.wordsArray.length - 1) {
         const indexNotStudiedCart = this.getFastIndexOfIsNotLearnedWordObject();
         if (!indexNotStudiedCart) this.runEndLearn();
@@ -597,12 +622,12 @@ export default {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.37);
   margin-right: 0.3rem;
 }
 
-.dot:nth-child(1) {
-  background-color: orange;
+.dot_accent {
+  background-color: white;
 }
 
 .card-text__word-element {

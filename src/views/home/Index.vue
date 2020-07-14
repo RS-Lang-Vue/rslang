@@ -34,7 +34,7 @@
                 <span v-if="getIsRepeatWordsLearned">Для повторения больше нет</span>
               </p>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="flex-wrap">
               <v-btn
                 text
                 color="indigo accent-4"
@@ -180,8 +180,6 @@ export default {
   }),
   computed: {
     ...mapGetters([
-      // "getRepeatWordsArray",
-      // "getNewWordsArray",
       "getCountLearnedNewCard",
       "getCountLearnedRepeatCard",
       "getIsNewWordsLearned",
