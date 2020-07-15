@@ -3,6 +3,7 @@
     <div v-if="loading">
       <v-data-table
         item-key="name"
+        hide-default-footer
         class="elevation-1"
         loading
         loading-text="Загружается... Пожалуйста, подождите."
@@ -43,13 +44,13 @@
                 <td>{{ row.item.lastDate }}</td>
                 <td>{{ row.item.repeatDate }}</td>
                 <td>
-                  <v-btn icon small @click="showFullInfo(row.item)">
+                  <v-btn icon small @click="showFullInfo(row.item)" title="Подробнее">
                     <v-icon dark>mdi-book-open-variant</v-icon>
                   </v-btn>
                 </td>
                 <td v-if="i === 2">
-                  <v-btn icon small @click="sendToLearn(row.item)">
-                    <v-icon dark>mdi-book-open-variant</v-icon>
+                  <v-btn icon small @click="sendToLearn(row.item)" title="Восстановить">
+                    <v-icon dark>mdi-autorenew</v-icon>
                   </v-btn>
                 </td>
               </tr>
@@ -64,7 +65,7 @@
     <div class="text-center">
       <v-dialog v-model="fullInfo" max-width="500">
         <v-card class="mx-auto" max-width="500">
-          <v-card-title>
+          <v-card-title>            
             {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
             {{ fullInfoCard.wordTranslate }}
             <v-btn icon small @click="audio.play(fullInfoCard.audio)">
@@ -73,8 +74,8 @@
           </v-card-title>
 
           <v-card-subtitle>
-            <span v-html="fullInfoCard.textMeaning"></span> <br />
-            {{ fullInfoCard.textMeaningTranslate }}
+            <b>Meaning: </b><span v-html="fullInfoCard.textMeaning"></span> <br />
+            <b>Определение: </b>{{ fullInfoCard.textMeaningTranslate }}
           </v-card-subtitle>
 
           <v-img
@@ -88,8 +89,8 @@
               <v-divider></v-divider>
 
               <v-card-text>
-                <span v-html="fullInfoCard.textExample"></span> <br />
-                {{ fullInfoCard.textExampleTranslate }}
+                <b>Example: </b><span v-html="fullInfoCard.textExample"></span> <br />
+                <b>Пример: </b>{{ fullInfoCard.textExampleTranslate }}
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -209,13 +210,6 @@ export default {
         this.showAlert("error", "Ошибка!", res.error);
       }
       this.pageCount = Math.ceil((res.add.totalCount ?? 1) / this.WORDS_PER_PAGE);
-      // res.result[0].userWord.difficulty = "2";
-      // console.log(res.result[0]);
-      // this.$store.dispatch("setUserWords", {
-      //   isNewWord: false,
-      //   userWord: res.result[0].userWord,
-      //   wordId: res.result[0]._id,
-      // });
       this.words = res.result.map((w) => {
         const status = this.getStatusText(w.userWord.optional.status);
         return {
@@ -237,16 +231,16 @@ export default {
       });
       this.loading = false;
     },
-    sendToLearn(word) {
-      console.log(word);
+    async sendToLearn(word) {
+      this.loading = true;
       const newWord = word._word;
       newWord.userWord.difficulty = "0";
-      this.$store.dispatch("setUserWords", {
+      await this.$store.dispatch("setUserWords", {
         isNewWord: false,
         userWord: newWord.userWord,
         wordId: newWord._id,
       });
-      this.getWords(this.tab);
+      this.getWords(this.tab.split("-")[1]);
     },
     getStatusText(status) {
       switch (status) {
