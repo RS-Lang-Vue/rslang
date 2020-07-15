@@ -102,7 +102,6 @@
               <v-btn text color="indigo accent-4" :to="card.mainButton.link">{{
                 card.mainButton.title
               }}</v-btn>
-              <v-btn text color="indigo accent-4">{{ card.additionalButton.title }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -117,14 +116,6 @@ import { mapGetters } from "vuex";
 
 const cards = [
   {
-    cardTitle: "SpeakIt",
-    cardSubtitle: "Мини игра",
-    cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/speak-it" },
-    additionalButton: { title: "Инфо", link: "" },
-  },
-  {
     cardTitle: "English puzzle",
     cardSubtitle: "Мини игра",
     cardText: "Цель игры - собрать предложения из размещённых в случайном порядке английских слов.",
@@ -134,25 +125,8 @@ const cards = [
   {
     cardTitle: "Саванна",
     cardSubtitle: "Мини игра",
-    cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
+    cardText: "Успейте выбрать правильный перевод, до того, как падающее слово пересечет черту.",
     mainButton: { title: "Играть", link: "/games/savannah" },
-    additionalButton: { title: "Инфо", link: "" },
-  },
-  {
-    cardTitle: "Аудиовызов",
-    cardSubtitle: "Мини игра",
-    cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/audio-call" },
-    additionalButton: { title: "Инфо", link: "" },
-  },
-  {
-    cardTitle: "Спринт",
-    cardSubtitle: "Мини игра",
-    cardText:
-      "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/sprint" },
     additionalButton: { title: "Инфо", link: "" },
   },
   {
@@ -161,6 +135,30 @@ const cards = [
     cardText:
       "Игра развивает память и помогает изучать слова. Изучение построено на сопоставлении слова и картинки.",
     mainButton: { title: "Играть", link: "/games/start-find-the-pair" },
+    additionalButton: { title: "Инфо", link: "" },
+  },
+  {
+    cardTitle: "Спринт",
+    cardSubtitle: "Мини игра",
+    cardText:
+      "Проверьте себя, попробовав угадать, соответствует ли перевод указанному слову пока таймер не заполнится.",
+    mainButton: { title: "Играть", link: "/games/sprint" },
+    additionalButton: { title: "Инфо", link: "" },
+  },
+  {
+    cardTitle: "Аудиовызов",
+    cardSubtitle: "Мини игра",
+    cardText:
+      "Звучит произношение слова на английском языке, нужно выбрать перевод слова из пяти предложенных вариантов ответа.",
+    mainButton: { title: "Играть", link: "/games/audio-call" },
+    additionalButton: { title: "Инфо", link: "" },
+  },
+
+  {
+    cardTitle: "SpeakIt",
+    cardSubtitle: "Мини игра",
+    cardText: "Игра не реализованна",
+    mainButton: { title: "Играть", link: "/games/speak-it" },
     additionalButton: { title: "Инфо", link: "" },
   },
 ];

@@ -19,6 +19,35 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-container>
+      <v-row class="mt-6 mb-8" align="center" justify="center">
+        <v-col class="text-center">
+          <p class="promo-text">
+            В современном обществе, кажется, проще найти человека, не умеющего готовить, нежели не
+            знающего английский язык. Поэтому меньше слов, больше дела! Мы создали для вас
+            уникальное веб приложения для изучения английского языка, которые гарантированно сделают
+            процесс обучения легким и приятным!
+          </p>
+        </v-col>
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-col class="text-center">
+          <v-img
+            max-width="800"
+            style="margin: 0 auto;"
+            src="../../assets/images/img-promo1.jpg"
+          ></v-img>
+          <!-- <h1 class="promo__header">RS Lang</h1> -->
+        </v-col>
+      </v-row>
+
+      <v-row class="my-8" align="center" justify="center">
+        GitHub приложения:
+        <a href="https://github.com/RS-Lang-Vue/rslang" target="_blank"
+          >https://github.com/RS-Lang-Vue/rslang</a
+        >
+      </v-row>
+    </v-container>
   </v-main>
 </template>
 
@@ -60,5 +89,10 @@ export default {
 
 .promo__button {
   margin: 24px;
+}
+
+.promo-text {
+  max-width: 900px;
+  margin: auto;
 }
 </style>
