@@ -50,26 +50,25 @@ const drawerGroups = [
   [
     { link: "/home", icon: "mdi-home", title: "Главная страница" },
     { link: "/team", icon: "mdi-account-group", title: "О команде" },
-    { link: "/stats", icon: "mdi-chart-bar", title: "Статистика" },
     { link: "/vocabulary", icon: "mdi-bookshelf", title: "Словарь" },
     { link: "/settings", icon: "mdi-cog", title: "Настройки" },
   ],
   [
     { link: "/learn", icon: "mdi-alphabetical-variant", title: "Словарная тренировка" },
-    { link: "/games/speak-it", icon: "mdi-nintendo-game-boy", title: 'Игра "SpeakIt"' },
     {
       link: "/games/start-english-puzzle",
       icon: "mdi-nintendo-game-boy",
       title: 'Игра "English puzzle"',
     },
     { link: "/games/savannah", icon: "mdi-nintendo-game-boy", title: 'Игра "Саванна"' },
-    { link: "/games/audio-call", icon: "mdi-nintendo-game-boy", title: 'Игра "Аудиовызов"' },
-    { link: "/games/sprint", icon: "mdi-nintendo-game-boy", title: 'Игра "Спринт"' },
     {
       link: "/games/start-find-the-pair",
       icon: "mdi-nintendo-game-boy",
       title: 'Игра "Find The Pair"',
     },
+    { link: "/games/sprint", icon: "mdi-nintendo-game-boy", title: 'Игра "Спринт"' },
+    { link: "/games/audio-call", icon: "mdi-nintendo-game-boy", title: 'Игра "Аудиовызов"' },
+    { link: "/games/speak-it", icon: "mdi-nintendo-game-boy", title: 'Игра "SpeakIt"' },
   ],
 ];
 
