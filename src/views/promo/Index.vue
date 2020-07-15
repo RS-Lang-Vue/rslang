@@ -1,6 +1,6 @@
 <template>
   <v-main class="promo">
-    <v-container class="fill-height" fluid>
+    <v-container class="my-16" fluid>
       <v-row align="center" justify="center">
         <v-col class="text-center">
           <h1 class="promo__header">RS Lang</h1>
@@ -46,6 +46,13 @@
         <a href="https://github.com/RS-Lang-Vue/rslang" target="_blank"
           >https://github.com/RS-Lang-Vue/rslang</a
         >
+      </v-row>
+
+      <v-row align="center" justify="center">
+        <v-col class="text-center">
+          <h3 class="mt-2">Алгоритм используемой в приложении методики интервального повторения</h3>
+          <v-img max-width="1000" style="margin: 0 auto;" src="../../assets/images/MIR.png"></v-img>
+        </v-col>
       </v-row>
     </v-container>
   </v-main>
