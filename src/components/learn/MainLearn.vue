@@ -261,6 +261,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import config from "@/config/config";
+import UserWord from "@/helpers/user-word/user-word";
 import {
   EVALUATION_AGAIN,
   EVALUATION_HARD,
@@ -659,8 +660,8 @@ export default {
       this.setLoading(true);
       const isNewWord = !this.currentWordObject.userWord;
       try {
-        if (isNewWord) this.currentWordObject.userWord = { difficulty: message };
-        else this.currentWordObject.userWord.difficulty = message;
+        if (isNewWord) this.currentWordObject.userWord = new UserWord();
+        this.currentWordObject.userWord.difficulty = message;
 
         const res = await this.setUserWordWithCheck({
           userWord: this.currentWordObject.userWord,
