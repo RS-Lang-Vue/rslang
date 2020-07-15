@@ -4,7 +4,7 @@
     <Main v-if="!startPage" :startPage="startPage" @changeStartPage="startPage = true" />
     <div class="intro__wrapper" v-else>
       <v-card color="transparent" class="intro" elevation="0">
-        <v-card-title class="intro__title">Savannah</v-card-title>
+        <v-card-title class="intro__title">Саванна</v-card-title>
         <v-card-text class="intro__decription"
           >Успейте выбрать правильный перевод, до того, как падающее слово пересечет черту
         </v-card-text>
