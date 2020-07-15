@@ -3,13 +3,13 @@
     <v-card align="center" justify="center">
       <v-switch
         :value="learned"
-        class="ma-0 pt-5"
+        class="ma-2 ml-5 pt-5"
         color="primary"
         label="Повторять изученные"
         @change="changeLearned"
       ></v-switch>
       <v-divider inset></v-divider>
-      <v-card elevation="0" :disabled="learned || loading">
+      <v-card elevation="0" :disabled="loading || learned">
         <v-card-title>Уровень</v-card-title>
         <v-slider
           :value="level"
@@ -52,7 +52,7 @@
       >
       </v-slider>
       <v-card-title>Подсказки</v-card-title>
-      <v-switch v-model="audio" class="ma-2" color="primary" label="Произношение"></v-switch>
+      <v-switch v-model="audio" class="ma-2 ml-5" color="primary" label="Произношение"></v-switch>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="closeSettings">Close</v-btn>

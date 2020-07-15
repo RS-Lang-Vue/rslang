@@ -3,22 +3,57 @@
     <v-container>
       <!-- Stack the columns on mobile by making one full-width and the other half-width -->
       <v-row>
-        <v-col cols="12" md="6" lg="4">
+        <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto amber lighten-5" max-width="500">
-            <v-card-title class="headline">Цель на сегодня</v-card-title>
-            <v-card-text class="text-left">Завершить 50 карточек</v-card-text>
-            <v-card-text class="text-left"
-              >Сегодня вы выполнили 0 карточек. Для достижения цели завершите 50
-              карточек</v-card-text
-            >
-
+            <v-card-title class="headline">Задача на сегодня</v-card-title>
+            <v-card-text class="text-left pb-1">
+              <span v-if="getIsNewWordsLearned && getIsRepeatWordsLearned">
+                Вы достигли цели. Пройдено карточк - {{ wordsPerDay }}</span
+              >
+              <span v-else>
+                Изучить {{ wordsPerDay }} карточек, в том числе {{ newWordsPerDay }} новых
+              </span>
+            </v-card-text>
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/learn">Выполнить</v-btn>
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean(LEARN_TYPE_ALL)"
+                :disabled="getIsNewWordsLearned && getIsRepeatWordsLearned"
+                >Выполнить</v-btn
+              >
+            </v-card-actions>
+
+            <v-card-text class="text-left pb-1">
+              <p>
+                Сегодня вы изучили {{ getCountLearnedNewCard }} новых слов.
+                <span v-if="getIsNewWordsLearned">Новые слова все изучены</span>
+              </p>
+              <p>
+                Повторили {{ getCountLearnedRepeatCard }} карточек.
+                <span v-if="getIsRepeatWordsLearned">Для повторения больше нет</span>
+              </p>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean(LEARN_TYPE_NEW)"
+                :disabled="getIsNewWordsLearned"
+                >Изучить новые</v-btn
+              >
+              <v-btn
+                text
+                color="indigo accent-4"
+                @click="startLean(LEARN_TYPE_REPEAT)"
+                :disabled="wordsPerDay === newWordsPerDay || getIsRepeatWordsLearned"
+                >Повторить слова</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="6" lg="4">
+        <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto yellow lighten-5" max-width="500">
             <v-card-title class="headline">Статистика</v-card-title>
 
@@ -59,6 +94,9 @@
 </template>
 
 <script>
+import { LEARN_TYPE_ALL, LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+import { mapGetters } from "vuex";
+
 const cards = [
   {
     cardTitle: "SpeakIt",
@@ -80,7 +118,7 @@ const cards = [
     cardSubtitle: "Мини игра",
     cardText:
       "Очень краткое описание игры. А возможно и статистика игрока. Типа, сыграно - столько, уровень - такой, изучено слов — столько.",
-    mainButton: { title: "Играть", link: "/games/savana" },
+    mainButton: { title: "Играть", link: "/games/savannah" },
     additionalButton: { title: "Инфо", link: "" },
   },
   {
@@ -136,7 +174,42 @@ export default {
   data: () => ({
     cards,
     staticticList,
+    LEARN_TYPE_ALL,
+    LEARN_TYPE_NEW,
+    LEARN_TYPE_REPEAT,
   }),
+  computed: {
+    ...mapGetters([
+      // "getRepeatWordsArray",
+      // "getNewWordsArray",
+      "getCountLearnedNewCard",
+      "getCountLearnedRepeatCard",
+      "getIsNewWordsLearned",
+      "getIsRepeatWordsLearned",
+    ]),
+
+    wordsPerDay() {
+      return this.$store.state.userSettings.optional.learn.wordsPerDay;
+    },
+    newWordsPerDay() {
+      return this.$store.state.userSettings.optional.learn.newWordsPerDay;
+    },
+  },
+  async created() {
+    this.$store.dispatch("setLoading", true);
+    try {
+      await this.$store.dispatch("downloadSettings");
+    } finally {
+      this.$store.dispatch("setLoading", false);
+    }
+  },
+
+  methods: {
+    startLean(type) {
+      this.$store.commit("updateLearnType", type);
+      this.$router.push("/learn");
+    },
+  },
 };
 </script>
 

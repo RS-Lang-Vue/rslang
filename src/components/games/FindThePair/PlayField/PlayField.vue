@@ -105,7 +105,7 @@ export default {
           }
           this.stack = [];
           this.flippedСardsCount = 0;
-        }, 700);
+        }, 1300);
       }
     },
     deletedCard(id) {

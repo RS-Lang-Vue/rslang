@@ -1,22 +1,54 @@
+import settingsConstants from "@/config/settingsConstants";
 import errorList from "@/config/errors";
 
 export default {
   state: {
-    wordsPerDay: 20,
     optional: {
-      globalSettings: {
-        maxCards: 50,
-        answerBtn: false,
-        deleteBtn: false,
-        btnDifficult: false,
-        btnSet: false,
-      },
-      wordsTraining: {
-        wordTranslate: false,
-        textMeaning: false,
-        textExample: false,
-        transcription: false,
-        image: false,
+      learn: {
+        wordsPerDay: settingsConstants.DEFAULT_WORDS_PER_DAY,
+        newWordsPerDay: settingsConstants.DEFAULT_NEW_WORDS_PER_DAY,
+        toggles: {
+          wordTranslate: {
+            title: "Перевод",
+            state: true,
+          },
+          textMeaning: {
+            title: "Объяснение значения",
+            state: true,
+          },
+          textExample: {
+            title: "Пример использования",
+            state: true,
+          },
+          transcription: {
+            title: "Транскрипция",
+            state: true,
+          },
+          image: {
+            title: "Картинка-ассоциация",
+            state: true,
+          },
+          autoPronunciation: {
+            title: "Автоматическое произношение",
+            state: true,
+          },
+          translationAfter: {
+            title: "Перевод после ответа ",
+            state: true,
+          },
+          answerButton: {
+            title: 'Кнопка "Ответ"',
+            state: true,
+          },
+          deleteButton: {
+            title: 'Кнопка "Удалить"',
+            state: true,
+          },
+          difficultButton: {
+            title: 'Кнопка "Сложное"',
+            state: true,
+          },
+        },
       },
       gameSpeakIt: {
         round: [0, 0, 0, 0, 0, 0],
@@ -126,6 +158,9 @@ export default {
     },
   },
   getters: {
+    getLearnSettings(state) {
+      return state.optional.learn;
+    },
     getSavannahSettings(state) {
       return state.optional.gameSavannah;
     },

@@ -10,8 +10,8 @@ export default class AudioControl {
 
   init() {
     this.setHandlerLoaded();
-    this.setHandlersPause();
-    this.setHandlersEnd();
+    this.setHandlerPause();
+    this.setHandlerEnd();
   }
 
   setHandlerLoaded() {
@@ -22,14 +22,14 @@ export default class AudioControl {
     this.player.addEventListener("loadeddata", loadded);
   }
 
-  setHandlersPause() {
+  setHandlerPause() {
     const end = () => {
       this.isAudioActive = false;
     };
     this.player.addEventListener("pause", end);
   }
 
-  setHandlersEnd() {
+  setHandlerEnd() {
     const end = () => {
       if (this.tracks.length === 0) {
         this.isAudioActive = false;
@@ -41,14 +41,24 @@ export default class AudioControl {
   }
 
   play(url) {
+    let correctUrl = "";
     if (/^files/i.test(url)) {
-      this.tracks.push(`${config.dataBaseUrl}${url}`);
+      correctUrl = `${config.dataBaseUrl}${url}`;
     } else {
-      this.tracks.push(`data:audio/mpeg;base64,${url}`);
+      correctUrl = `data:audio/mpeg;base64,${url}`;
     }
+    if (this.tracks.length === 0 || correctUrl !== this.tracks[this.tracks.length - 1]) {
+      this.tracks.push(correctUrl);
+    }
+
     if (!this.isPlaying()) {
       this.player.src = this.tracks.shift();
     }
+  }
+
+  forcePlay(url) {
+    this.stop();
+    this.play(url);
   }
 
   stop() {
