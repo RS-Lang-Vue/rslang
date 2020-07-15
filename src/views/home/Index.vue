@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <v-container>
-      <!-- Stack the columns on mobile by making one full-width and the other half-width -->
       <v-row>
         <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto amber lighten-5" max-width="500">
@@ -34,7 +33,7 @@
                 <span v-if="getIsRepeatWordsLearned">Для повторения больше нет</span>
               </p>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="flex-wrap">
               <v-btn
                 text
                 color="indigo accent-4"
@@ -55,19 +54,38 @@
 
         <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto yellow lighten-5" max-width="500">
-            <v-card-title class="headline">Статистика</v-card-title>
+            <v-card-title class="headline">Текущая статистика</v-card-title>
 
             <v-simple-table dense class="container__color">
               <tbody>
-                <tr v-for="item in staticticList" :key="item.id">
-                  <td class="text-left">{{ item.staticticTitle }}</td>
-                  <td class="text-right">{{ item.staticticValue }}</td>
+                <tr>
+                  <td class="text-left">Пройдено карточек</td>
+                  <td class="text-right">
+                    {{ getCountLearnedNewCard + getCountLearnedRepeatCard }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-left">Изученно новых слов</td>
+                  <td class="text-right">{{ getCountLearnedNewCard }}</td>
+                </tr>
+                <tr>
+                  <td class="text-left">Количество попыток</td>
+                  <td class="text-right">{{ getCountAttemptsAllCards }}</td>
+                </tr>
+                <tr>
+                  <td class="text-left">Процент правильных ответов</td>
+                  <td class="text-right">{{ percentageOfCrrectAnswers }}</td>
+                </tr>
+                <tr>
+                  <td class="text-left">Лучшая серия правильных ответов</td>
+                  <td class="text-right">
+                    {{ getCurrentLearnStateObject.bestCorrectAnswersSeries }}
+                  </td>
                 </tr>
               </tbody>
             </v-simple-table>
 
             <v-card-actions>
-              <v-btn text color="indigo accent-4" to="/stats">Подробнее</v-btn>
               <v-btn text color="indigo accent-4" to="/vocabulary">Словарь</v-btn>
             </v-card-actions>
           </v-card>
@@ -147,45 +165,44 @@ const cards = [
   },
 ];
 
-const staticticList = [
-  {
-    staticticTitle: "Слова для практики",
-    staticticValue: 11,
-  },
-  {
-    staticticTitle: "Лучшая серия",
-    staticticValue: 0,
-  },
-  {
-    staticticTitle: "Пройдено слов по практике",
-    staticticValue: 11,
-  },
-  {
-    staticticTitle: "Правильные повторы, %",
-    staticticValue: 0,
-  },
-  {
-    staticticTitle: "Новые слова",
-    staticticValue: 0,
-  },
-];
+// const staticticList = [
+//   {
+//     staticticTitle: "Пройдено карточек",
+//     staticticValue: this.getCountLearnedNewCard + this.getCountLearnedRepeatCard,
+//   },
+//   {
+//     staticticTitle: "Изученно новых слов",
+//     staticticValue: this.getCountLearnedNewCard,
+//   },
+//   {
+//     staticticTitle: "Количество попыток",
+//     staticticValue: this.getCountAttemptsAllCards,
+//   },
+//   {
+//     staticticTitle: "Процент правильных ответов",
+//     staticticValue: this.percentageOfCrrectAnswers,
+//   },
+//   {
+//     staticticTitle: "Лучшая серия правильных ответов",
+//     staticticValue: this.getCurrentLearnStateObject.bestCorrectAnswersSeries,
+//   },
+// ];
 
 export default {
   data: () => ({
     cards,
-    staticticList,
     LEARN_TYPE_ALL,
     LEARN_TYPE_NEW,
     LEARN_TYPE_REPEAT,
   }),
   computed: {
     ...mapGetters([
-      // "getRepeatWordsArray",
-      // "getNewWordsArray",
       "getCountLearnedNewCard",
       "getCountLearnedRepeatCard",
       "getIsNewWordsLearned",
       "getIsRepeatWordsLearned",
+      "getCountAttemptsAllCards",
+      "getCurrentLearnStateObject",
     ]),
 
     wordsPerDay() {
@@ -193,6 +210,16 @@ export default {
     },
     newWordsPerDay() {
       return this.$store.state.userSettings.optional.learn.newWordsPerDay;
+    },
+
+    percentageOfCrrectAnswers() {
+      const percentage = Math.round(
+        ((this.getCountLearnedNewCard + this.getCountLearnedRepeatCard) /
+          this.getCountAttemptsAllCards) *
+          100
+      );
+      if (Number.isNaN(percentage)) return "-";
+      return percentage;
     },
   },
   async created() {

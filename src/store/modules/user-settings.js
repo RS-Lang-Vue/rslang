@@ -48,6 +48,10 @@ export default {
             title: 'Кнопка "Сложное"',
             state: true,
           },
+          userEvaluation: {
+            title: "Оценивать сложность изучаемого слова",
+            state: true,
+          },
         },
       },
       gameSpeakIt: {
