@@ -65,7 +65,7 @@
     <div class="text-center">
       <v-dialog v-model="fullInfo" max-width="500">
         <v-card class="mx-auto" max-width="500">
-          <v-card-title>            
+          <v-card-title>
             {{ fullInfoCard.word }} {{ fullInfoCard.transcription }} -
             {{ fullInfoCard.wordTranslate }}
             <v-btn icon small @click="audio.play(fullInfoCard.audio)">
@@ -96,7 +96,7 @@
           </v-expand-transition>
 
           <v-card-actions>
-            <v-btn @click="hideFullInfo()" text>HIDE</v-btn>
+            <v-btn @click="hideFullInfo()" text>ЗАКРЫТЬ</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
