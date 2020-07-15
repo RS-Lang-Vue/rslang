@@ -28,19 +28,20 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["setError"]),
     handleFormSubmit(user) {
       this.isFormLoading = true;
       this.loginUser(user)
         .then(() => {
-          this.showAlert("success", "Success", "Successfully logged in");
+          this.showAlert("success", "Успех", "Успешная авторизация");
           this.$router.push("/home");
         })
         .catch((err) => {
           const statusCode = err.response.status;
           if (statusCode === 404 || statusCode === 403) {
-            this.showAlert("error", "Error", "Credentials are incorrect");
+            this.setError("Учетные данные неверны");
           } else {
-            this.showAlert("error", "Error", "Something went wrong");
+            this.setError("Что-то пошло не так");
           }
         })
         .finally(() => {

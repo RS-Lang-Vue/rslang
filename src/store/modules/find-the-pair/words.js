@@ -36,7 +36,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Слова не были получены с сервера`);
+          throw new Error(`Нет связи с сервером. Слова не были получены`);
         }
         const data = await res.json();
         commit("updateWordsForRoundFP", data);
@@ -53,7 +53,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Слова не были получены с сервера`);
+          throw new Error(`Нет связи с сервером. Слова не были получены`);
         }
         const data = await res.json();
         dispatch("setLoading", false);
