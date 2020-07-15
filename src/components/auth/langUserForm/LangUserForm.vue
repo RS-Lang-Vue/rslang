@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import passwordComplexity from "@/helpers/passwordComplexity";
+
 export default {
   props: {
     title: {
@@ -42,11 +44,17 @@ export default {
   data: () => ({
     email: "",
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      (v) => !!v || "Необходимо ввести Ваш e-mail",
+      (v) => /.+@.+\..+/.test(v) || "Введите корректный e-mail",
     ],
     password: "",
-    passwordRules: [(v) => !!v || "Password is required"],
+    passwordRules: [
+      (v) => !!v || "Необходимо ввести пароль",
+      (v) => v.length > 7 || "Длина пароля должна быть не менее 8 символов",
+      (v) =>
+        passwordComplexity(v) ||
+        "Пароль должен содержать: прописные и строчные буквы латинского алфавита(A-z), цифры(0-9), минимум один из символов #+-_ @$!%*?&.,;:[]{}",
+    ],
   }),
   methods: {
     handleFormSubmit() {
@@ -61,6 +69,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.user-form .v-messages__message {
+  min-height: 2em !important;
+}
+</style>
 
 <style scoped>
 .user-form {

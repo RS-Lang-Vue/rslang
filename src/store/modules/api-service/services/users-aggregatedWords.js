@@ -23,11 +23,7 @@ export default {
         return new UniResponse(false, errorList.unauthorized);
       }
       let url = `${this.state.apiService.baseApiUrl}/users/${user.userId}/aggregatedWords?`;
-      if (page !== 0) {
-        url += "wordsPerPage=3600";
-      } else {
-        url += `wordsPerPage=${wordsPerPage}`;
-      }
+      url += `wordsPerPage=${wordsPerPage}`;
       if (group !== undefined) url += `&group=${group}`;
       if (page !== undefined) url += `&page=${page}`;
       if ((_onlyLearned || _onlyNotLearned) && !(_onlyLearned && _onlyNotLearned)) {
@@ -50,15 +46,11 @@ export default {
         },
       });
       if (res.status === 200) {
-        let array = (await res.json())[0].paginatedResults;
-        if (page !== undefined && array.length < page * wordsPerPage) {
-          return new UniResponse(
-            false,
-            `${errorList.pageNotFound}. Все изучено слов - ${array.length}`
-          );
-        }
-        array = array.splice(page * wordsPerPage, wordsPerPage);
-        return new UniResponse(true, array);
+        const jsonRes = await res.json();
+        const array = jsonRes[0].paginatedResults;
+        const result = new UniResponse(true, array);
+        result.add = { totalCount: jsonRes[0].totalCount[0]?.count ?? 0 };
+        return result;
       }
       switch (res.status) {
         case 401:

@@ -1,5 +1,6 @@
 import UniResponse from "@/models/UniResponse";
 import updateUserWord from "@/helpers/user-word/update-user-word";
+import UserWord from "../../helpers/user-word/user-word";
 
 export default {
   state: {},
@@ -19,13 +20,28 @@ export default {
       }
       return res;
     },
+    async changeDifficulty({ dispatch }, { difficulty, wordId }) {
+      let res = await dispatch("getUsersWordsById", { wordId });
+      if (!res.success) {
+        return res;
+      }
+      let userWord = res.result;
+      const isNewWord = userWord === undefined;
+      if (isNewWord) userWord = new UserWord();
+      userWord.difficulty = difficulty;
+      res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
+      if (!res.success) {
+        return res;
+      }
+      return res;
+    },
     async setUserWordWithCheck({ dispatch }, { userWord, wordId }) {
       let res = await dispatch("getUsersWordsById", { wordId });
       if (!res.success) {
         return res;
       }
-      const oldUerWord = res.result;
-      const isNewWord = oldUerWord === undefined;
+      const oldUserWord = res.result;
+      const isNewWord = oldUserWord === undefined;
       res = await this.dispatch("setUserWords", { isNewWord, userWord, wordId });
       if (!res.success) {
         return res;

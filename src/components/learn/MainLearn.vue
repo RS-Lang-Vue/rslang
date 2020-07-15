@@ -3,9 +3,14 @@
     <v-card class="mx-auto text-start mt-1" max-width="700">
       <v-card-title :class="[isCardStudied ? 'grey' : 'cyan darken-1']">
         <div class="dots">
-          <span v-for="n in 5" :key="n" class="dot"></span>
+          <span
+            v-for="n in 5"
+            :key="n"
+            class="dot"
+            :class="{ dot_accent: n - 1 <= numberStatusCurrentWord }"
+          ></span>
         </div>
-        <span class="white--text body-1">новое слово</span>
+        <span class="white--text body-1">{{ statusNameArray[numberStatusCurrentWord] }}</span>
         <v-spacer></v-spacer>
         <div v-if="isCardStudied">
           <span class="teal--text text--accent-1 body-1 mr-3">карточка изучена</span>
@@ -15,6 +20,7 @@
           dark
           icon
           title="Удалить слово из изучаемых"
+          @click="handleDeleting(WORD_DELETED)"
         >
           <v-icon>mdi-delete-outline</v-icon>
         </v-btn>
@@ -102,6 +108,7 @@
       <v-card-actions>
         <v-btn
           v-if="learnSettingsToggles.answerButton.state"
+          @click="handleDeleting(WORD_DIFFICULT)"
           text
           color="indigo accent-4"
           title="Добавить в раздел сложные слова"
@@ -119,7 +126,7 @@
           ответ
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn text @click.stop="checkWord" color="indigo accent-4">
+        <v-btn text @click.stop="checkWord" :disabled="isCheck" color="indigo accent-4">
           Далее
         </v-btn>
       </v-card-actions>
@@ -149,34 +156,51 @@
       ></v-progress-linear>
     </v-card>
 
-    <v-bottom-sheet v-model="isShowEvaluation">
+    <v-bottom-sheet v-model="isShowEvaluation" persistent>
       <v-sheet class="text-center" height="300px">
-        <v-btn class="mt-4" text color="red" @click="isShowEvaluation = !isShowEvaluation"
-          >close</v-btn
-        >
         <div class="py-3">
           <p class="text-h5 text-center mt-6">Оцените сложность слова</p>
           <div class="d-flex justify-center flex-wrap text-center">
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="teal accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_AGAIN)"
+                class="ma-1"
+                text
+                color="teal accent-4"
+              >
                 <v-icon large color="teal darken-4">mdi-repeat</v-icon>
                 Снова
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="deep-purple accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_HARD)"
+                class="ma-1"
+                text
+                color="deep-purple accent-4"
+              >
                 <v-icon large color="deep-purple darken-4">mdi-emoticon-neutral-outline</v-icon>
                 Трудно
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="green accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_GOOD)"
+                class="ma-1"
+                text
+                color="green accent-4"
+              >
                 <v-icon large color="green darken-4">mdi-emoticon-happy-outline</v-icon>
                 Хорошо
               </v-btn>
             </div>
             <div class="d-flex flex-column">
-              <v-btn @click.stop="setEvaluation" class="ma-1" text color="light-blue accent-4">
+              <v-btn
+                @click.stop="setEvaluation(EVALUATION_EASY)"
+                class="ma-1"
+                text
+                color="light-blue accent-4"
+              >
                 <v-icon large color="light-blue darken-4">mdi-emoticon-wink-outline</v-icon>
                 Легко
               </v-btn>
@@ -194,20 +218,30 @@
 
         <v-card-text class="mt-5">
           <div v-if="getLearnTypeIsNew" class="final-message final-message__new">
-            <p>Все запланированные новые слова изучены</p>
+            <h5>Все запланированные новые слова изучены</h5>
             <p>Пройдено карточек - {{ getCountLearnedNewCard }}</p>
           </div>
           <div v-else-if="getLearnTypeIsRepeat" class="final-message final-message__new">
-            <p>Повтор слов выполнен</p>
+            <h5>Повтор слов выполнен</h5>
             <p>Пройдено карточек - {{ getCountLearnedRepeatCard }}</p>
           </div>
           <div v-else class="final-message final-message__all">
-            <p>На сегодня все.</p>
-            <p>
-              Задача выполнена. Изучено
-              {{ getCountLearnedNewCard + getCountLearnedRepeatCard }} карточек. Можно поиграть в
-              игры.
-            </p>
+            <p class="text-h6">Задача выполнена. На сегодня все.</p>
+            <v-list subheader>
+              <v-list-item
+                >Пройдено карточек -
+                {{ getCountLearnedNewCard + getCountLearnedRepeatCard }}</v-list-item
+              >
+              <v-list-item
+                >Процент правильных ответов - {{ percentageOfCrrectAnswers }}%</v-list-item
+              >
+              <v-list-item>Изученно новых слов - {{ getCountLearnedNewCard }}</v-list-item>
+              <v-list-item
+                >Самая длинная серия правильных ответов -
+                {{ getCurrentLearnStateObject.bestCorrectAnswersSeries }}</v-list-item
+              >
+            </v-list>
+            <p>Можно поиграть в игры.</p>
           </div>
         </v-card-text>
 
@@ -227,36 +261,56 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import config from "@/config/config";
+import {
+  EVALUATION_AGAIN,
+  EVALUATION_HARD,
+  EVALUATION_GOOD,
+  EVALUATION_EASY,
+  statusNameArray,
+  WORD_DIFFICULT,
+  WORD_DELETED,
+  WORD_ORDINARY,
+} from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
 export default {
   data: () => ({
+    EVALUATION_AGAIN,
+    EVALUATION_HARD,
+    EVALUATION_GOOD,
+    EVALUATION_EASY,
+    statusNameArray,
+    WORD_DIFFICULT,
+    WORD_DELETED,
+    WORD_ORDINARY,
     isVisibleContent: false,
     wordsArray: {},
     step: 0,
     audio: {},
     currentWordHtml: "",
+    currentAttemptCount: 0,
     intut: "",
     isRightWord: false,
-    isErrorWord: false,
     isIntutOpacity: false,
     isShowEvaluation: false,
     isShowEndLearnInfo: false,
+    isCheck: false,
     prefixImagePath: config.dataBaseUrl,
     nameRules: [(v) => !!v || "Введите слово"],
   }),
 
   computed: {
     ...mapGetters([
-      "getCurrentCardStudied",
       "getCurrentLearnStateObject",
       "getLearnType",
+      "getMixWordsArray",
       "getCurrentArray",
       "getLearnSettings",
       "getLearnTypeIsNew",
       "getLearnTypeIsRepeat",
       "getCountLearnedNewCard",
       "getCountLearnedRepeatCard",
+      "getCountAttemptsAllCards",
     ]),
     inputValue: {
       get() {
@@ -266,21 +320,68 @@ export default {
         this.intut = value;
       },
     },
+
     currentWordObject() {
       return this.getCurrentArray[this.step];
     },
+
     isCardStudied: {
       get() {
-        const isStudied = !!this.currentWordObject.isCardStudied;
-        return isStudied;
+        return !!this.currentWordObject.isCardStudied;
       },
       set(value) {
         this.$set(this.currentWordObject, "isCardStudied", value);
       },
     },
+
+    hasWordCorrectAnswer: {
+      get() {
+        return !!this.currentWordObject.hasWordCorrectAnswer;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "hasWordCorrectAnswer", value);
+      },
+    },
+
+    attemptСount: {
+      get() {
+        if (typeof this.currentWordObject.attemptСount !== "undefined")
+          return this.currentWordObject.attemptСount;
+        return 0;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "attemptСount", value);
+      },
+    },
+
+    percentageOfCrrectAnswers() {
+      return Math.round(
+        ((this.getCountLearnedNewCard + this.getCountLearnedRepeatCard) /
+          this.getCountAttemptsAllCards) *
+          100
+      );
+    },
+
+    wasHint: {
+      get() {
+        return !!this.currentWordObject.wasHint;
+      },
+      set(value) {
+        this.$set(this.currentWordObject, "wasHint", value);
+      },
+    },
+
     currentWord() {
       return this.currentWordObject.word;
     },
+
+    numberStatusCurrentWord() {
+      if (!this.currentWordObject.userWord) return 0;
+      // check for old notes
+      if (!this.currentWordObject.userWord.optional.status) return 1;
+      return this.currentWordObject.userWord.optional.status;
+    },
+
     learnSettingsToggles() {
       return this.$store.state.userSettings.optional.learn.toggles;
     },
@@ -323,7 +424,6 @@ export default {
       this.isVisibleContent = true;
       this.autoAudioPlayWord();
     } catch (error) {
-      console.log(error);
       this.$router.push("/home");
     } finally {
       this.setLoading(false);
@@ -331,10 +431,16 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setLoading", "getLearnArraysFromServer", "updateMixWordsArrayObjectByStep"]),
+    ...mapActions([
+      "setLoading",
+      "getLearnArraysFromServer",
+      "addAnswerResult",
+      "setError",
+      "setUserWordWithCheck",
+      "getUserAggregateWords",
+    ]),
 
     async prepareStart() {
-      // console.log("isArraysLoaded: ", this.getCurrentLearnStateObject.isArraysLoaded);
       if (!this.getCurrentLearnStateObject.isArraysLoaded) {
         await this.getLearnArraysFromServer();
       }
@@ -376,6 +482,8 @@ export default {
       this.currentWordHtml = this.currentWord;
       this.inputValue = "";
       this.isIntutOpacity = true;
+      this.wasHint = true;
+      this.getCurrentLearnStateObject.currentCorrectAnswersSeries = 0;
       setTimeout(() => {
         this.isIntutOpacity = false;
       }, 5000);
@@ -383,7 +491,8 @@ export default {
 
     handleErrorWord(inputWord) {
       this.playAllAudio();
-      this.isErrorWord = true;
+      this.hasWordCorrectAnswer = false;
+      this.getCurrentLearnStateObject.currentCorrectAnswersSeries = 0;
       const charsArrayCurrentWord = this.currentWord.split("");
       const charsArrayInputWord = inputWord.split("");
       let countError = 0;
@@ -408,36 +517,72 @@ export default {
       this.currentWordHtml = tagArray.join("");
       this.inputValue = "";
       this.isIntutOpacity = true;
+      this.isCheck = false;
       return countError;
     },
 
-    setEvaluation() {
-      // todo set raiting word
+    setEvaluation(message) {
+      if (message === EVALUATION_AGAIN) {
+        this.isCardStudied = false;
+      } else {
+        const resultOptionObject = {
+          wordId: this.currentWordObject._id,
+          isCorrectAnswer: this.hasWordCorrectAnswer,
+          userEvaluation: EVALUATION_HARD,
+          attemptСount: this.attemptСount,
+        };
+        if (message === EVALUATION_GOOD) resultOptionObject.userEvaluation = EVALUATION_GOOD;
+        if (message === EVALUATION_EASY) resultOptionObject.userEvaluation = EVALUATION_EASY;
+        this.addAnswerResult(resultOptionObject);
+      }
       this.nextStep();
+    },
+
+    addToCorrectAnswersSeries() {
+      const state = this.getCurrentLearnStateObject;
+      state.currentCorrectAnswersSeries += 1;
+      if (state.currentCorrectAnswersSeries > state.bestCorrectAnswersSeries)
+        state.bestCorrectAnswersSeries = state.currentCorrectAnswersSeries;
     },
 
     handleRightWord() {
       this.playAllAudio();
       this.isCardStudied = true;
       this.displayWordRightInInput();
-      setTimeout(() => {
-        this.isShowEvaluation = true;
-      }, 2000);
-      // todo set raiting word
+      if (this.attemptСount === 1 && !this.wasHint) {
+        this.hasWordCorrectAnswer = true;
+        this.addToCorrectAnswersSeries();
+      }
+      if (this.learnSettingsToggles.userEvaluation.state) {
+        setTimeout(() => {
+          this.isShowEvaluation = true;
+        }, 1000);
+      } else {
+        const resultOptionObject = {
+          wordId: this.currentWordObject._id,
+          isCorrectAnswer: this.hasWordCorrectAnswer,
+          attemptСount: this.attemptСount,
+        };
+        this.addAnswerResult(resultOptionObject);
+        setTimeout(() => {
+          this.nextStep();
+        }, 10000);
+      }
     },
 
     checkWord() {
-      const isNotEmpty = !!this.inputValue;
-      if (isNotEmpty) {
-        const inputWord = this.inputValue.trim();
-        if (inputWord === this.currentWord) {
-          if (!this.isCardStudied) this.handleRightWord();
-          else this.nextStep();
-        } else {
-          const countError = this.handleErrorWord(inputWord);
-          console.log("countError >>> ", countError);
-          // todo set focus on input
-          // todo set raiting word
+      if (this.isCardStudied) this.nextStep();
+      else {
+        const isNotEmpty = !!this.inputValue;
+        if (isNotEmpty) {
+          this.isCheck = true;
+          this.attemptСount += 1;
+          const inputWord = this.inputValue.trim();
+          if (inputWord.toLowerCase() === this.currentWord.toLowerCase()) {
+            this.handleRightWord();
+          } else {
+            this.handleErrorWord(inputWord);
+          }
         }
       }
     },
@@ -446,20 +591,18 @@ export default {
       this.inputValue = "";
       this.isRightWord = false;
       this.currentWordHtml = "";
+      this.currentAttemptCount = 0;
       this.isIntutOpacity = false;
       this.isShowEvaluation = false;
+      this.audio.stop();
     },
 
     showEndLearnInfo() {
-      // todo show end's learn info modal window
       this.isShowEndLearnInfo = true;
     },
 
     runEndLearn() {
-      // console.log("runEndLearn");
       this.isShowEvaluation = false;
-      // todo save statistic & etc.
-      // todo update statictics and goals
       this.showEndLearnInfo();
     },
 
@@ -478,6 +621,7 @@ export default {
     },
 
     nextStep() {
+      this.isCheck = false;
       if (this.step === this.wordsArray.length - 1) {
         const indexNotStudiedCart = this.getFastIndexOfIsNotLearnedWordObject();
         if (!indexNotStudiedCart) this.runEndLearn();
@@ -485,6 +629,60 @@ export default {
       } else {
         this.clear();
         this.step += 1;
+      }
+    },
+
+    showAlert(type, title, text) {
+      this.$notify({
+        group: "main",
+        type,
+        title,
+        text,
+      });
+    },
+
+    async getWordsFromServer(isNew) {
+      const numberOfWordsRequested = this.getCurrentArray.length + 1;
+      const optionObject = {
+        page: 0,
+        wordsPerPage: numberOfWordsRequested,
+        onlyNotLearned: isNew,
+        onlyLearned: !isNew,
+      };
+      if (!isNew) optionObject.difficulty = WORD_ORDINARY;
+      const resWord = await this.getUserAggregateWords(optionObject);
+      if (resWord.success) return resWord.result;
+      return false;
+    },
+
+    async handleDeleting(message) {
+      this.setLoading(true);
+      const isNewWord = !this.currentWordObject.userWord;
+      try {
+        if (isNewWord) this.currentWordObject.userWord = { difficulty: message };
+        else this.currentWordObject.userWord.difficulty = message;
+
+        const res = await this.setUserWordWithCheck({
+          userWord: this.currentWordObject.userWord,
+          wordId: this.currentWordObject._id,
+        });
+
+        const newWordsArray = await this.getWordsFromServer(isNewWord);
+        if (res.success && !!newWordsArray) {
+          const newWordObject = newWordsArray.find((element) => {
+            return !this.getMixWordsArray.find((object) => element._id === object._id);
+          });
+          if (!newWordObject) throw new Error("no matching word found");
+
+          this.getCurrentArray.splice(this.step, 1, newWordObject);
+          this.showAlert("success", "Успешно", "Карточка удалена из изучения");
+          this.nextStep();
+        }
+      } catch (error) {
+        this.setError("Oшибка удаления карточки");
+        throw error;
+      } finally {
+        this.setLoading(false);
       }
     },
   },
@@ -501,12 +699,12 @@ export default {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.37);
   margin-right: 0.3rem;
 }
 
-.dot:nth-child(1) {
-  background-color: orange;
+.dot_accent {
+  background-color: white;
 }
 
 .card-text__word-element {

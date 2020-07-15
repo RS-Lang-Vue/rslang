@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import Emblem from "@/components/games/FindThePair/Emblem.vue";
+import Emblem from "@/components/common/Emblem.vue";
 
 export default {
   components: {

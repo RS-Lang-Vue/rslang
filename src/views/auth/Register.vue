@@ -8,7 +8,7 @@
       :loading="isFormLoading"
     >
       <p class="text-body-2 text-sm-body-1" style="text-align: left;">
-        Уже зарегистрированы? <router-link to="/auth/login">Войти</router-link>
+        Уже есть аккаунт? <router-link to="/auth/login">Войти</router-link>
       </p>
     </lang-user-form>
   </v-card>
@@ -28,14 +28,21 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["setError"]),
     handleFormSubmit({ email, password }) {
       this.isFormLoading = true;
       this.createUser({ email, password })
         .then(() => {
-          this.showAlert("success", "Success", "Successfully created user");
+          this.showAlert("success", "Успех", "Пользователь успешно создан");
           this.$router.push("/auth/login");
         })
-        .catch(() => this.showAlert("error", "Error", "Something went wrong"))
+        .catch((err) => {
+          if (err.message === "Request failed with status code 417") {
+            this.setError("Пользователь с таким e-mail уже существует");
+          } else {
+            this.setError("Что-то пошло не так");
+          }
+        })
         .finally(() => {
           this.isFormLoading = false;
         });
