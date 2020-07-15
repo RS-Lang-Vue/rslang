@@ -233,12 +233,9 @@ export default {
     },
     async sendToLearn(word) {
       this.loading = true;
-      const newWord = word._word;
-      newWord.userWord.difficulty = "0";
-      await this.$store.dispatch("setUserWords", {
-        isNewWord: false,
-        userWord: newWord.userWord,
-        wordId: newWord._id,
+      await this.$store.dispatch("changeDifficulty", {
+        difficulty: "0",
+        wordId: word._word._id,
       });
       this.getWords(this.tab.split("-")[1]);
     },
