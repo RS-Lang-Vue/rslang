@@ -304,6 +304,7 @@ export default {
     ...mapGetters([
       "getCurrentLearnStateObject",
       "getLearnType",
+      "getMixWordsArray",
       "getCurrentArray",
       "getLearnSettings",
       "getLearnTypeIsNew",
@@ -643,7 +644,7 @@ export default {
       });
     },
 
-    async getOneWordFromServer(isNew) {
+    async getWordsFromServer(isNew) {
       const numberOfWordsRequested = this.getCurrentArray.length + 1;
       const optionObject = {
         page: 0,
@@ -658,40 +659,31 @@ export default {
     },
 
     async handleDeleting(message) {
-      console.log("handleDeleting message > ", message);
       this.setLoading(true);
       const isNewWord = !this.currentWordObject.userWord;
       try {
         if (isNewWord) this.currentWordObject.userWord = { difficulty: message };
         else this.currentWordObject.userWord.difficulty = message;
-        console.log("this.currentWordObject", this.currentWordObject.word);
 
         const res = await this.setUserWordWithCheck({
           userWord: this.currentWordObject.userWord,
           wordId: this.currentWordObject._id,
         });
-        console.log("setUserWordWithCheck res >>>", res);
 
-        const newWordsArray = await this.getOneWordFromServer(isNewWord);
-        console.log("getOneWordFromServer newWordsArray >>>", newWordsArray);
-
-        console.log("getOneWordFromServer !!newWordObject >>>", !!newWordsArray);
-        console.log("res.succes >>>", res.success);
+        const newWordsArray = await this.getWordsFromServer(isNewWord);
         if (res.success && !!newWordsArray) {
-          const newWordObject = newWordsArray.find(
-            (element) => element._id !== this.currentWordObject._id
-          );
+          const newWordObject = newWordsArray.find((element) => {
+            return !this.getMixWordsArray.find((object) => element._id === object._id);
+          });
           if (!newWordObject) throw new Error("no matching word found");
 
-          this.getCurrentArray.splice(this.step, 1);
-          this.getCurrentArray.push(newWordObject);
+          this.getCurrentArray.splice(this.step, 1, newWordObject);
           this.showAlert("success", "Успешно", "Карточка удалена из изучения");
-          // todo
-          this.autoAudioPlayWord();
+          this.nextStep();
         }
       } catch (error) {
         this.setError("Oшибка удаления карточки");
-        console.log("ошибка удаления карточки", error);
+        throw error;
       } finally {
         this.setLoading(false);
       }
