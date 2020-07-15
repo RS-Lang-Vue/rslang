@@ -226,7 +226,6 @@
             <p>Пройдено карточек - {{ getCountLearnedRepeatCard }}</p>
           </div>
           <div v-else class="final-message final-message__all">
-            <!-- // todo показывать только по изучению всех слов -->
             <p class="text-h6">Задача выполнена. На сегодня все.</p>
             <v-list subheader>
               <v-list-item
@@ -604,8 +603,6 @@ export default {
 
     runEndLearn() {
       this.isShowEvaluation = false;
-      // todo save statistic & etc.
-      // todo update statictics and goals
       this.showEndLearnInfo();
     },
 
