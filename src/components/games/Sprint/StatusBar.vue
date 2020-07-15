@@ -54,12 +54,9 @@ export default {
 }
 
 @media screen and (max-width: 500px) {
-  .status-bar {
-    flex-direction: column;
-    .score,
-    .streak {
-      width: 100%;
-    }
+  .streak__img {
+    width: 30px !important;
+    height: 30px;
   }
 }
 </style>

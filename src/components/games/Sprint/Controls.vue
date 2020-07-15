@@ -167,10 +167,16 @@ form {
   width: 80%;
 }
 
-@media screen and (max-width: 948px) {
+@media screen and (max-height: 850px) {
   .control-bar {
-    top: -50px;
-    right: 45px;
+    top: initial;
+    bottom: 38px;
+    right: initial;
+    width: 100%;
+  }
+  .icon {
+    font-size: 30px !important;
+    border: none;
   }
 }
 </style>

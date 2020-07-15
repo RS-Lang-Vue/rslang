@@ -13,7 +13,7 @@
       :statistic="statistic"
       @closeModal="closeModal()"
     />
-    <v-card class="content" v-if="!loading">
+    <v-card class="content" v-if="!loading" :elevation="0">
       <Header v-if="!startGame" />
       <v-card :elevation="0" class="card rounded-t-xl transparent">
         <v-card :elevation="20" class="game" v-if="startGame">
@@ -75,7 +75,7 @@ export default {
       countWords: 0,
       timer: 0,
       score: 0,
-      streak: { count: 4, seriesCorrectAnswer: 4 },
+      streak: { count: 0, seriesCorrectAnswer: 0 },
       buttonActivity: false,
       interval: "",
       words: localStorage.getItem("SprintSettings")
@@ -103,22 +103,28 @@ export default {
     this.getData();
     this.setLoading(false);
   },
+  destroyed() {
+    document.removeEventListener("keyup", this.keyControl, false);
+  },
   methods: {
     ...mapActions(["getLearnedWordsSortByRepeatDate", "addAnswerResult", "setLoading"]),
     changeWord(x) {
       this.words = x;
       this.timerBtnVisibility(true);
       this.getData();
+      document.removeEventListener("keyup", this.keyControl, false);
     },
     changeRound(x) {
       this.round = x;
       this.loading = true;
       this.getData();
+      document.removeEventListener("keyup", this.keyControl, false);
     },
     changeLevel(x) {
       this.level = x;
       this.loading = true;
       this.getData();
+      document.removeEventListener("keyup", this.keyControl, false);
     },
     async getData() {
       function getRandom() {
@@ -147,8 +153,17 @@ export default {
       this.startGame = false;
       this.countWords = 0;
       this.score = 0;
-      this.streak = { count: 4, seriesCorrectAnswer: 4 };
+      this.streak = { count: 0, seriesCorrectAnswer: 0 };
       this.loading = false;
+    },
+    keyControl(e) {
+      if (e.code === "Space") {
+        this.checkAnswer();
+      } else if (e.code === "ArrowRight") {
+        this.checkAnswer(false);
+      } else if (e.code === "ArrowLeft") {
+        this.checkAnswer(true);
+      }
     },
     gameStarted() {
       this.timer = 0;
@@ -161,6 +176,8 @@ export default {
           this.timerBtnVisibility(false);
         }
       }, 1000);
+
+      document.addEventListener("keyup", this.keyControl);
     },
     timerBtnVisibility(x) {
       if (x === true) {
@@ -174,9 +191,12 @@ export default {
       }
     },
     checkAnswer(x) {
-      const answerId = this.words
+      let answerId = this.words
         ? this.sourceData[this.countWords]._id
         : this.sourceData[this.countWords].id;
+      if (!answerId) {
+        answerId = this.sourceData[this.countWords].id;
+      }
       const answer =
         document.querySelector(".word-translate").textContent.trim() ===
         this.sourceData[this.countWords].wordTranslate;
@@ -197,7 +217,7 @@ export default {
             isCorrectAnswer: false,
           });
         }
-      } else if (!x) {
+      } else if (x === false) {
         if (!answer) {
           this.streakCount();
           this.score += 10 + 10 * (this.streak.count + 1);
@@ -227,6 +247,7 @@ export default {
       this.timerBtnVisibility(true);
       if (this.countWords !== 19) {
         this.countWords += 1;
+        document.removeEventListener("keyup", this.keyControl, false);
         this.gameStarted();
       } else {
         this.sendLocalStatistic();
@@ -313,6 +334,7 @@ export default {
   background: #4e6a6ec4 !important;
 }
 .controls {
+  position: static;
   display: flex;
   justify-content: space-around;
   width: 50%;
@@ -324,11 +346,11 @@ export default {
   display: flex;
   align-items: center;
   margin-top: 10px;
-  opacity: 1;
+  visibility: visible;
   transition: opacity 0.5s;
 }
 .next-btn.hide {
-  opacity: 0;
+  visibility: hidden;
   cursor: default;
 }
 .next-btn__icon {
@@ -345,15 +367,29 @@ export default {
   }
 }
 
-@media screen and (max-height: 700px) {
+@media screen and (max-height: 850px) {
   .game {
-    height: 75vh;
+    height: 65vh;
   }
   .controls {
     width: 100%;
   }
   .answer-btn {
     width: 120px !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .game {
+    height: 75vh;
+  }
+  .next-btn {
+    position: absolute;
+    bottom: 25px;
+    width: 85% !important;
+  }
+  .controls {
+    position: absolute;
+    bottom: 25px;
   }
 }
 </style>
