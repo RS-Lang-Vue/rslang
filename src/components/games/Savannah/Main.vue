@@ -13,7 +13,11 @@
       <v-container>
         <v-row class="example__container">
           <v-col class="example__container-col" v-for="item in exampleData[countWords]" :key="item">
-            <v-btn class="example-btn" @click="checkAnswer($event)">
+            <v-btn
+              v-bind:class="{ small: item.length > 12 }"
+              class="example-btn"
+              @click="checkAnswer($event)"
+            >
               {{ item }}
             </v-btn>
           </v-col>
@@ -44,7 +48,7 @@ export default {
     return {
       score: 0,
       ainmated: undefined,
-      position: -10,
+      position: 0,
       loading: true,
       sourceData: [],
       exampleData: {},
@@ -137,7 +141,7 @@ export default {
       await this.btnActivity();
       if (this.countWords !== 19) {
         this.countWords += 1;
-        this.position = -10;
+        this.position = 0;
         this.moveBlock();
       } else {
         this.sendStatistic();
@@ -183,7 +187,6 @@ export default {
     sendStatistic() {
       const date = new Date().toLocaleString("ru").split(",")[0];
       this.stat.date = date;
-      /*       this.stat.id = this.getSavannahStatistic.length; */
       if (localStorage.getItem("SavannahStatistic")) {
         const localStat = JSON.parse(localStorage.getItem("SavannahStatistic"));
         this.stat.id = localStat.length;
@@ -210,6 +213,7 @@ export default {
     async nextGame() {
       this.stat = { correct: 0, wrong: 0 };
       this.countWords = 0;
+      this.position = 0;
       this.roundModalActive = false;
       this.setLoading(true);
       await this.getData();
@@ -263,6 +267,7 @@ export default {
 .source-word {
   color: #e5fd0a !important;
   position: relative;
+  cursor: default;
   top: 0px;
 }
 .close-btn {
@@ -281,6 +286,9 @@ export default {
 }
 .example-btn {
   width: 150px;
+}
+.small {
+  font-size: 8px !important;
 }
 .example-btn.correct {
   background-color: #4ffd0a !important;

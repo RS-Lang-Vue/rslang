@@ -4,7 +4,7 @@
       <v-row>
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Саяжан</v-card-title>
+            <v-card-title class="cyan darken-1">Саяжан (crepiks)</v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item>
@@ -39,7 +39,7 @@
 
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Виталий</v-card-title>
+            <v-card-title class="cyan darken-1">Виталий (matusvit)</v-card-title>
             <v-card-text>
               <v-list color="">
                 <v-list-item>
@@ -89,7 +89,7 @@
 
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Антон</v-card-title>
+            <v-card-title class="cyan darken-1">Антон (akrayushkin)</v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item>
@@ -152,7 +152,7 @@
       <v-row>
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Сергей</v-card-title>
+            <v-card-title class="cyan darken-1">Сергей (yagovkinsi)</v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item>
@@ -173,6 +173,14 @@
                     <v-list-item-title>Страница словаря</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-check</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Стартовая организация работы команды</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list>
             </v-card-text>
           </v-card>
@@ -180,7 +188,7 @@
 
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Васли</v-card-title>
+            <v-card-title class="cyan darken-1">Васли (vaslisaidmuradov)</v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item>
@@ -198,7 +206,7 @@
 
         <v-col col="4">
           <v-card shaped class="mx-auto" min-height="100%" elevation="20">
-            <v-card-title class="cyan darken-1">Максим</v-card-title>
+            <v-card-title class="cyan darken-1">Максим (ifoba)</v-card-title>
             <v-card-text>
               <v-list>
                 <v-list-item>
