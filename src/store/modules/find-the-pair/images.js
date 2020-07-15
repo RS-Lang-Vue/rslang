@@ -17,11 +17,13 @@ export default {
         if (!res.ok) {
           const limit = await res.text();
           if (limit === "Rate Limit Exceeded") {
-            throw new Error(`${limit} (50 images per hour).`);
+            throw new Error(
+              `Этот раунд без картинки. Ограничение API Unsplash 50 изображений в час. Извините.`
+            );
           }
           const data = await res.json();
-          const message = data.errors ? `Message: ${data.errors[0]}` : "";
-          throw new Error(`${message} Server response status: ${res.status}.`);
+          const message = data.errors ? `Сообщение: ${data.errors[0]}` : "";
+          throw new Error(`${message} Статус ответа сервера: ${res.status}.`);
         }
         const data = await res.json();
         const image = data.urls.regular;

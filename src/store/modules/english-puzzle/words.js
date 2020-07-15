@@ -36,7 +36,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Words were not received from the server`);
+          throw new Error(`Нет связи с сервером. Слова не были получены`);
         }
         const data = await res.json();
         commit("updateWordsForRoundEP", data);
@@ -53,7 +53,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Word were not received from the server`);
+          throw new Error(`Нет связи с сервером. Слова не были получены`);
         }
         const data = await res.json();
         dispatch("setLoading", false);
@@ -71,7 +71,7 @@ export default {
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`No connection to server`);
+          throw new Error(`Нет связи с сервером`);
         }
         const data = await res.json();
         const value = data.count - 1;

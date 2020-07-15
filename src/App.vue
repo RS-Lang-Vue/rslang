@@ -29,7 +29,7 @@ export default {
       }
     },
     error() {
-      if (this.error) this.showAlert("error", "Error", this.error);
+      if (this.error) this.showAlert("error", "Ошибка", this.error);
     },
   },
   created() {
