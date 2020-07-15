@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <v-container>
-      <!-- Stack the columns on mobile by making one full-width and the other half-width -->
       <v-row>
         <v-col cols="12" md="6" lg="5">
           <v-card class="mx-auto amber lighten-5" max-width="500">
@@ -180,8 +179,6 @@ export default {
   }),
   computed: {
     ...mapGetters([
-      // "getRepeatWordsArray",
-      // "getNewWordsArray",
       "getCountLearnedNewCard",
       "getCountLearnedRepeatCard",
       "getIsNewWordsLearned",

@@ -105,6 +105,7 @@ export default {
   },
   destroyed() {
     document.removeEventListener("keyup", this.keyControl, false);
+    clearInterval(this.interval);
   },
   methods: {
     ...mapActions(["getLearnedWordsSortByRepeatDate", "addAnswerResult", "setLoading"]),
