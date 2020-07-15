@@ -20,7 +20,7 @@
           dark
           icon
           title="Удалить слово из изучаемых"
-          @click="handleDeleting"
+          @click="handleDeleting(WORD_DELETED)"
         >
           <v-icon>mdi-delete-outline</v-icon>
         </v-btn>
@@ -108,7 +108,7 @@
       <v-card-actions>
         <v-btn
           v-if="learnSettingsToggles.answerButton.state"
-          @click="handleDifficult"
+          @click="handleDeleting(WORD_DIFFICULT)"
           text
           color="indigo accent-4"
           title="Добавить в раздел сложные слова"
@@ -268,6 +268,9 @@ import {
   EVALUATION_GOOD,
   EVALUATION_EASY,
   statusNameArray,
+  WORD_DIFFICULT,
+  WORD_DELETED,
+  WORD_ORDINARY,
 } from "@/config/constants";
 import AudioControl from "@/helpers/audio-control";
 
@@ -278,6 +281,9 @@ export default {
     EVALUATION_GOOD,
     EVALUATION_EASY,
     statusNameArray,
+    WORD_DIFFICULT,
+    WORD_DELETED,
+    WORD_ORDINARY,
     isVisibleContent: false,
     wordsArray: {},
     step: 0,
@@ -592,7 +598,6 @@ export default {
     },
 
     showEndLearnInfo() {
-      // todo show end's learn info modal window
       this.isShowEndLearnInfo = true;
     },
 
@@ -639,60 +644,57 @@ export default {
     },
 
     async getOneWordFromServer(isNew) {
+      const numberOfWordsRequested = this.getCurrentArray.length + 1;
       const optionObject = {
         page: 0,
-        wordsPerPage: 1,
+        wordsPerPage: numberOfWordsRequested,
         onlyNotLearned: isNew,
         onlyLearned: !isNew,
       };
+      if (!isNew) optionObject.difficulty = WORD_ORDINARY;
       const resWord = await this.getUserAggregateWords(optionObject);
-      if (resWord.success) return resWord.result[0];
-      throw new Error("Error loading repeatWordsArray");
+      if (resWord.success) return resWord.result;
+      return false;
     },
 
-    handleDeleting() {
-      // todo
-    },
-    // async handleDeleting() {
-    //   this.setLoading(true);
-    //   const isNewWord = !this.currentWordObject.userWord;
-    //   try {
-    //     // todo
-    //     const newWordObject = await this.getOneWordFromServer(isNewWord);
-    //     console.log("newWordObject", newWordObject);
+    async handleDeleting(message) {
+      console.log("handleDeleting message > ", message);
+      this.setLoading(true);
+      const isNewWord = !this.currentWordObject.userWord;
+      try {
+        if (isNewWord) this.currentWordObject.userWord = { difficulty: message };
+        else this.currentWordObject.userWord.difficulty = message;
+        console.log("this.currentWordObject", this.currentWordObject.word);
 
-    //     if (isNewWord) this.currentWordObject.userWord = { difficulty: 2 };
-    //     else this.currentWordObject.userWord.difficulty = 2;
+        const res = await this.setUserWordWithCheck({
+          userWord: this.currentWordObject.userWord,
+          wordId: this.currentWordObject._id,
+        });
+        console.log("setUserWordWithCheck res >>>", res);
 
-    //     const res = await this.setUserWordWithCheck({
-    //       userWord: this.currentWordObject.userWord,
-    //       wordId: this.currentWordObject._id,
-    //     });
-    //     console.log("res >>>", res);
-    //     if (res.success) {
-    //       this.getCurrentArray.splice(this.step, 1);
-    //       this.getCurrentArray.push(newWordObject);
-    //     }
-    //     this.showAlert("success", "Успешно", "Карточка удалена");
+        const newWordsArray = await this.getOneWordFromServer(isNewWord);
+        console.log("getOneWordFromServer newWordsArray >>>", newWordsArray);
 
-    //    /*
-    //       + определить новое слово или сторое
-    //       + запросить и получить объект слова
-    //       + отправить данные на сервер по исключенной карточке
-    //       + исключить карточку из массива
-    //       + добавить новую в массив
-    //       + выдать сообщени об успешном результате
-    //     */
-    //   } catch (error) {
-    //     this.setError("Oшибка удаления карточки");
-    //     console.log("ошибка удаления карточки", error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
+        console.log("getOneWordFromServer !!newWordObject >>>", !!newWordsArray);
+        console.log("res.succes >>>", res.success);
+        if (res.success && !!newWordsArray) {
+          const newWordObject = newWordsArray.find(
+            (element) => element._id !== this.currentWordObject._id
+          );
+          if (!newWordObject) throw new Error("no matching word found");
 
-    handleDifficult() {
-      // todo
+          this.getCurrentArray.splice(this.step, 1);
+          this.getCurrentArray.push(newWordObject);
+          this.showAlert("success", "Успешно", "Карточка удалена из изучения");
+          // todo
+          this.autoAudioPlayWord();
+        }
+      } catch (error) {
+        this.setError("Oшибка удаления карточки");
+        console.log("ошибка удаления карточки", error);
+      } finally {
+        this.setLoading(false);
+      }
     },
   },
 };

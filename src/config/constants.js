@@ -8,3 +8,7 @@ export const EVALUATION_GOOD = 3;
 export const EVALUATION_EASY = 4;
 
 export const statusNameArray = ["новое слово", "изучение", "повторение", "напоминание", "изучено"];
+
+export const WORD_ORDINARY = "0";
+export const WORD_DIFFICULT = "1";
+export const WORD_DELETED = "2";

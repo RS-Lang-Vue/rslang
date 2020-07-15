@@ -1,4 +1,9 @@
-import { LEARN_TYPE_ALL, LEARN_TYPE_NEW, LEARN_TYPE_REPEAT } from "@/config/constants";
+import {
+  LEARN_TYPE_ALL,
+  LEARN_TYPE_NEW,
+  LEARN_TYPE_REPEAT,
+  WORD_ORDINARY,
+} from "@/config/constants";
 import mixArrays from "@/store/modules/utils/utilsForLearn";
 import defaultNewWordsArray from "./defaultObject";
 
@@ -21,7 +26,7 @@ export default {
       const repeatWordsPerDay = wordsPerDay - newWordsPerDay;
       try {
         const resNewWords = await dispatch("getUserAggregateWords", {
-          // difficulty: 0 // 0 - common words
+          // difficulty: WORD_ORDINARY,
           page: 0,
           wordsPerPage: newWordsPerDay,
           onlyNotLearned: true,
@@ -31,7 +36,7 @@ export default {
 
         if (repeatWordsPerDay) {
           const resRepeatWords = await dispatch("getUserAggregateWords", {
-            // difficulty: 0 // 0 - common words
+            difficulty: WORD_ORDINARY,
             page: 0,
             wordsPerPage: repeatWordsPerDay,
             onlyLearned: true,
