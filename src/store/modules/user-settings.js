@@ -118,7 +118,7 @@ export default {
         dispatch("setError", err.message);
       }
     },
-    async downloadSettings({ dispatch, commit }) {
+    async downloadSettings({ state, dispatch, commit }) {
       try {
         const user = await dispatch("getUser");
         if (!user) throw Error(errorList.unauthorized);
@@ -136,7 +136,18 @@ export default {
         if (res.ok) {
           const { wordsPerDay, optional } = await res.json();
           if (optional !== undefined && Object.keys(optional).length !== 0) {
-            commit("setUserSettings", { wordsPerDay, optional });
+            const optionalKeys = Object.keys(state.optional).sort();
+            let match = true;
+            Object.keys(optional)
+              .sort()
+              .forEach((item, index) => {
+                if (item !== optionalKeys[index]) match = false;
+              });
+            if (match) {
+              commit("setUserSettings", { wordsPerDay, optional });
+            } else {
+              this.dispatch("uploadSettings");
+            }
           } else {
             this.dispatch("uploadSettings");
           }

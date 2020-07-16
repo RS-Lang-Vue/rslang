@@ -144,6 +144,7 @@ export default {
   gap: 2px;
   height: 213px !important;
   background: transparent;
+  padding: 2px;
   @media (min-width: 375px) {
     height: 250px !important;
   }

@@ -1,9 +1,13 @@
 <template>
   <div class="home">
-    <v-container>
-      <v-row>
+    <v-container class="wrapper">
+      <v-row style="justify-content: space-around;">
         <v-col cols="12" md="6" lg="5">
-          <v-card class="mx-auto amber lighten-5" max-width="500">
+          <v-card
+            class="mx-auto amber lighten-5"
+            max-width="500"
+            style="height: 100%; display: flex; flex-direction: column;"
+          >
             <v-card-title class="headline">Задача на сегодня</v-card-title>
             <v-card-text class="text-left pb-1">
               <span v-if="getIsNewWordsLearned && getIsRepeatWordsLearned">
@@ -33,7 +37,7 @@
                 <span v-if="getIsRepeatWordsLearned">Для повторения больше нет</span>
               </p>
             </v-card-text>
-            <v-card-actions class="flex-wrap">
+            <v-card-actions class="flex-wrap" style="margin-top: auto;">
               <v-btn
                 text
                 color="indigo accent-4"
@@ -53,7 +57,11 @@
         </v-col>
 
         <v-col cols="12" md="6" lg="5">
-          <v-card class="mx-auto yellow lighten-5" max-width="500">
+          <v-card
+            class="mx-auto yellow lighten-5"
+            max-width="500"
+            style="height: 100%; display: flex; flex-direction: column;"
+          >
             <v-card-title class="headline">Текущая статистика</v-card-title>
 
             <v-simple-table dense class="container__color">
@@ -85,7 +93,7 @@
               </tbody>
             </v-simple-table>
 
-            <v-card-actions>
+            <v-card-actions style="margin-top: auto;">
               <v-btn text color="indigo accent-4" to="/vocabulary">Словарь</v-btn>
             </v-card-actions>
           </v-card>
@@ -94,11 +102,16 @@
 
       <v-row>
         <v-col cols="12" md="6" lg="4" v-for="card in cards" :key="card.id">
-          <v-card color="blue lighten-5" class="mx-auto" max-width="500">
+          <v-card
+            color="blue lighten-5"
+            class="mx-auto"
+            max-width="500"
+            style="height: 100%; display: flex; flex-direction: column;"
+          >
             <v-card-title class="headline">{{ card.cardTitle }}</v-card-title>
             <v-card-subtitle class="text-left">{{ card.cardSubtitle }}</v-card-subtitle>
             <v-card-text class="text-left">{{ card.cardText }}</v-card-text>
-            <v-card-actions>
+            <v-card-actions style="margin-top: auto;">
               <v-btn text color="indigo accent-4" :to="card.mainButton.link">{{
                 card.mainButton.title
               }}</v-btn>
@@ -163,29 +176,6 @@ const cards = [
   },
 ];
 
-// const staticticList = [
-//   {
-//     staticticTitle: "Пройдено карточек",
-//     staticticValue: this.getCountLearnedNewCard + this.getCountLearnedRepeatCard,
-//   },
-//   {
-//     staticticTitle: "Изученно новых слов",
-//     staticticValue: this.getCountLearnedNewCard,
-//   },
-//   {
-//     staticticTitle: "Количество попыток",
-//     staticticValue: this.getCountAttemptsAllCards,
-//   },
-//   {
-//     staticticTitle: "Процент правильных ответов",
-//     staticticValue: this.percentageOfCrrectAnswers,
-//   },
-//   {
-//     staticticTitle: "Лучшая серия правильных ответов",
-//     staticticValue: this.getCurrentLearnStateObject.bestCorrectAnswersSeries,
-//   },
-// ];
-
 export default {
   data: () => ({
     cards,
@@ -239,6 +229,13 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 1264px) {
+  .wrapper {
+    max-width: 80%;
+    padding: 8px !important;
+  }
+}
+
 .container__color {
   background-color: inherit !important;
 }

@@ -370,7 +370,7 @@ export default {
         this.isErrors = true;
       } else {
         const word = this.getWordsForRoundEP[this.currentPhraseNumber];
-        this.roundResults.succes = word;
+        this.roundResults.success = word;
         this.sendWordStatisticsToTheServer(word.id, true);
         this.isPhraseCollected = true;
         this.audio.play(this.AUDIO_URL);
